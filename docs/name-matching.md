@@ -73,7 +73,7 @@ sets intersect. Each rung widens *recall* without spending *precision*:
 - **L5 — Manual residue.** The irreducible remainder: a rename with *no* shared course
   to lean on (e.g. `Yiorgos Makris` teaches a grad seminar; his grades are under
   `Georgios Makris` on a different course). These live in a tiny, commented
-  `MANUAL_ALIAS` dict — currently **2 entries**.
+  `MANUAL_ALIAS` dict — currently **4 entries**.
 - **L6 — Namesake blocks.** The inverse hazard: two *different* people who share a
   surname and initial (`Michael McKay` teaches MGT 18; `Mary McKay` taught it before).
   L3 would happily link them and falsely tag Mary "Teaching now." Confirmed namesakes go
@@ -91,9 +91,9 @@ glance at the `VERIFY namesakes` list, is the only recurring manual step, and it
 The whole point is that curation does **not** grow with the catalog. On the current
 FA26 snapshot:
 
-- **22** professors are linked under a different name than their grade history.
-- **20 of 22** are resolved *automatically* (L1–L4). Only **2** are hand-written aliases,
-  plus **1** hand-confirmed namesake block.
+- **27** professors are linked under a different name than their grade history.
+- **23 of 27** are resolved *automatically* (L1–L4). Only **4** are hand-written aliases
+  (renames with no shared course), plus **1** hand-confirmed namesake block.
 - The human review queue for the entire term is **2 alias candidates** — both correctly
   *different* people (`Ruobing Zhang ≠ Zhang, Yuming`; `Laura Acosta Gonzalez ≠
   Roman Gonzalez, Betsabe`), which the course-overlap gate declined to auto-merge — plus
@@ -113,14 +113,14 @@ for the first time — there is simply no history to show. Rather than hide them
 script emits a synthetic row per (professor, course) with `src = 2`, no GPA, and a
 `0×` marker. In the UI these always sort to the **bottom** of the table and are
 listed **after** returning instructors in every course's instructor list, so they
-never crowd out rows that actually carry grade signal. Currently **27** first-time
-instructors → **35** first-term rows.
+never crowd out rows that actually carry grade signal. Currently **22** first-time
+instructors → **26** first-term rows.
 
 They have no grade rows for the normal RMP join to ride, so `tools/fetch_rmp_firsttime.py`
 queries RateMyProfessors (UCSD, school 1079) for them directly and caches strict matches
 (surname must match; first name must be compatible) to `tools/rmp_firsttime.json`, which
 the generator writes onto the `0×` rows. Most first-timers aren't on RMP yet — currently
-**2 of 27** match — so a `0×` row can still show a rating even with no grade history.
+**2 of 22** match — so a `0×` row can still show a rating even with no grade history.
 
 ## What we deliberately did *not* build
 

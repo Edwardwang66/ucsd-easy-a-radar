@@ -52,6 +52,8 @@ DATA = Path(__file__).resolve().parent.parent / "data.json"
 MANUAL_ALIAS = {
     "Yiorgos Makris": "Makris, Georgios V",     # Greek transliteration; teaches ECE 299 (grad), grades under ECE 25
     "Zeinab Jahed": "Jahed Motlagh, Zeinab",    # same NANO professor; second family name dropped, no shared course
+    "Natalye Harpin": "Pass, Natalye Joann",    # name change (Pass → Harpin); same rare first name, same course DOC 100D
+    "Siavash Mirarab": "Mir Arabbaygi, Siavash",  # surname restructured (Mir Arabbaygi → Mirarab); same course ECE 30
 }
 
 # L6 — manual blocks: (catalog name, grade name) pairs that share a surname + initial but are
@@ -142,12 +144,18 @@ def main(dry=False):
     PARTICLE = {"de", "di", "da", "del", "della", "la", "le", "van", "von", "el",
                 "al", "dos", "das", "bin", "ibn", "san", "st", "st.", "ii", "iii", "jr", "jr.", "sr"}
 
+    def sur_toks(surname):
+        """Split a surname into meaningful tokens on space AND hyphen (so 'Choi-Vanos' →
+        ['choi','vanos']), dropping particles/suffixes."""
+        raw = surname.replace("-", " ").split()
+        return [t for t in raw if t not in PARTICLE] or raw
+
     def surname_tokens(nm):
         """Meaningful surname anchors: the full compound plus its first & last real tokens."""
         last, _ = split_name(nm)
         if not last:
             return set()
-        toks = [t for t in last.split() if t not in PARTICLE] or last.split()
+        toks = sur_toks(last)
         return {last, toks[0], toks[-1], despace(last)}
 
     g_key_set = set()                 # every grade key that exists
@@ -184,10 +192,11 @@ def main(dry=False):
         facs = fa_courses[name]
         best = None                                    # (exact_overlap, subj_overlap, records, full_name)
         # catalog surname anchors: full trailing surname + its first & last real tokens
+        # (hyphen-split, so "Power-Sotomayor" also anchors on "power" and "sotomayor")
         cat_toks = collapse(deacc(name)).split()
-        cat_sur = cat_toks[1:] if len(cat_toks) >= 2 else []
-        cat_real = [t.lower() for t in cat_sur if t.lower() not in PARTICLE] or [t.lower() for t in cat_sur]
-        cat_full = " ".join(cat_sur).lower()
+        cat_sur = " ".join(cat_toks[1:]) if len(cat_toks) >= 2 else ""
+        cat_real = [t.lower() for t in sur_toks(cat_sur)] if cat_sur else []
+        cat_full = cat_sur.lower()
         cat_anchors = {cat_full, despace(cat_full), *cat_real} if cat_sur else set()
         cand_names = {g for sv in cat_anchors for g in g_by_surname.get(sv, [])}
         for g in sorted(cand_names):
@@ -240,6 +249,28 @@ def main(dry=False):
         return any((name, g) not in MANUAL_BLOCK for g in cands)
 
     new_prof = sorted({n for n in fa_courses if not resolves(n)})
+
+    # --- rename review: a "first-timer" who shares an EXACT course with a DIFFERENT-surname
+    #     grade professor of the same first name is probably a name change (marriage, surname
+    #     restructure). Surfaced for review; confirmed ones go in MANUAL_ALIAS. ---
+    def _fname(nm):
+        _, given = split_name(nm)
+        return given[0].lower() if given else ""
+
+    g_by_course = {}
+    for g, cs in g_courses.items():
+        for c in cs:
+            g_by_course.setdefault(c, []).append(g)
+    renames = []
+    for n in new_prof:
+        fn = _fname(n)
+        seen_g = set()
+        for course in fa_courses[n]:
+            for g in g_by_course.get(course, []):
+                if g in seen_g or _fname(g) != fn:
+                    continue
+                seen_g.add(g)
+                renames.append((n, g, course))
 
     # --- synthetic first-term rows (src == 2): one per (first-timer, course) ---
     # borrow title index + level from an existing row of the course, else from the
@@ -355,6 +386,11 @@ def main(dry=False):
               f"spelled first name ({len(namesakes)}). Nicknames are fine; block true namesakes:")
         for course, g, f in namesakes:
             print(f"   ~ {course:11} {g:32} <- FA26 {f!r}")
+    if renames:
+        print(f"\nREVIEW renames — a first-timer sharing an exact course + first name with a "
+              f"DIFFERENT-surname grade professor ({len(renames)}); add to MANUAL_ALIAS if same person:")
+        for n, g, course in renames:
+            print(f"   ? {n:24} ?= {g:28} (both {course})")
 
     if dry:
         print("\n--dry-run: data.json NOT written")

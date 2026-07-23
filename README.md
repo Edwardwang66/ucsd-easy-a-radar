@@ -44,8 +44,8 @@ No environment variables, no server. `fetch('data.json')` is same-origin, so it 
   despace Mc/apostrophe spellings (*McCulloch* ↔ *Mc Culloch*) → match on the first **or a middle**
   initial (*Ryan Wagner* ↔ *Wagner, Timothy Ryan*) → and, for genuine renames, **auto-alias by course
   overlap** (*Paul Cao* teaches CSE 12/100 and *Cao, Yingjun* has CSE 12/100 grade history → same
-  person). Of the 22 professors listed under a different name than their grades, 20 resolve
-  automatically; the `alias` map in `data.json` is generated, and only 2 hand-confirmed entries remain
+  person). Of the 27 professors listed under a different name than their grades, 23 resolve
+  automatically; the `alias` map in `data.json` is generated, and only 4 hand-confirmed entries remain
   (`MANUAL_ALIAS`). Professors teaching at UCSD for the first time have no grade history; they're
   collected in `newProf`, shown as `src:2` rows marked **0×**, and sorted last. See
   [`docs/name-matching.md`](docs/name-matching.md) for the full design.
