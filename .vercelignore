@@ -1,6 +1,3 @@
-# The site is just index.html + data.json + schedule.json. Keep tooling, docs and
-# regeneration scripts out of the deployment — they don't affect the static site.
-tools/
-docs/
+# Not part of the deployed site.
 README.md
 .gitignore
