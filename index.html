@@ -261,9 +261,16 @@
         <button class="combo-clear" id="subjectClear" type="button" aria-label="Clear subject">×</button>
         <ul id="subjectList" class="combo-list" role="listbox" hidden></ul>
       </div>
+      <div class="combo" id="profCombo">
+        <input id="profInput" type="text" placeholder="Any professor" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="profList" aria-label="Filter by professor">
+        <span class="cv-caret" aria-hidden="true">▾</span>
+        <button class="combo-clear" id="profClear" type="button" aria-label="Clear professor">×</button>
+        <ul id="profList" class="combo-list" role="listbox" hidden></ul>
+      </div>
       <div class="sortwrap">
         <span>Sort</span>
         <select id="sort" aria-label="Sort by">
+          <option value="y" selected>Recently taught — newest first</option>
           <option value="g">Avg GPA — high to low</option>
           <option value="gA">A rate — high to low</option>
           <option value="risk">Risk (D+F+W) — low to high</option>
@@ -286,8 +293,8 @@
       <div class="sortwrap">
         <span>Taught ≥</span>
         <select id="minoff" aria-label="Minimum times taught">
-          <option value="1">1×</option><option value="2">2×</option>
-          <option value="3" selected>3×</option><option value="5">5×</option>
+          <option value="1" selected>1×</option><option value="2">2×</option>
+          <option value="3">3×</option><option value="5">5×</option>
         </select>
       </div>
       <span class="grow"></span>
@@ -361,7 +368,7 @@ function init(DATA){
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
-  const state={q:'',subject:'',level:'ug',offered:true,sort:'g',minoff:3,limit:60};
+  const state={q:'',subject:'',prof:'',level:'ug',offered:true,sort:'y',minoff:1,limit:60};
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
@@ -382,30 +389,50 @@ function init(DATA){
       case 'grad':return lv>=200;
     }
   }
+  function matchQ(r,q){
+    if(!q) return true;
+    const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
+    const title=(r[C.t]>=0?(T[r[C.t]]||''):'').toLowerCase(), instr=(r[C.i]||'').toLowerCase();
+    return code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q);
+  }
+  function tie(a,b){const ga=a[C.g],gb=b[C.g];if(ga!=null&&gb!=null&&ga!==gb)return gb-ga;if(ga!=null&&gb==null)return -1;if(ga==null&&gb!=null)return 1;return b[C.n]-a[C.n];}
   function compute(){
     const q=state.q.trim().toLowerCase(), out=[];
     for(const r of R){
       if(state.offered && !r[C.off]) continue;
       if(state.subject && r[C.s]!==state.subject) continue;
+      if(state.prof && r[C.i]!==state.prof) continue;
       if(!levelOk(r[C.lv])) continue;
       if(r[C.src]!==1 && r[C.n]<state.minoff) continue;
-      if(q){
-        const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
-        const title=(r[C.t]>=0?(T[r[C.t]]||''):'').toLowerCase(), instr=(r[C.i]||'').toLowerCase();
-        if(!(code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q))) continue;
-      }
+      if(!matchQ(r,q)) continue;
       out.push(r);
     }
     const key=state.sort, dir=(key==='risk'||key==='rd')?1:-1;
     out.sort((a,b)=>{
       let va=sortVal(a,key), vb=sortVal(b,key);
       const an=(va==null), bn=(vb==null);
-      if(an&&bn) return b[C.n]-a[C.n];
+      if(an&&bn) return tie(a,b);
       if(an) return 1; if(bn) return -1;
       if(va!==vb) return (va-vb)*dir;
-      return b[C.n]-a[C.n];
+      return tie(a,b);
     });
     return out;
+  }
+  function profSuggestions(query){
+    const q=state.q.trim().toLowerCase(), qq=(query||'').trim().toLowerCase();
+    const seen=new Map();
+    for(const r of R){
+      if(state.offered && !r[C.off]) continue;
+      if(state.subject && r[C.s]!==state.subject) continue;
+      if(!levelOk(r[C.lv])) continue;
+      if(!matchQ(r,q)) continue;
+      const raw=r[C.i]; if(!raw) continue;
+      const disp=instrShort(raw);
+      if(qq && !(disp.toLowerCase().includes(qq)||raw.toLowerCase().includes(qq))) continue;
+      let e=seen.get(raw); if(!e){e={disp,cnt:0};seen.set(raw,e);} e.cnt++;
+    }
+    return [...seen.entries()].map(([raw,v])=>({v:raw,label:v.disp,cnt:v.cnt}))
+      .sort((a,b)=>a.label.localeCompare(b.label)).slice(0,100);
   }
 
   function distHTML(r){
@@ -490,19 +517,31 @@ function init(DATA){
     </div>`;
   }
 
-  let current=[];
-  function render(){
-    current=compute();
-    const rowsEl=$('rows'), emptyEl=$('empty');
-    if(current.length===0){rowsEl.innerHTML='';emptyEl.hidden=false;}
-    else{emptyEl.hidden=true;rowsEl.innerHTML=current.slice(0,state.limit).map(r=>{
-      return rowHTML(r)+(expanded.has(RI.get(r))?detailHTML(r):'');
-    }).join('');}
-    const mw=$('moreWrap');
-    if(current.length>state.limit){mw.hidden=false;$('moreBtn').textContent=`Show ${Math.min(PAGE,current.length-state.limit)} more · ${current.length.toLocaleString()} total`;}
-    else mw.hidden=true;
+  let current=[], shown=0;
+  const rowsEl=$('rows'), emptyEl=$('empty'), moreWrap=$('moreWrap'), moreBtn=$('moreBtn');
+  function chunkHTML(list){return list.map(r=>rowHTML(r)+(expanded.has(RI.get(r))?detailHTML(r):'')).join('');}
+  function updateMore(){
+    if(shown<current.length){moreWrap.hidden=false;moreBtn.textContent=`Show ${Math.min(PAGE,current.length-shown)} more · ${current.length.toLocaleString()} total`;}
+    else moreWrap.hidden=true;
+  }
+  function appendMore(){ // append the next page — cheap, keeps existing rows in place
+    if(shown>=current.length) return;
+    const next=current.slice(shown,shown+PAGE);
+    rowsEl.insertAdjacentHTML('beforeend', chunkHTML(next));
+    shown+=next.length;
+    updateMore();
+  }
+  function render(){ // full refresh after a filter / sort change
+    current=compute(); shown=0; rowsEl.innerHTML='';
+    emptyEl.hidden=current.length!==0;
+    if(current.length) appendMore();
+    else { moreWrap.hidden=true; }
     renderStats(current);
     document.querySelectorAll('.thead .sortable').forEach(el=>el.dataset.active=(el.dataset.sort===state.sort)?'1':'0');
+  }
+  function rerenderShown(){ // after an expand toggle: rebuild only the rows already shown
+    rowsEl.innerHTML=chunkHTML(current.slice(0,Math.max(shown,0)));
+    updateMore();
   }
   function renderStats(list){
     const withG=list.filter(r=>r[C.g]!=null).map(r=>r[C.g]).sort((a,b)=>a-b);
@@ -521,49 +560,47 @@ function init(DATA){
 
   let qt;
   $('q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{state.q=e.target.value;state.limit=PAGE;render();},130);});
-  // ---- subject combobox (typeahead) ----
-  const cCombo=$('subjectCombo'), cInput=$('subjectInput'), cList=$('subjectList'), cClear=$('subjectClear');
-  cInput.placeholder='All subjects ('+subs.length+')';
-  let comboActive=-1;
-  function openList(filter){
-    const q=(filter||'').trim().toLowerCase();
-    let list=subs;
-    if(q){
-      const starts=[],incl=[];
-      for(const s of subs){const sl=s.toLowerCase();if(sl.startsWith(q))starts.push(s);else if(sl.includes(q))incl.push(s);}
-      list=starts.concat(incl);
+  // ---- generic typeahead combobox (used by Subject & Professor) ----
+  function setupCombo(o){
+    let active=-1, selLabel='';
+    const lbl=el=>el.childNodes[0]?el.childNodes[0].textContent:'';
+    function open(filter){
+      const items=o.getItems(filter);
+      const showAll=!(filter&&filter.trim());
+      const allRow=showAll?`<li data-v="" role="option" class="alli">${o.allLabel}</li>`:'';
+      const rows=items.map(it=>`<li data-v="${esc(it.v)}" role="option">${esc(it.label)}${it.cnt!=null?`<span class="cnt">${it.cnt.toLocaleString()}</span>`:''}</li>`).join('');
+      o.list.innerHTML=allRow+(rows||`<li class="none">No match</li>`);
+      o.list.hidden=false; o.input.setAttribute('aria-expanded','true'); active=-1;
     }
-    const items=list.slice(0,80);
-    const allRow=q?'':`<li data-v="" role="option" class="alli">All subjects<span class="cnt">${R.length.toLocaleString()}</span></li>`;
-    const rows=items.map(s=>`<li data-v="${s}" role="option">${s}<span class="cnt">${(subjCount[s]||0).toLocaleString()}</span></li>`).join('');
-    cList.innerHTML=allRow+(rows||'<li class="none">No subject matches “'+esc(q)+'”</li>');
-    cList.hidden=false; cInput.setAttribute('aria-expanded','true'); comboActive=-1;
+    function close(){o.list.hidden=true;o.input.setAttribute('aria-expanded','false');active=-1;o.input.value=selLabel;}
+    function pick(v,label){selLabel=label||'';o.onSelect(v);o.input.value=selLabel;o.combo.classList.toggle('has-value',!!v);o.list.hidden=true;o.input.setAttribute('aria-expanded','false');active=-1;}
+    function move(d){const els=[...o.list.querySelectorAll('li[data-v]')];if(!els.length)return;active=(active+d+els.length)%els.length;els.forEach((el,i)=>el.classList.toggle('active',i===active));els[active].scrollIntoView({block:'nearest'});}
+    o.input.addEventListener('focus',()=>open(''));
+    o.input.addEventListener('input',e=>{o.combo.classList.remove('has-value');open(e.target.value);});
+    o.input.addEventListener('keydown',e=>{
+      if(o.list.hidden&&e.key==='ArrowDown'){open(o.input.value);return;}
+      if(e.key==='ArrowDown'){e.preventDefault();move(1);}
+      else if(e.key==='ArrowUp'){e.preventDefault();move(-1);}
+      else if(e.key==='Enter'){e.preventDefault();const els=[...o.list.querySelectorAll('li[data-v]')];const el=active>=0?els[active]:els[0];if(el)pick(el.dataset.v, el.dataset.v?lbl(el):'');}
+      else if(e.key==='Escape'){close();o.input.blur();}
+    });
+    o.list.addEventListener('mousedown',e=>{const li=e.target.closest('li[data-v]');if(!li)return;e.preventDefault();pick(li.dataset.v, li.dataset.v?lbl(li):'');});
+    o.clear.addEventListener('mousedown',e=>{e.preventDefault();pick('','');o.input.focus();open('');});
+    document.addEventListener('click',e=>{if(!e.target.closest('#'+o.combo.id)&&!o.list.hidden)close();});
   }
-  function closeList(){cList.hidden=true;cInput.setAttribute('aria-expanded','false');comboActive=-1;cInput.value=state.subject||'';}
-  function selectSubject(v){
-    state.subject=v; state.limit=PAGE;
-    cInput.value=v||''; cCombo.classList.toggle('has-value',!!v);
-    cList.hidden=true; cInput.setAttribute('aria-expanded','false'); comboActive=-1;
-    render();
-  }
-  function moveActive(d){
-    const els=[...cList.querySelectorAll('li[data-v]')]; if(!els.length)return;
-    comboActive=(comboActive+d+els.length)%els.length;
-    els.forEach((el,i)=>el.classList.toggle('active',i===comboActive));
-    els[comboActive].scrollIntoView({block:'nearest'});
-  }
-  cInput.addEventListener('focus',()=>openList(''));
-  cInput.addEventListener('input',e=>{cCombo.classList.remove('has-value');openList(e.target.value);});
-  cInput.addEventListener('keydown',e=>{
-    if(cList.hidden && e.key==='ArrowDown'){openList(cInput.value);return;}
-    if(e.key==='ArrowDown'){e.preventDefault();moveActive(1);}
-    else if(e.key==='ArrowUp'){e.preventDefault();moveActive(-1);}
-    else if(e.key==='Enter'){e.preventDefault();const els=[...cList.querySelectorAll('li[data-v]')];const el=comboActive>=0?els[comboActive]:els[0];if(el)selectSubject(el.dataset.v);}
-    else if(e.key==='Escape'){closeList();cInput.blur();}
+  setupCombo({
+    combo:$('subjectCombo'), input:$('subjectInput'), list:$('subjectList'), clear:$('subjectClear'),
+    allLabel:'All subjects',
+    getItems(f){const q=(f||'').trim().toLowerCase();let list=subs;if(q){const s1=[],s2=[];for(const s of subs){const sl=s.toLowerCase();if(sl.startsWith(q))s1.push(s);else if(sl.includes(q))s2.push(s);}list=s1.concat(s2);}return list.slice(0,120).map(s=>({v:s,label:s,cnt:subjCount[s]||0}));},
+    onSelect(v){state.subject=v;render();}
   });
-  cList.addEventListener('mousedown',e=>{const li=e.target.closest('li[data-v]');if(!li)return;e.preventDefault();selectSubject(li.dataset.v);});
-  cClear.addEventListener('mousedown',e=>{e.preventDefault();selectSubject('');cInput.focus();openList('');});
-  document.addEventListener('click',e=>{if(!e.target.closest('#subjectCombo')&&!cList.hidden)closeList();});
+  $('subjectInput').placeholder='All subjects ('+subs.length+')';
+  setupCombo({
+    combo:$('profCombo'), input:$('profInput'), list:$('profList'), clear:$('profClear'),
+    allLabel:'Any professor',
+    getItems(f){return profSuggestions(f);},
+    onSelect(v){state.prof=v;render();}
+  });
   $('sort').addEventListener('change',e=>{state.sort=e.target.value;state.limit=PAGE;render();});
   $('minoff').addEventListener('change',e=>{state.minoff=+e.target.value;state.limit=PAGE;render();});
   $('levels').addEventListener('click',e=>{
@@ -574,14 +611,16 @@ function init(DATA){
   });
   const offBtn=$('offered');
   offBtn.addEventListener('click',()=>{state.offered=!state.offered;offBtn.setAttribute('aria-pressed',state.offered?'true':'false');state.limit=PAGE;render();});
-  $('moreBtn').addEventListener('click',()=>{state.limit+=PAGE;render();});
+  moreBtn.addEventListener('click',appendMore);
   $('rows').addEventListener('click',e=>{
     if(e.target.closest('a')) return; // let RMP links work
     const row=e.target.closest('.trow'); if(!row) return;
     const idx=+row.dataset.i;
     if(expanded.has(idx)) expanded.delete(idx); else expanded.add(idx);
-    render();
+    rerenderShown();
   });
+  // auto-load the next page when the button scrolls near view (button still works as a fallback)
+  new IntersectionObserver(es=>{ if(es[0].isIntersecting) appendMore(); },{rootMargin:'500px'}).observe(moreWrap);
   $('thead').addEventListener('click',e=>{
     const el=e.target.closest('.sortable'); if(!el||!el.dataset.sort) return;
     state.sort=el.dataset.sort; $('sort').value=el.dataset.sort; state.limit=PAGE; render();
