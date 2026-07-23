@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "/(data|hist).json",
+      "source": "/(data|hist|schedule).json",
       "headers": [
         {
           "key": "Cache-Control",
