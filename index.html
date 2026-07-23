@@ -805,8 +805,9 @@ function init(DATA){
     if(expanded.has(idx)) expanded.delete(idx); else expanded.add(idx);
     rerenderShown();
   });
-  // auto-load the next page when the button scrolls near view (button still works as a fallback)
-  new IntersectionObserver(es=>{ if(es[0].isIntersecting) appendMore(); },{rootMargin:'500px'}).observe(moreWrap);
+  // NOTE: no scroll-triggered auto-load. It fought the button — approaching "Show more"
+  // fired the observer, appended a page, and shoved the button far down the page, so it
+  // was impossible to actually click. "Show more" is now an explicit, predictable button.
   $('thead').addEventListener('click',e=>{
     const el=e.target.closest('.sortable'); if(!el||!el.dataset.sort) return;
     state.sort=el.dataset.sort; $('sort').value=el.dataset.sort; state.limit=PAGE; render();
