@@ -139,15 +139,23 @@ def subj(course):
     return course.split()[0]
 
 
+HIST = DATA.parent / "hist.json"
+
+
 def main(dry=False):
     d = json.loads(DATA.read_text())
     C = {c: i for i, c in enumerate(d["cols"])}
 
+    # `hist` runs parallel to `recs`. It lives either inline in data.json (older layout) or in a
+    # separate hist.json (current layout, lazily fetched by the app). Handle both.
+    hist_split = "hist" not in d and HIST.exists()
+    hist = json.loads(HIST.read_text())["hist"] if hist_split else d.get("hist")
+
     # Drop any synthetic first-term rows from a previous run so this is idempotent.
     keep = [i for i, r in enumerate(d["recs"]) if r[C["src"]] != 2]
     d["recs"] = [d["recs"][i] for i in keep]
-    if d.get("hist"):
-        d["hist"] = [d["hist"][i] for i in keep]
+    if hist is not None:
+        hist = [hist[i] for i in keep]
 
     # --- indexes over the real grade rows ---
     # Name particles that are never a standalone family name — don't index on them.
@@ -335,8 +343,8 @@ def main(dry=False):
                 row[C["rq"]], row[C["rd"]] = rmp.get("rq"), rmp.get("rd")
                 row[C["rw"]], row[C["rn"]], row[C["rid"]] = rmp.get("rw"), rmp.get("rn"), rmp.get("rid")
             d["recs"].append(row)
-            if d.get("hist") is not None:
-                d["hist"].append([])   # keep hist parallel to recs
+            if hist is not None:
+                hist.append([])   # keep hist parallel to recs
             added += 1
         if rmp:
             rmp_hits += 1
@@ -406,8 +414,14 @@ def main(dry=False):
     if dry:
         print("\n--dry-run: data.json NOT written")
         return
+    if hist_split:
+        d.pop("hist", None)   # keep hist out of data.json; it lives in hist.json
+        HIST.write_text(json.dumps({"hist": hist}, ensure_ascii=False, separators=(",", ":")))
+    elif hist is not None:
+        d["hist"] = hist
     DATA.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))
-    print(f"\nwrote {DATA} (recs now {len(d['recs'])})")
+    print(f"\nwrote {DATA} (recs now {len(d['recs'])})"
+          + (f" + {HIST.name} (hist {len(hist)})" if hist_split else ""))
 
 
 if __name__ == "__main__":
