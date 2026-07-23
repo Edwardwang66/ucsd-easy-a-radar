@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UCSD Easy-A Radar</title>
+<meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions + RateMyProfessors.">
+<style>
+  :root{
+    --bg:#EEF1F5; --surface:#FFFFFF; --surface-2:#F7F9FB;
+    --ink:#14202E; --muted:#5C6875; --faint:#8A95A3;
+    --line:#E3E7ED; --line-strong:#CFD6DF;
+    --accent:#0B4F8A; --accent-2:#0E63AC; --accent-soft:#E7F0F9; --gold:#E8A400;
+    --gA:#1F9D6B; --gB:#8FB63C; --gC:#E0A100; --gD:#E17B36; --gF:#D2544B; --gW:#93A0B0; --gO:#DCE2E9;
+    --neutral:#C3CBD5;
+    --shadow:0 1px 2px rgba(16,32,52,.05),0 10px 30px rgba(16,32,52,.06);
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --r:12px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0E141B; --surface:#151D27; --surface-2:#111922;
+      --ink:#E7ECF3; --muted:#96A3B4; --faint:#66727F;
+      --line:#232E3B; --line-strong:#33404F;
+      --accent:#4E9BDC; --accent-2:#69AEE8; --accent-soft:#16283A; --gold:#E8A400;
+      --gA:#33B183; --gB:#93BE49; --gC:#E4B23C; --gD:#E68A4C; --gF:#E06A61; --gW:#5A6675; --gO:#26303C;
+      --neutral:#3A4756;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E141B; --surface:#151D27; --surface-2:#111922;
+    --ink:#E7ECF3; --muted:#96A3B4; --faint:#66727F;
+    --line:#232E3B; --line-strong:#33404F;
+    --accent:#4E9BDC; --accent-2:#69AEE8; --accent-soft:#16283A; --gold:#E8A400;
+    --gA:#33B183; --gB:#93BE49; --gC:#E4B23C; --gD:#E68A4C; --gF:#E06A61; --gW:#5A6675; --gO:#26303C;
+    --neutral:#3A4756;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg:#EEF1F5; --surface:#FFFFFF; --surface-2:#F7F9FB;
+    --ink:#14202E; --muted:#5C6875; --faint:#8A95A3;
+    --line:#E3E7ED; --line-strong:#CFD6DF;
+    --accent:#0B4F8A; --accent-2:#0E63AC; --accent-soft:#E7F0F9; --gold:#E8A400;
+    --gA:#1F9D6B; --gB:#8FB63C; --gC:#E0A100; --gD:#E17B36; --gF:#D2544B; --gW:#93A0B0; --gO:#DCE2E9;
+    --neutral:#C3CBD5;
+    --shadow:0 1px 2px rgba(16,32,52,.05),0 10px 30px rgba(16,32,52,.06);
+  }
+
+  *{box-sizing:border-box}
+  html{background:var(--bg)}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 20px 80px}
+  a{color:var(--accent-2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+  .brand{display:flex;flex-direction:column;gap:6px}
+  .kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2);font-weight:600}
+  h1{margin:0;font-size:31px;line-height:1.02;letter-spacing:-.025em;font-weight:800;text-wrap:balance}
+  h1 .drop{color:var(--accent)}
+  .sub{color:var(--muted);font-size:13px;max-width:60ch}
+  .theme-btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+    border-radius:999px;padding:7px 13px;font-size:12.5px;cursor:pointer;font-family:var(--sans);display:flex;gap:6px;align-items:center}
+  .theme-btn:hover{color:var(--ink);border-color:var(--accent)}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;box-shadow:var(--shadow)}
+  .stat .v{font-size:23px;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .stat .l{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .stat .v.accent{color:var(--accent)}
+
+  .toolbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);
+    backdrop-filter:saturate(1.4) blur(10px);border:1px solid var(--line);border-radius:var(--r);
+    padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow)}
+  .row1{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:230px;position:relative;display:flex;align-items:center}
+  .search svg{position:absolute;left:12px;width:16px;height:16px;color:var(--faint)}
+  .search input{width:100%;padding:11px 12px 11px 36px;border-radius:9px;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--ink);font-size:14px;font-family:var(--sans)}
+  .search input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+  select{padding:10px 30px 10px 12px;border-radius:9px;border:1px solid var(--line-strong);background:var(--surface);
+    color:var(--ink);font-size:13.5px;font-family:var(--sans);cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A95A3' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center}
+  select:focus{outline:2px solid var(--accent);border-color:transparent}
+  .row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+  .chip{border:0;background:transparent;color:var(--muted);padding:6px 11px;border-radius:7px;font-size:13px;cursor:pointer;font-family:var(--sans);font-weight:500}
+  .chip[aria-pressed="true"]{background:var(--accent);color:#fff;font-weight:600}
+  .chip:not([aria-pressed="true"]):hover{color:var(--ink)}
+  .toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none;
+    border:1px solid var(--line-strong);background:var(--surface);border-radius:9px;padding:8px 12px}
+  .toggle .sw{width:34px;height:20px;border-radius:999px;background:var(--neutral);position:relative;transition:background .16s}
+  .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .16s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .toggle[aria-pressed="true"]{color:var(--ink);border-color:var(--accent)}
+  .toggle[aria-pressed="true"] .sw{background:var(--gA)}
+  .toggle[aria-pressed="true"] .sw::after{transform:translateX(14px)}
+  .grow{flex:1}
+  .sortwrap{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted)}
+
+  .note{background:color-mix(in srgb,var(--gold) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--gold) 40%,var(--line));
+    border-radius:10px;padding:11px 14px;margin-bottom:12px;font-size:12.5px;line-height:1.55;color:var(--ink)}
+  .note b{font-weight:700}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 2px 14px;font-size:11.5px;color:var(--muted)}
+  .legend .lg{display:inline-flex;align-items:center;gap:5px}
+  .legend .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  .tablecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+  .thead,.trow{display:grid;grid-template-columns:minmax(200px,2fr) minmax(135px,1.4fr) 78px minmax(200px,2.1fr) minmax(122px,1.2fr) 80px;
+    align-items:center;gap:14px;padding:11px 16px}
+  .thead{position:sticky;top:0;background:var(--surface-2);border-bottom:1px solid var(--line);
+    font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);font-weight:600;z-index:5}
+  .thead .sortable{cursor:pointer;display:inline-flex;align-items:center;gap:4px;user-select:none}
+  .thead .sortable:hover{color:var(--ink)}
+  .thead .sortable[data-active="1"]{color:var(--accent)}
+  .thead .num,.trow .num{justify-self:end;text-align:right}
+  .trow{border-bottom:1px solid var(--line)}
+  .trow:last-child{border-bottom:0}
+  .trow:hover{background:var(--surface-2)}
+
+  .course .code{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  .course .title{font-size:12.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:30ch}
+  .badge-off{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.05em;color:var(--gA);
+    border:1px solid color-mix(in srgb,var(--gA) 45%,transparent);border-radius:5px;padding:1px 5px;margin-left:7px;vertical-align:1px;text-transform:uppercase}
+
+  .instr{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .instr .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .instr .rmpq{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:3px}
+  .star{color:var(--gold)}
+
+  .gpa{justify-self:start}
+  .gpa .b{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:5px 8px;border-radius:8px;font-weight:800;font-size:15px;color:#fff;letter-spacing:-.02em}
+  .gpa .na{color:var(--faint);font-size:13px}
+  .gpa .rmponly{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--accent-2);
+    border:1px dashed color-mix(in srgb,var(--accent-2) 45%,transparent);border-radius:6px;padding:3px 6px;line-height:1.2}
+
+  .dist{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .bar{height:11px;border-radius:5px;overflow:hidden;display:flex;background:var(--gO)}
+  .bar i{display:block;height:100%}
+  .distlab{font-family:var(--mono);font-size:10.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 9px;line-height:1.3}
+  .distlab span{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+  .distlab .dot{width:7px;height:7px;border-radius:2px;display:inline-block}
+  .distlab b{color:var(--ink);font-weight:600}
+  .nodata{font-size:11.5px;color:var(--faint);font-style:italic}
+
+  .rmp{display:flex;flex-direction:column;gap:3px;font-size:11.5px}
+  .rmp .d{display:inline-flex;align-items:center;gap:5px}
+  .diffchip{display:inline-block;min-width:30px;text-align:center;padding:1px 6px;border-radius:5px;font-weight:700;font-size:11px;color:#fff}
+  .rmp .wta{color:var(--muted)}
+  .rmp .none{color:var(--faint)}
+  .rmp a{font-size:11px}
+
+  .samp{justify-self:end;text-align:right;font-size:12px;color:var(--muted)}
+  .samp .n{font-weight:700;color:var(--ink);font-size:14px}
+  .samp .yr{font-size:10px;color:var(--faint)}
+  .samp .yr.recent{color:var(--gA)}
+
+  .k{display:none}
+  .more{display:flex;justify-content:center;padding:16px}
+  .more button{background:var(--surface);border:1px solid var(--line-strong);color:var(--accent-2);padding:10px 22px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .more button:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .empty,.loading{padding:48px 20px;text-align:center;color:var(--muted)}
+  .empty .big{font-size:16px;color:var(--ink);font-weight:600;margin-bottom:6px}
+
+  footer{margin-top:26px;font-size:12px;color:var(--muted);line-height:1.7}
+  footer .meth{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow)}
+  footer h3{margin:0 0 8px;font-size:13px;color:var(--ink);letter-spacing:.02em}
+  footer code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
+  footer ul{margin:6px 0 0;padding-left:18px}
+  footer li{margin:3px 0}
+
+  @media (max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}}
+  @media (max-width:720px){
+    .thead{display:none}
+    .trow{grid-template-columns:1fr 1fr;gap:10px 14px;padding:14px 15px}
+    .trow>div{min-width:0}
+    .course,.dist{grid-column:1/-1}
+    .k{display:block;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:3px;font-weight:600}
+    .gpa{justify-self:start;text-align:left}
+    .samp{justify-self:end;text-align:right}
+    .course .title{max-width:none;white-space:normal}
+    .instr .nm{white-space:normal}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="kicker">UCSD · GPA Intelligence</span>
+      <h1>Easy-A <span class="drop">Radar</span></h1>
+      <span class="sub">Find this term's most GPA-friendly courses — ranked on UCSD's real 2015–2026 grade distributions, with each course's <b>past</b> instructors and their RateMyProfessors scores.</span>
+    </div>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span>◐</span><span>Theme</span></button>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <div class="toolbar">
+    <div class="row1">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="q" type="search" placeholder="Search course code, title, or professor — e.g. CSE 8A, Butler, Calculus" autocomplete="off">
+      </label>
+      <select id="subject" aria-label="Subject"></select>
+      <div class="sortwrap">
+        <span>Sort</span>
+        <select id="sort" aria-label="Sort by">
+          <option value="g">Avg GPA — high to low</option>
+          <option value="gA">A rate — high to low</option>
+          <option value="risk">Risk (D+F+W) — low to high</option>
+          <option value="rd">RMP difficulty — low to high</option>
+          <option value="n">Times taught — most first</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="chips" id="levels" role="group" aria-label="Course level">
+        <button class="chip" data-lv="ug" aria-pressed="true">Undergrad</button>
+        <button class="chip" data-lv="low" aria-pressed="false">Lower 1–99</button>
+        <button class="chip" data-lv="up" aria-pressed="false">Upper 100–199</button>
+        <button class="chip" data-lv="grad" aria-pressed="false">Grad 200+</button>
+        <button class="chip" data-lv="all" aria-pressed="false">All</button>
+      </div>
+      <button class="toggle" id="offered" aria-pressed="true">
+        <span class="sw"></span><span>Offered this term only</span>
+      </button>
+      <div class="sortwrap">
+        <span>Taught ≥</span>
+        <select id="minoff" aria-label="Minimum times taught">
+          <option value="1">1×</option><option value="2">2×</option>
+          <option value="3" selected>3×</option><option value="5">5×</option>
+        </select>
+      </div>
+      <span class="grow"></span>
+    </div>
+  </div>
+
+  <div class="note" role="note">
+    <b>How to read the professor column:</b> the schedule snapshot lists course codes only, so we don't know who teaches each course this term. The name in each row is a <b>past instructor</b> of that course (2015–2026) — use it to see how the course has been graded and rated, not to predict this term's section.
+  </div>
+
+  <div class="legend">
+    <span class="lg"><i class="sw" style="background:var(--gA)"></i>A</span>
+    <span class="lg"><i class="sw" style="background:var(--gB)"></i>B</span>
+    <span class="lg"><i class="sw" style="background:var(--gC)"></i>C</span>
+    <span class="lg"><i class="sw" style="background:var(--gD)"></i>D</span>
+    <span class="lg"><i class="sw" style="background:var(--gF)"></i>F</span>
+    <span class="lg"><i class="sw" style="background:var(--gW)"></i>W (withdraw)</span>
+    <span class="lg"><i class="sw" style="background:var(--gO)"></i>P / NP</span>
+  </div>
+
+  <div class="tablecard">
+    <div class="thead" id="thead">
+      <div class="sortable" data-sort="g">Course</div>
+      <div>Past instructor · RMP</div>
+      <div class="sortable" data-sort="g">Avg GPA</div>
+      <div class="sortable" data-sort="gA">Grade distribution (A → F, W, P/NP)</div>
+      <div class="sortable" data-sort="rd">RMP difficulty / again</div>
+      <div class="sortable num" data-sort="n">Sample</div>
+    </div>
+    <div id="rows"><div class="loading">Loading grade data…</div></div>
+    <div id="empty" class="empty" hidden>
+      <div class="big">No matching courses</div>
+      <div>Try loosening the filters — turn off “Offered this term only”, or set level to “All”.</div>
+    </div>
+  </div>
+  <div class="more" id="moreWrap" hidden><button id="moreBtn"></button></div>
+
+  <footer>
+    <div class="meth">
+      <h3>Data &amp; methodology</h3>
+      <ul>
+        <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
+        <li><b>Offered this term</b> — matched against the current schedule snapshot (<span id="schedcount"></span> course codes; <b>codes only — the snapshot has no instructor names</b>). An <code>Offered</code> tag means the course code is in the schedule, so it runs this term — but we do <b>not</b> know which professor teaches it. Names shown are past instructors of that course.</li>
+        <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
+        <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
+        <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
+      </ul>
+    </div>
+  </footer>
+</div>
+
+<!--INLINE_DATA-->
+<script>
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function hex(h){h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function mix(c1,c2,t){const a=hex(c1),b=hex(c2);return `rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;}
+function gpaColor(g){
+  if(g==null) return 'var(--neutral)';
+  const s=[[2.4,'#C63F37'],[2.9,'#D98A1E'],[3.35,'#3E9E5C'],[4.0,'#1B8A5A']];
+  if(g<=s[0][0])return s[0][1]; if(g>=s[3][0])return s[3][1];
+  for(let i=0;i<3;i++){if(g>=s[i][0]&&g<=s[i+1][0]){const t=(g-s[i][0])/(s[i+1][0]-s[i][0]);return mix(s[i][1],s[i+1][1],t);}}
+  return s[3][1];
+}
+function diffColor(d){if(d==null)return 'var(--neutral)';const t=clamp((d-1.6)/(4.2-1.6),0,1);return mix('#2E9E63','#C63F37',t);}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function instrShort(i){if(!i)return '—';if(i.indexOf(',')<0)return i;const [l,r]=i.split(',');const first=(r||'').trim().split(/\s+/)[0]||'';return (first+' '+l.trim()).trim();}
+
+function init(DATA){
+  const C={}; DATA.cols.forEach((c,i)=>C[c]=i);
+  const T=DATA.titles, R=DATA.recs;
+  const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
+  const state={q:'',subject:'',level:'ug',offered:true,sort:'g',minoff:3,limit:60};
+  const PAGE=60;
+  const $=id=>document.getElementById(id);
+
+  const set=new Set(); for(const r of R) set.add(r[C.s]);
+  const subs=[...set].sort();
+  $('subject').innerHTML='<option value="">All subjects ('+subs.length+')</option>'+subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  $('schedcount').textContent=(DATA.meta&&DATA.meta.schedCodes||1780).toLocaleString();
+
+  function riskOf(r){const d=r[C.gD],f=r[C.gF],w=r[C.gW];if(d==null&&f==null&&w==null)return null;return (d||0)+(f||0)+(w||0);}
+  function sortVal(r,key){ if(key==='risk')return riskOf(r); return r[C[key]]; }
+
+  function levelOk(lv){
+    switch(state.level){
+      case 'all':return true;
+      case 'ug':return lv<200;
+      case 'low':return lv>=1&&lv<100;
+      case 'up':return lv>=100&&lv<200;
+      case 'grad':return lv>=200;
+    }
+  }
+  function compute(){
+    const q=state.q.trim().toLowerCase(), out=[];
+    for(const r of R){
+      if(state.offered && !r[C.off]) continue;
+      if(state.subject && r[C.s]!==state.subject) continue;
+      if(!levelOk(r[C.lv])) continue;
+      if(r[C.src]!==1 && r[C.n]<state.minoff) continue;
+      if(q){
+        const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
+        const title=(r[C.t]>=0?(T[r[C.t]]||''):'').toLowerCase(), instr=(r[C.i]||'').toLowerCase();
+        if(!(code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q))) continue;
+      }
+      out.push(r);
+    }
+    const key=state.sort, dir=(key==='risk'||key==='rd')?1:-1;
+    out.sort((a,b)=>{
+      let va=sortVal(a,key), vb=sortVal(b,key);
+      const an=(va==null), bn=(vb==null);
+      if(an&&bn) return b[C.n]-a[C.n];
+      if(an) return 1; if(bn) return -1;
+      if(va!==vb) return (va-vb)*dir;
+      return b[C.n]-a[C.n];
+    });
+    return out;
+  }
+
+  function distHTML(r){
+    const vals=LETTERS.map(([k])=>r[C[k]]);
+    if(vals.every(v=>v==null)) return '<span class="nodata">No letter breakdown</span>';
+    let sum=0; vals.forEach(v=>sum+=(v||0));
+    const other=clamp(100-sum,0,100);
+    let segs=LETTERS.map(([k,lab,col],i)=>{const v=vals[i]||0; return v>0?`<i style="width:${v}%;background:${col}" title="${lab} ${v.toFixed(1)}%"></i>`:'';}).join('');
+    if(other>0.5) segs+=`<i style="width:${other}%;background:var(--gO)" title="P/NP ${other.toFixed(1)}%"></i>`;
+    const labs=LETTERS.map(([k,lab,col],i)=>{const v=vals[i]; if(v==null||v<0.05)return ''; return `<span><i class="dot" style="background:${col}"></i>${lab}<b>${v.toFixed(0)}</b></span>`;}).join('');
+    return `<div class="bar">${segs}</div><div class="distlab">${labs}</div>`;
+  }
+
+  function rowHTML(r){
+    const isRmp=r[C.src]===1;
+    const code=r[C.s]+'-'+r[C.c];
+    const title=isRmp?'Graduate course · RMP-rated':(r[C.t]>=0?(T[r[C.t]]||''):'');
+    const off=r[C.off]?'<span class="badge-off" title="This course code is in the current schedule. The instructor for this term is not known — the name shown is a past instructor.">Offered</span>':'';
+    const g=r[C.g];
+    const gpaCell=isRmp?'<span class="rmponly">RMP only</span>':(g==null?'<span class="na">—</span>':`<span class="b" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`);
+    const dist=isRmp?'<span class="nodata">No grade data on record</span>':distHTML(r);
+    const rq=r[C.rq],rd=r[C.rd],rwta=r[C.rw],rn=r[C.rn],rid=r[C.rid];
+    let rmpCell;
+    if(rid==null){rmpCell='<span class="none">no RMP match</span>';}
+    else{
+      const diff=rd==null?'':`<span class="d">Diff <span class="diffchip" style="background:${diffColor(rd)}">${rd.toFixed(1)}</span></span>`;
+      const wta=rwta==null?'':`<span class="wta">${rwta}% again</span>`;
+      rmpCell=`${diff}${wta}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener">RMP · ${rn||0} ratings ↗</a>`;
+    }
+    const rmpStar=rq==null?'':`<span class="rmpq"><span class="star">★</span>${rq.toFixed(1)}</span>`;
+    const yr=r[C.y],recent=(yr!=null&&yr>=25);
+    const sample=isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
+      :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
+    return `<div class="trow">
+      <div class="course"><span class="code">${esc(code)}</span>${off}<div class="title">${esc(title)}</div></div>
+      <div class="instr"><span class="k">Past instructor</span><span class="nm">${esc(instrShort(r[C.i]))}</span>${rmpStar}</div>
+      <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
+      <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
+      <div class="rmp"><span class="k">RMP</span>${rmpCell}</div>
+      <div class="samp num"><span class="k">Sample</span>${sample}</div>
+    </div>`;
+  }
+
+  let current=[];
+  function render(){
+    current=compute();
+    const rowsEl=$('rows'), emptyEl=$('empty');
+    if(current.length===0){rowsEl.innerHTML='';emptyEl.hidden=false;}
+    else{emptyEl.hidden=true;rowsEl.innerHTML=current.slice(0,state.limit).map(rowHTML).join('');}
+    const mw=$('moreWrap');
+    if(current.length>state.limit){mw.hidden=false;$('moreBtn').textContent=`Show ${Math.min(PAGE,current.length-state.limit)} more · ${current.length.toLocaleString()} total`;}
+    else mw.hidden=true;
+    renderStats(current);
+    document.querySelectorAll('.thead .sortable').forEach(el=>el.dataset.active=(el.dataset.sort===state.sort)?'1':'0');
+  }
+  function renderStats(list){
+    const withG=list.filter(r=>r[C.g]!=null).map(r=>r[C.g]).sort((a,b)=>a-b);
+    const med=withG.length?withG[Math.floor(withG.length/2)]:null;
+    const av=list.filter(r=>r[C.gA]!=null).map(r=>r[C.gA]);
+    const avgA=av.length?av.reduce((a,b)=>a+b,0)/av.length:null;
+    const cov=list.length?Math.round(100*list.filter(r=>r[C.rid]!=null).length/list.length):0;
+    const tiles=[
+      {v:list.length.toLocaleString(),l:'Course × professor matches'},
+      {v:med==null?'—':med.toFixed(2),l:'Median avg GPA',accent:true},
+      {v:avgA==null?'—':avgA.toFixed(0)+'%',l:'Mean A rate'},
+      {v:cov+'%',l:'RMP match coverage'},
+    ];
+    $('stats').innerHTML=tiles.map(t=>`<div class="stat"><div class="v ${t.accent?'accent':''}">${t.v}</div><div class="l">${t.l}</div></div>`).join('');
+  }
+
+  let qt;
+  $('q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{state.q=e.target.value;state.limit=PAGE;render();},130);});
+  $('subject').addEventListener('change',e=>{state.subject=e.target.value;state.limit=PAGE;render();});
+  $('sort').addEventListener('change',e=>{state.sort=e.target.value;state.limit=PAGE;render();});
+  $('minoff').addEventListener('change',e=>{state.minoff=+e.target.value;state.limit=PAGE;render();});
+  $('levels').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b) return;
+    state.level=b.dataset.lv;state.limit=PAGE;
+    document.querySelectorAll('#levels .chip').forEach(c=>c.setAttribute('aria-pressed',c===b?'true':'false'));
+    render();
+  });
+  const offBtn=$('offered');
+  offBtn.addEventListener('click',()=>{state.offered=!state.offered;offBtn.setAttribute('aria-pressed',state.offered?'true':'false');state.limit=PAGE;render();});
+  $('moreBtn').addEventListener('click',()=>{state.limit+=PAGE;render();});
+  $('thead').addEventListener('click',e=>{
+    const el=e.target.closest('.sortable'); if(!el||!el.dataset.sort) return;
+    state.sort=el.dataset.sort; $('sort').value=el.dataset.sort; state.limit=PAGE; render();
+  });
+  render();
+}
+
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  const root=document.documentElement;
+  const cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+});
+
+(async function boot(){
+  try{
+    let data=window.__DATA__;
+    if(!data){const res=await fetch('data.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
+    init(data);
+  }catch(err){
+    document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
+  }
+})();
+</script>
+</body>
+</html>
