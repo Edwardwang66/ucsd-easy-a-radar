@@ -368,8 +368,8 @@
       <div class="sortwrap">
         <span>Sort</span>
         <select id="sort" aria-label="Sort by">
-          <option value="y" selected>Recently taught — newest first</option>
-          <option value="g">Avg GPA — high to low</option>
+          <option value="g" selected>Avg GPA — high to low</option>
+          <option value="y">Recently taught — newest first</option>
           <option value="gA">A rate — high to low</option>
           <option value="risk">Risk (D+F+W) — low to high</option>
           <option value="rd">RMP difficulty — low to high</option>
@@ -503,7 +503,7 @@ function init(DATA){
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
-  const state={q:'',subject:'',prof:'',level:'ug',offered:true,curonly:false,sort:'y',minoff:1,limit:60};
+  const state={q:'',subject:'',prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60};
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
