@@ -54,6 +54,13 @@ MANUAL_ALIAS = {
     "Zeinab Jahed": "Jahed Motlagh, Zeinab",    # same NANO professor; second family name dropped, no shared course
 }
 
+# L6 — manual blocks: (catalog name, grade name) pairs that share a surname + initial but are
+# DIFFERENT people (namesakes). Matching would otherwise falsely tag the grade professor
+# "Teaching now". The REVIEW report below surfaces candidates; confirmed namesakes go here.
+MANUAL_BLOCK = {
+    ("Michael McKay", "McKay, Mary A"),   # MGT: Michael (FA26) ≠ Mary (grades), same surname+initial
+}
+
 
 def deacc(s):
     return "".join(c for c in unicodedata.normalize("NFD", str(s or "")) if unicodedata.category(c) != "Mn")
@@ -199,25 +206,38 @@ def main(dry=False):
             review.append((name, best[3], sorted(facs), sorted(g_courses[best[3]])[:4]))
         # else: no surname/subject overlap -> genuine first-timer (handled below)
 
-    # --- recompute cur with the resolved aliases ---
-    course_keys = {}
-    for course, names in d["fa"].items():
-        ks = set()
-        for n in names:
-            ks |= ({tuple(alias[n])} if n in alias else set()) | catalog_keys(n)
-        course_keys[course] = ks
+    # --- matching primitives (alias-aware + block-aware) ---
+    def fa_keyset(name):
+        return {tuple(alias[name])} if name in alias else catalog_keys(name)
 
+    def pair_matches(fa_name, grade_name):
+        if (fa_name, grade_name) in MANUAL_BLOCK:   # confirmed namesake, never link
+            return False
+        return bool(fa_keyset(fa_name) & grade_keys(grade_name))
+
+    # grade key -> set of grade names, so block checks can look up who supplied a match
+    g_names_by_key = {}
+    for r in d["recs"]:
+        nm = r[C["i"]] or ""
+        for k in grade_keys(nm):
+            g_names_by_key.setdefault(k, set()).add(nm)
+
+    # --- recompute cur: a grade row is "teaching now" iff some non-blocked FA26 instructor of
+    #     that course links to it ---
     cur = 0
     for r in d["recs"]:
         course = f"{r[C['s']]} {r[C['c']]}"
-        hit = bool(r[C["off"]]) and bool(grade_keys(r[C["i"]]) & course_keys.get(course, set()))
+        gname = r[C["i"]] or ""
+        hit = bool(r[C["off"]]) and any(pair_matches(f, gname) for f in d["fa"].get(course, []))
         r[C["cur"]] = 1 if hit else 0
         cur += r[C["cur"]]
 
-    # --- first-timers: FA26 instructors with no grade history at all ---
+    # --- first-timers: FA26 instructors with no (non-blocked) grade-history link at all ---
     def resolves(name):
-        keys = ({tuple(alias[name])} if name in alias else set()) | catalog_keys(name)
-        return bool(keys & g_key_set)
+        cands = set()
+        for k in fa_keyset(name):
+            cands |= g_names_by_key.get(k, set())
+        return any((name, g) not in MANUAL_BLOCK for g in cands)
 
     new_prof = sorted({n for n in fa_courses if not resolves(n)})
 
@@ -248,9 +268,18 @@ def main(dry=False):
         digits = re.sub(r"\D", "", str(num)) or "0"
         return ti, int(digits)
 
+    # RMP ratings for first-timers, cached by tools/fetch_rmp_firsttime.py (no grade rows to
+    # ride the normal join, so they're looked up by name directly).
+    rmp_cache = {}
+    rmp_path = Path(__file__).resolve().parent / "rmp_firsttime.json"
+    if rmp_path.exists():
+        rmp_cache = json.loads(rmp_path.read_text())
+    rmp_hits = 0
+
     ncol = len(d["cols"])
     added = 0
     for name in new_prof:
+        rmp = rmp_cache.get(name)
         for code in sorted(fa_courses[name]):
             s, num = code.split(" ", 1)
             ti, lv = course_title_level(code, s, num)
@@ -261,13 +290,45 @@ def main(dry=False):
             row[C["lv"]] = lv
             row[C["src"]] = 2          # first-term instructor, no grade data
             row[C["cur"]] = 1          # teaching this term
+            if rmp:                    # attach RMP rating if a strict match was cached
+                row[C["rq"]], row[C["rd"]] = rmp.get("rq"), rmp.get("rd")
+                row[C["rw"]], row[C["rn"]], row[C["rid"]] = rmp.get("rw"), rmp.get("rn"), rmp.get("rid")
             d["recs"].append(row)
             if d.get("hist") is not None:
                 d["hist"].append([])   # keep hist parallel to recs
             added += 1
+        if rmp:
+            rmp_hits += 1
+
+    # --- namesake review: cur=1 links where the FA26 first name only shares an INITIAL (not a
+    #     full given token) with the grade record. Most are nicknames (Tim↔Timothy) and fine;
+    #     the odd one is a different person sharing surname+initial → add it to MANUAL_BLOCK. ---
+    def _first(nm):
+        n = collapse(deacc(nm))
+        if "," in n:
+            r = collapse(n.split(",", 1)[1])
+            return r.split()[0].lower() if r else ""
+        p = n.split()
+        return p[0].lower() if p else ""
+
+    namesakes, seen_ns = [], set()
+    for r in d["recs"]:
+        if r[C["src"]] != 0 or r[C["cur"]] != 1:
+            continue
+        course = f"{r[C['s']]} {r[C['c']]}"
+        gname = r[C["i"]] or ""
+        for f in d["fa"].get(course, []):
+            if f in alias or (f, gname) in MANUAL_BLOCK or not pair_matches(f, gname):
+                continue
+            ff = _first(f)
+            gv = [t.lower() for t in split_name(gname)[1]]
+            if ff and ff not in gv and (f, gname) not in seen_ns:
+                seen_ns.add((f, gname))
+                namesakes.append((course, gname, f))
 
     # --- meta + serialise ---
     d["alias"] = {k: v for k, v in sorted(alias.items())}
+    d["block"] = [list(p) for p in sorted(MANUAL_BLOCK)]
     d["newProf"] = new_prof
     d["meta"]["fa26CurrentRows"] = cur
     d["meta"]["fa26Aliases"] = len(alias)
@@ -281,11 +342,19 @@ def main(dry=False):
     for tag, name, g, facs in applied:
         print(f"   [{tag}] {name:26} -> {g:28} {facs}")
     print(f"first-time instructors: {len(new_prof)}  (+{added} synthetic rows)")
+    print(f"  with an RMP match   : {rmp_hits}"
+          + ("" if rmp_cache else "  (run tools/fetch_rmp_firsttime.py to populate)"))
+    print(f"blocked namesakes     : {len(MANUAL_BLOCK)}")
     if review:
-        print(f"\nREVIEW — same surname & subject but no shared course ({len(review)}); "
+        print(f"\nREVIEW aliases — same surname & subject but no shared course ({len(review)}); "
               f"add to MANUAL_ALIAS only if truly the same person:")
         for name, g, facs, gc in review:
             print(f"   ? {name:26} ?= {g:28} fa={facs} grades={gc}")
+    if namesakes:
+        print(f"\nVERIFY namesakes — cur=1 links matched on surname+initial with a differently "
+              f"spelled first name ({len(namesakes)}). Nicknames are fine; block true namesakes:")
+        for course, g, f in namesakes:
+            print(f"   ~ {course:11} {g:32} <- FA26 {f!r}")
 
     if dry:
         print("\n--dry-run: data.json NOT written")

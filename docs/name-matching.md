@@ -74,10 +74,17 @@ sets intersect. Each rung widens *recall* without spending *precision*:
   to lean on (e.g. `Yiorgos Makris` teaches a grad seminar; his grades are under
   `Georgios Makris` on a different course). These live in a tiny, commented
   `MANUAL_ALIAS` dict — currently **2 entries**.
+- **L6 — Namesake blocks.** The inverse hazard: two *different* people who share a
+  surname and initial (`Michael McKay` teaches MGT 18; `Mary McKay` taught it before).
+  L3 would happily link them and falsely tag Mary "Teaching now." Confirmed namesakes go
+  in a `MANUAL_BLOCK` set that vetoes the link — currently **1 entry**. The generator
+  prints every initial-only match (`VERIFY namesakes …`) so new ones are easy to spot;
+  the overwhelming majority are legitimate nicknames (`Tim`↔`Timothy`, `Geoff`↔`Geoffrey`)
+  and are left alone.
 
 Anything matched by surname **and subject** but *not* by an exact course is **not**
-applied. It's printed as a `REVIEW` line for a human to confirm or reject. That is the
-only recurring manual step, and it is small.
+applied. It's printed as a `REVIEW` line for a human to confirm or reject. That, plus a
+glance at the `VERIFY namesakes` list, is the only recurring manual step, and it is small.
 
 ## Why this scales
 
@@ -85,12 +92,14 @@ The whole point is that curation does **not** grow with the catalog. On the curr
 FA26 snapshot:
 
 - **22** professors are linked under a different name than their grade history.
-- **20 of 22** are resolved *automatically* (L1–L4). Only **2** are hand-written.
-- The human review queue for the entire term is **2 candidates** — both correctly
+- **20 of 22** are resolved *automatically* (L1–L4). Only **2** are hand-written aliases,
+  plus **1** hand-confirmed namesake block.
+- The human review queue for the entire term is **2 alias candidates** — both correctly
   *different* people (`Ruobing Zhang ≠ Zhang, Yuming`; `Laura Acosta Gonzalez ≠
-  Roman Gonzalez, Betsabe`), which the course-overlap gate declined to auto-merge.
-- **0** grade rows were mis-linked (verified: the JS re-derivation of `cur` matches
-  the Python-baked flag on all rows).
+  Roman Gonzalez, Betsabe`), which the course-overlap gate declined to auto-merge — plus
+  a short `VERIFY namesakes` list to eyeball.
+- The JS re-derivation of `cur` matches the Python-baked flag on all rows (0 mismatches),
+  so the live ✓ display and the stored flag can never drift apart.
 
 Each term you drop in a fresh catalog and rerun `python3 tools/relink_fa26.py`.
 L1–L4 re-resolve everything derivable from the data; the script prints any new
@@ -106,6 +115,12 @@ script emits a synthetic row per (professor, course) with `src = 2`, no GPA, and
 listed **after** returning instructors in every course's instructor list, so they
 never crowd out rows that actually carry grade signal. Currently **27** first-time
 instructors → **35** first-term rows.
+
+They have no grade rows for the normal RMP join to ride, so `tools/fetch_rmp_firsttime.py`
+queries RateMyProfessors (UCSD, school 1079) for them directly and caches strict matches
+(surname must match; first name must be compatible) to `tools/rmp_firsttime.json`, which
+the generator writes onto the `0×` rows. Most first-timers aren't on RMP yet — currently
+**2 of 27** match — so a `0×` row can still show a rating even with no grade history.
 
 ## What we deliberately did *not* build
 
@@ -125,8 +140,10 @@ instructors → **35** first-term rows.
 ## Files
 
 - `tools/relink_fa26.py` — the regenerator. Reads `data.json` (+ `schedule.json` for
-  titles), rewrites `cur`, `alias`, `newProf`, and the `src = 2` rows. Idempotent;
-  `--dry-run` reports without writing.
+  titles, + `rmp_firsttime.json` for first-timer RMP), rewrites `cur`, `alias`, `block`,
+  `newProf`, and the `src = 2` rows. Idempotent; `--dry-run` reports without writing.
+- `tools/fetch_rmp_firsttime.py` — refreshes `rmp_firsttime.json` by querying RMP for the
+  current first-time instructors. Run it when the first-timer set changes.
 - `index.html` — `ourKeysJS` / `catKeysJS` / `orderFa` mirror the ladder for the live
   ✓ display and first-timer ordering.
 - `data.json` — `alias` (catalog-name → `[surname, initial]`) and `newProf` (first-time

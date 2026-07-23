@@ -614,7 +614,7 @@ function init(DATA){
     const myks=ourKeysJS(r[C.i]||'');
     const who=orderFa(faList).map(n=>{
       const isNew=NEWPROF.has(n);
-      const m=!isNew&&catKeysJS(n).some(ck=>myks.some(mk=>keyEq(mk,ck)));
+      const m=!isNew&&!blocked(n,r[C.i]||'')&&catKeysJS(n).some(ck=>myks.some(mk=>keyEq(mk,ck)));
       const nx=isNew?' <span class="firstx" title="First time teaching at UCSD — no grade history yet">0×</span>':'';
       return `<span class="who${m?' match':''}${isNew?' isnew':''}">${esc(n)}${m?' ✓':''}${nx}</span>`;
     }).join('');
@@ -814,6 +814,8 @@ function init(DATA){
   // maps the catalog name to that professor's [surname, first-initial] grade key.
   const ALIAS=(DATA&&DATA.alias)||{};
   const NEWPROF=new Set((DATA&&DATA.newProf)||[]);   // FA26 instructors with no grade history (first term)
+  const BLOCK=new Set(((DATA&&DATA.block)||[]).map(p=>p[0]+'||'+p[1]));   // confirmed namesakes: never link these
+  const blocked=(faName,gradeName)=>BLOCK.has(faName+'||'+gradeName);
   const despace=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');   // "Mc Culloch"/"McCulloch" -> "mcculloch"
   // Grade-history side ("Last, First Middle"): full surname × {first initial, each
   // middle initial} — so professors who go by a middle name still link (L3).
