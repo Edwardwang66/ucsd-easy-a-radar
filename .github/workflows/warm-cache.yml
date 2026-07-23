@@ -1,0 +1,55 @@
+name: Warm CDN cache
+
+# Vercel purges its edge cache on every deploy, so the first visitor in each
+# region pays a cold origin fetch for the big JSON files. This job fires right
+# after Vercel reports a successful *production* deploy and pre-fetches those
+# assets so the edge is already warm.
+#
+# deployment_status is the reliable, secret-free signal: Vercel's GitHub
+# integration creates a GitHub Deployment (environment "Production") and marks
+# it "success" once the prod alias is live — exactly when we want to warm.
+#
+# Note: GitHub-hosted runners live in a single region, so one run warms the
+# edge node nearest the runner. stale-while-revalidate (set in vercel.json)
+# covers the remaining regions — their first visitor still gets an instant
+# stale copy while the edge refreshes in the background.
+
+on:
+  deployment_status:
+  workflow_dispatch: {}   # allow manual warming from the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  warm:
+    # Only run on a successful PRODUCTION deploy, or a manual dispatch.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment_status.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prefetch production assets (loop until edge HIT)
+        env:
+          BASE: https://easy-a-radar.vercel.app
+        run: |
+          set -euo pipefail
+          assets="data.json hist.json schedule.json index.html"
+          fail=0
+          for a in $assets; do
+            hit=""
+            for i in 1 2 3 4 5; do
+              # Request the brotli variant (what real browsers get) and read the
+              # edge cache status + HTTP code from the response headers.
+              hdr="$(curl -sS -o /dev/null -D - --compressed -H 'Accept-Encoding: br,gzip' "$BASE/$a")"
+              code="$(printf '%s' "$hdr" | awk 'toupper($1) ~ /HTTP/ {print $2; exit}')"
+              cache="$(printf '%s' "$hdr" | awk 'tolower($1) ~ /x-vercel-cache/ {print $2; exit}' | tr -d '\r')"
+              echo "$a  http=$code  x-vercel-cache=${cache:-none}  (try $i)"
+              if [ "$code" != "200" ]; then sleep 3; continue; fi
+              if [ "$cache" = "HIT" ] || [ "$cache" = "STALE" ]; then hit=1; break; fi
+              sleep 2   # first request was a MISS that populated the edge; re-check
+            done
+            if [ -z "$hit" ]; then echo "::warning::$a never reported a warm edge cache"; fail=1; fi
+          done
+          [ "$fail" = "0" ] && echo "All assets warmed." || echo "Some assets did not confirm a warm cache (see warnings)."
