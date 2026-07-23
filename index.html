@@ -50,6 +50,7 @@
   }
 
   *{box-sizing:border-box}
+  [hidden]{display:none!important}  /* the hidden attribute must always win over display:grid/flex etc. */
   html{background:var(--bg)}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
     font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
@@ -967,7 +968,7 @@ function init(DATA){
     const has=schItems.length>0;
     $('schedEmpty').hidden=has; $('schedGrid').hidden=!has;
     const cnt=$('schedTabCnt'); cnt.hidden=!has; cnt.textContent=schItems.length;
-    if(!has)return;
+    if(!has){ $('schedItems').innerHTML=''; const _c=$('cal'); if(_c)_c.innerHTML=''; return; }
     const evs=schEvents(), confSet=new Set(evs.filter(e=>e.clash).map(e=>e.ci));
     schItems.forEach((it,ci)=>it._conf=confSet.has(ci));
     let units=0; schItems.forEach(it=>{const c=SCHED.courses[it.k];if(c){const u=parseFloat(c.u);if(!isNaN(u))units+=u;}});
