@@ -843,6 +843,20 @@ function init(DATA){
     return evs;
   }
   const DAY_START=480,DAY_END=1320,HRH=34;
+  // assign each day's events to side-by-side columns so time conflicts don't overlap
+  function layoutDay(events){
+    events.sort((x,y)=> x.a-y.a || x.b-y.b);
+    let cluster=[], colsEnd=[], clusterMaxEnd=-1;
+    const flush=()=>{ const n=colsEnd.length; for(const e of cluster){e._ncols=n;} cluster=[]; colsEnd=[]; clusterMaxEnd=-1; };
+    for(const e of events){
+      if(clusterMaxEnd!==-1 && e.a>=clusterMaxEnd) flush();      // gap → new cluster
+      let col=-1;
+      for(let i=0;i<colsEnd.length;i++){ if(colsEnd[i]<=e.a){ col=i; break; } } // reuse a freed column
+      if(col===-1){ col=colsEnd.length; colsEnd.push(e.b); } else { colsEnd[col]=e.b; }
+      e._col=col; cluster.push(e); clusterMaxEnd=Math.max(clusterMaxEnd,e.b);
+    }
+    flush();
+  }
   function renderCal(evs){
     const cal=$('cal'); if(!cal)return;
     let html='<div class="hd"></div>'+DAYLAB.map(d=>`<div class="hd">${d}</div>`).join('');
@@ -852,10 +866,14 @@ function init(DATA){
     for(let d=0;d<5;d++){
       html+='<div class="cell daycol">';
       for(let m=DAY_START;m<DAY_END;m+=60)html+='<div class="hr"></div>';
-      for(const e of evs.filter(x=>x.d===d)){
+      const dayEvs=evs.filter(x=>x.d===d);
+      layoutDay(dayEvs);
+      for(const e of dayEvs){
         const top=8+(clamp(e.a,DAY_START,DAY_END)-DAY_START)/60*HRH;
         const hgt=Math.max(15,(clamp(e.b,DAY_START,DAY_END)-clamp(e.a,DAY_START,DAY_END))/60*HRH);
-        html+=`<div class="ev${e.clash?' clash':''}" style="top:${top}px;height:${hgt}px;background:${e.color}"><span class="ec">${esc(e.code)}</span> <span class="et">${esc(e.type)}</span></div>`;
+        const nc=e._ncols||1, col=e._col||0;
+        const left=`calc(${(col/nc*100).toFixed(3)}% + 3px)`, wid=`calc(${(100/nc).toFixed(3)}% - 6px)`;
+        html+=`<div class="ev${e.clash?' clash':''}" style="top:${top}px;height:${hgt}px;left:${left};width:${wid};right:auto;background:${e.color}"><span class="ec">${esc(e.code)}</span> <span class="et">${esc(e.type)}</span></div>`;
       }
       html+='</div>';
     }
