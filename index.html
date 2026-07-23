@@ -259,6 +259,13 @@
   .sched-summary .st .v{font-size:20px;font-weight:800;letter-spacing:-.02em}
   .sched-summary .st .l{font-size:11px;color:var(--muted);margin-top:3px}
   .sched-summary .st .v.warn{color:var(--gF)}
+  .sched-actions{display:flex;flex-direction:column;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px;box-shadow:var(--shadow)}
+  .exp-btn{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--accent);background:var(--accent-soft);
+    color:var(--accent);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans)}
+  .exp-btn:hover{background:var(--accent);color:#fff}
+  .exp-btn svg{width:15px;height:15px}
+  .exp-hint{font-size:10.5px;color:var(--faint);line-height:1.45}
+  .exp-hint b{color:var(--muted);font-weight:700}
   .sci{background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:11px 12px;box-shadow:var(--shadow)}
   .sci .h{display:flex;align-items:flex-start;gap:8px}
   .sci .code{font-family:var(--mono);font-weight:700;font-size:13.5px}
@@ -436,6 +443,13 @@
    <div class="sched-grid" id="schedGrid" hidden>
      <div class="sched-side">
        <div class="sched-summary" id="schedSummary"></div>
+       <div class="sched-actions">
+         <button class="exp-btn" id="exportIcs" title="Download an .ics calendar file of your Fall 2026 classes">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+           Export to Calendar (.ics)
+         </button>
+         <span class="exp-hint"><b>Apple Calendar:</b> open the downloaded file. <b>Google Calendar:</b> Settings → Import → choose the file. Weekly events run Sep 24 – Dec 4, 2026 with campus holidays skipped.</span>
+       </div>
        <div id="schedItems"></div>
      </div>
      <div>
@@ -458,7 +472,7 @@
         <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
         <li><b>Offered this term</b> — matched against the live <b>Fall 2026</b> WebReg catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
         <li><b>This term's instructor (FA26)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each Fall 2026 section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way.</li>
-        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser.</li>
+        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the Fall 2026 term (Sep 24 – Dec 4), campus holidays excluded and Pacific-time DST handled.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
@@ -899,6 +913,71 @@ function init(DATA){
     $('schedItems').innerHTML=schItems.map((it,ci)=>schItemHTML(it,ci)).join('');
     renderCal(evs); renderMap();
   }
+  // -------- Calendar export (.ics) : Fall 2026 term --------
+  // Official UCSD FA26: instruction Thu Sep 24 – Fri Dec 4, 2026.
+  // Holidays (no class): Veterans Day Wed Nov 11; Thanksgiving Thu Nov 26 & Fri Nov 27.
+  const ICS_UNTIL='20261205T075959Z';                 // through end of Fri Dec 4 (PST)
+  const JSDAY={0:1,1:2,2:3,3:4,4:5};                   // my DAYIDX(M..F) -> JS getDay(Mon..Fri)
+  const ICSDAY=['SU','MO','TU','WE','TH','FR','SA'];   // by JS getDay
+  const HOLIDAY_BY_JSDAY={3:'20261111',4:'20261126',5:'20261127'}; // Wed/Thu/Fri holidays in term
+  const p2=n=>String(n).padStart(2,'0');
+  function firstDateForJsDay(jsd){const d=new Date(2026,8,24);while(d.getDay()!==jsd)d.setDate(d.getDate()+1);return d;}
+  function dbasic(d){return ''+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate());}
+  function minHMS(m){return p2(Math.floor(m/60))+p2(m%60)+'00';}
+  function icsEsc(s){return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
+  function foldICS(line){ // RFC5545 75-octet line folding
+    if(line.length<=74)return line;
+    let out='',rest=line;
+    while(rest.length>74){out+=rest.slice(0,74)+'\r\n ';rest=rest.slice(74);}
+    return out+rest;
+  }
+  const VTZ=['BEGIN:VTIMEZONE','TZID:America/Los_Angeles',
+    'BEGIN:DAYLIGHT','TZOFFSETFROM:-0800','TZOFFSETTO:-0700','TZNAME:PDT','DTSTART:19700308T020000','RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU','END:DAYLIGHT',
+    'BEGIN:STANDARD','TZOFFSETFROM:-0700','TZOFFSETTO:-0800','TZNAME:PST','DTSTART:19701101T020000','RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU','END:STANDARD',
+    'END:VTIMEZONE'];
+  function buildICS(){
+    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Easy-A Radar//UCSD FA26 Schedule//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:UCSD Fall 2026',...VTZ];
+    const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
+    let count=0;
+    schItems.forEach(it=>{
+      const {course,secs}=itemSections(it); if(!course)return;
+      for(const s of secs){
+        const days=parseDays(s[S_DAYS]),a=parseMin(s[S_START]),b=parseMin(s[S_END]);
+        if(a==null||b==null||!days.length)continue;
+        for(const dow of days){
+          const jsd=JSDAY[dow]; if(jsd==null)continue;
+          const first=firstDateForJsDay(jsd), byday=ICSDAY[jsd];
+          const uid=it.k.replace(/\s+/g,'')+'-'+(s[S_CODE]||'x')+'-'+byday+'-fa26@easy-a-radar';
+          const loc=((s[S_BLD]||'')+' '+(s[S_ROOM]||'')).trim();
+          const hol=HOLIDAY_BY_JSDAY[jsd];
+          L.push('BEGIN:VEVENT');
+          L.push('UID:'+uid);
+          L.push('DTSTAMP:'+stamp);
+          L.push('DTSTART;TZID=America/Los_Angeles:'+dbasic(first)+'T'+minHMS(a));
+          L.push('DTEND;TZID=America/Los_Angeles:'+dbasic(first)+'T'+minHMS(b));
+          L.push('RRULE:FREQ=WEEKLY;BYDAY='+byday+';UNTIL='+ICS_UNTIL);
+          if(hol) L.push('EXDATE;TZID=America/Los_Angeles:'+hol+'T'+minHMS(a));
+          L.push(foldICS('SUMMARY:'+icsEsc(it.k+' '+s[S_TYPE]+' — '+course.t)));
+          if(loc) L.push(foldICS('LOCATION:'+icsEsc(loc)));
+          L.push(foldICS('DESCRIPTION:'+icsEsc((s[S_INSTR]?'Instructor: '+s[S_INSTR]+' · ':'')+'Section '+(s[S_CODE]||'')+' · UCSD Fall 2026')));
+          L.push('END:VEVENT');
+          count++;
+        }
+      }
+    });
+    L.push('END:VCALENDAR');
+    return {ics:L.join('\r\n'),count};
+  }
+  function exportICS(){
+    const {ics,count}=buildICS();
+    if(!count){alert('Nothing to export yet — add courses with scheduled meeting times first.');return;}
+    const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+    const url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download='ucsd-fa26-schedule.ics'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
+  $('exportIcs').addEventListener('click',exportICS);
+
   function updateAddButtons(){document.querySelectorAll('.addbtn[data-add]').forEach(b=>{const on=SCH.has(b.dataset.add);b.classList.toggle('added',on);b.textContent=on?'✓ Added':'+ Schedule';});}
   function tabCount(){const cnt=$('schedTabCnt');cnt.hidden=schItems.length===0;cnt.textContent=schItems.length;}
   function addToSched(k){
