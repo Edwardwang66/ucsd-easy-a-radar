@@ -196,6 +196,7 @@
   .diffchip{display:inline-block;min-width:30px;text-align:center;padding:1px 6px;border-radius:5px;font-weight:700;font-size:11px;color:#fff}
   .rmp .wta{color:var(--muted)}
   .rmp .none{color:var(--faint)}
+  .rmp .rmpaka{font-size:10.5px;color:var(--gold);font-style:italic}
   .rmp a{font-size:11px}
 
   .samp{justify-self:end;text-align:right;font-size:12px;color:var(--muted)}
@@ -509,6 +510,7 @@ function instrShort(i){if(!i)return '—';if(i.indexOf(',')<0)return i;const [l,
 function init(DATA){
   const C={}; DATA.cols.forEach((c,i)=>C[c]=i);
   const T=DATA.titles, R=DATA.recs;
+  const RMPAKA=DATA.rmpAka||{}; // rid -> the (different) name the professor is listed under on RMP
   let H=DATA.hist||null, histReady=!!DATA.hist; // history loads lazily after first paint
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
@@ -689,7 +691,8 @@ function init(DATA){
     else{
       const diff=rd==null?'':`<span class="d">Diff <span class="diffchip" style="background:${diffColor(rd)}">${rd.toFixed(1)}</span></span>`;
       const wta=rwta==null?'':`<span class="wta">${rwta}% again</span>`;
-      rmpCell=`${diff}${wta}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener">RMP · ${rn||0} ratings ↗</a>`;
+      const aka=RMPAKA[rid]?`<span class="rmpaka" title="This professor is listed on RateMyProfessors under a different name">listed on RMP as ${esc(RMPAKA[rid])}</span>`:'';
+      rmpCell=`${diff}${wta}${aka}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener">RMP · ${rn||0} ratings ↗</a>`;
     }
     const rmpStar=rq==null?'':`<span class="rmpq"><span class="star">★</span>${rq.toFixed(1)}</span>`;
     const yr=r[C.y],recent=(yr!=null&&yr>=25);
