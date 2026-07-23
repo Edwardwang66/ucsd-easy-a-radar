@@ -1028,5 +1028,12 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
   }
 })();
 </script>
+
+<!-- Vercel Web Analytics — static-site (non-framework) integration.
+     Requires Web Analytics to be enabled in the Vercel dashboard: Project → Analytics → Enable.
+     Vercel serves /_vercel/insights/script.js from the edge once enabled; it 404s only on
+     local/preview-without-analytics, failing silently (defer, no blocking). -->
+<script defer src="/_vercel/insights/script.js"></script>
+
 </body>
 </html>
