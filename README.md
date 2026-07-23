@@ -37,8 +37,14 @@ No environment variables, no server. `fetch('data.json')` is same-origin, so it 
   sourced from the [WebReg Course Planner](https://github.com/SahirSSharma/WebReg-Course-Planner)
   catalog. When a row's past instructor is teaching the course again this term, the row is tagged
   `Teaching now` — so its grade history is directly relevant. The `fa` map in `data.json` holds
-  `"SUBJ NUM" → [current instructors]`; the `cur` column flags matching rows. Match is by last name +
-  first initial (accent-insensitive), so a nickname mismatch (e.g. *Libby* vs *Elizabeth*) can miss.
+  `"SUBJ NUM" → [current instructors]`; the `cur` column flags matching rows. Match is by surname +
+  first initial (accent-insensitive). Compound surnames are handled on both sides (e.g. catalog
+  *Massimiliano Di Ventra* ↔ grades *Di Ventra, Massimiliano*), and an `alias` map in `data.json`
+  covers professors listed under a different name in the catalog than in the grade records — a
+  nickname or given/legal-name swap such as *Paul Cao* = *Cao, Yingjun*, *Libby Butler* =
+  *Butler, Elizabeth*, *Peggy Lott* = *Lott, Margaret*. Professors teaching at UCSD for the first
+  time have no grade history; they're collected in the `newProf` list, marked **0×** in the UI, and
+  sorted after the returning instructors.
 - **Schedule builder** — the **My Schedule** tab lets you add offered courses, pick lecture/discussion/lab
   sections, and see them on a weekly calendar (with conflict detection) and a Leaflet campus map. All
   section times, rooms, instructors and building coordinates come from `schedule.json`. Leaflet + OSM
