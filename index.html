@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
+<!-- Start the critical dataset download during HTML parse, before the app JS runs.
+     as="fetch" + crossorigin so it matches the app's fetch('data.json') (no double download).
+     hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
+<link rel="preload" href="data.json" as="fetch" crossorigin>
+<link rel="prefetch" href="hist.json" as="fetch" crossorigin>
 <title>UCSD Easy-A Radar</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions + RateMyProfessors.">
 <style>
