@@ -88,6 +88,25 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A95A3' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat:no-repeat;background-position:right 10px center}
   select:focus{outline:2px solid var(--accent);border-color:transparent}
+  .combo{position:relative;min-width:190px}
+  .combo input{width:100%;padding:10px 30px 10px 12px;border-radius:9px;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--ink);font-size:13.5px;font-family:var(--sans)}
+  .combo input:focus{outline:2px solid var(--accent);border-color:transparent}
+  .cv-caret{position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--faint);font-size:11px}
+  .combo.has-value .cv-caret{display:none}
+  .combo-clear{position:absolute;right:7px;top:50%;transform:translateY(-50%);display:none;border:0;background:transparent;
+    color:var(--faint);cursor:pointer;font-size:17px;line-height:1;padding:1px 5px;border-radius:5px}
+  .combo.has-value .combo-clear{display:block}
+  .combo-clear:hover{color:var(--ink);background:var(--surface-2)}
+  .combo-list{position:absolute;z-index:40;top:calc(100% + 4px);left:0;right:0;max-height:288px;overflow-y:auto;
+    margin:0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow)}
+  .combo-list li{padding:8px 10px;border-radius:7px;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--ink)}
+  .combo-list li .cnt{font-size:11px;color:var(--faint);font-family:var(--mono)}
+  .combo-list li.alli{color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);border-radius:0;margin-bottom:2px}
+  .combo-list li:hover{background:var(--accent-soft)}
+  .combo-list li.active{background:var(--accent);color:#fff}
+  .combo-list li.active .cnt{color:rgba(255,255,255,.72)}
+  .combo-list .none{color:var(--faint);cursor:default;font-style:italic;justify-content:flex-start}
   .row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .chips{display:flex;gap:6px;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
   .chip{border:0;background:transparent;color:var(--muted);padding:6px 11px;border-radius:7px;font-size:13px;cursor:pointer;font-family:var(--sans);font-weight:500}
@@ -236,7 +255,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input id="q" type="search" placeholder="Search course code, title, or professor — e.g. CSE 8A, Butler, Calculus" autocomplete="off">
       </label>
-      <select id="subject" aria-label="Subject"></select>
+      <div class="combo" id="subjectCombo">
+        <input id="subjectInput" type="text" placeholder="All subjects" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="subjectList" aria-label="Filter by subject">
+        <span class="cv-caret" aria-hidden="true">▾</span>
+        <button class="combo-clear" id="subjectClear" type="button" aria-label="Clear subject">×</button>
+        <ul id="subjectList" class="combo-list" role="listbox" hidden></ul>
+      </div>
       <div class="sortwrap">
         <span>Sort</span>
         <select id="sort" aria-label="Sort by">
@@ -341,9 +365,9 @@ function init(DATA){
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
-  const set=new Set(); for(const r of R) set.add(r[C.s]);
+  const set=new Set(); const subjCount={};
+  for(const r of R){ set.add(r[C.s]); subjCount[r[C.s]]=(subjCount[r[C.s]]||0)+1; }
   const subs=[...set].sort();
-  $('subject').innerHTML='<option value="">All subjects ('+subs.length+')</option>'+subs.map(s=>`<option value="${s}">${s}</option>`).join('');
   $('schedcount').textContent=(DATA.meta&&DATA.meta.schedCodes||1780).toLocaleString();
 
   function riskOf(r){const d=r[C.gD],f=r[C.gF],w=r[C.gW];if(d==null&&f==null&&w==null)return null;return (d||0)+(f||0)+(w||0);}
@@ -497,7 +521,49 @@ function init(DATA){
 
   let qt;
   $('q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{state.q=e.target.value;state.limit=PAGE;render();},130);});
-  $('subject').addEventListener('change',e=>{state.subject=e.target.value;state.limit=PAGE;render();});
+  // ---- subject combobox (typeahead) ----
+  const cCombo=$('subjectCombo'), cInput=$('subjectInput'), cList=$('subjectList'), cClear=$('subjectClear');
+  cInput.placeholder='All subjects ('+subs.length+')';
+  let comboActive=-1;
+  function openList(filter){
+    const q=(filter||'').trim().toLowerCase();
+    let list=subs;
+    if(q){
+      const starts=[],incl=[];
+      for(const s of subs){const sl=s.toLowerCase();if(sl.startsWith(q))starts.push(s);else if(sl.includes(q))incl.push(s);}
+      list=starts.concat(incl);
+    }
+    const items=list.slice(0,80);
+    const allRow=q?'':`<li data-v="" role="option" class="alli">All subjects<span class="cnt">${R.length.toLocaleString()}</span></li>`;
+    const rows=items.map(s=>`<li data-v="${s}" role="option">${s}<span class="cnt">${(subjCount[s]||0).toLocaleString()}</span></li>`).join('');
+    cList.innerHTML=allRow+(rows||'<li class="none">No subject matches “'+esc(q)+'”</li>');
+    cList.hidden=false; cInput.setAttribute('aria-expanded','true'); comboActive=-1;
+  }
+  function closeList(){cList.hidden=true;cInput.setAttribute('aria-expanded','false');comboActive=-1;cInput.value=state.subject||'';}
+  function selectSubject(v){
+    state.subject=v; state.limit=PAGE;
+    cInput.value=v||''; cCombo.classList.toggle('has-value',!!v);
+    cList.hidden=true; cInput.setAttribute('aria-expanded','false'); comboActive=-1;
+    render();
+  }
+  function moveActive(d){
+    const els=[...cList.querySelectorAll('li[data-v]')]; if(!els.length)return;
+    comboActive=(comboActive+d+els.length)%els.length;
+    els.forEach((el,i)=>el.classList.toggle('active',i===comboActive));
+    els[comboActive].scrollIntoView({block:'nearest'});
+  }
+  cInput.addEventListener('focus',()=>openList(''));
+  cInput.addEventListener('input',e=>{cCombo.classList.remove('has-value');openList(e.target.value);});
+  cInput.addEventListener('keydown',e=>{
+    if(cList.hidden && e.key==='ArrowDown'){openList(cInput.value);return;}
+    if(e.key==='ArrowDown'){e.preventDefault();moveActive(1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();moveActive(-1);}
+    else if(e.key==='Enter'){e.preventDefault();const els=[...cList.querySelectorAll('li[data-v]')];const el=comboActive>=0?els[comboActive]:els[0];if(el)selectSubject(el.dataset.v);}
+    else if(e.key==='Escape'){closeList();cInput.blur();}
+  });
+  cList.addEventListener('mousedown',e=>{const li=e.target.closest('li[data-v]');if(!li)return;e.preventDefault();selectSubject(li.dataset.v);});
+  cClear.addEventListener('mousedown',e=>{e.preventDefault();selectSubject('');cInput.focus();openList('');});
+  document.addEventListener('click',e=>{if(!e.target.closest('#subjectCombo')&&!cList.hidden)closeList();});
   $('sort').addEventListener('change',e=>{state.sort=e.target.value;state.limit=PAGE;render();});
   $('minoff').addEventListener('change',e=>{state.minoff=+e.target.value;state.limit=PAGE;render();});
   $('levels').addEventListener('click',e=>{
