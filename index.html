@@ -1035,5 +1035,11 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
      local/preview-without-analytics, failing silently (defer, no blocking). -->
 <script defer src="/_vercel/insights/script.js"></script>
 
+<!-- Vercel Speed Insights (Core Web Vitals) — static-site integration.
+     Enable separately in the Vercel dashboard: Project → Speed Insights → Enable.
+     Same failure mode as above: 404s silently until enabled on the edge. -->
+<script>window.si=window.si||function(){(window.siq=window.siq||[]).push(arguments);};</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+
 </body>
 </html>
