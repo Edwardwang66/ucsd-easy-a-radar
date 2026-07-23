@@ -117,9 +117,31 @@
   .thead .sortable:hover{color:var(--ink)}
   .thead .sortable[data-active="1"]{color:var(--accent)}
   .thead .num,.trow .num{justify-self:end;text-align:right}
-  .trow{border-bottom:1px solid var(--line)}
+  .trow{border-bottom:1px solid var(--line);cursor:pointer}
   .trow:last-child{border-bottom:0}
   .trow:hover{background:var(--surface-2)}
+  .trow[aria-expanded="true"]{background:var(--surface-2)}
+  .chev{display:inline-block;color:var(--faint);font-size:13px;margin-right:5px;transition:transform .15s;transform:translateY(-1px)}
+  .trow[aria-expanded="true"] .chev{transform:rotate(90deg) translateX(-1px);color:var(--accent)}
+
+  .tdetail{background:var(--surface-2);border-bottom:1px solid var(--line);animation:fade .16s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .tdet-inner{display:flex;gap:26px;padding:6px 18px 18px 40px;flex-wrap:wrap}
+  .spark-wrap{display:flex;flex-direction:column;gap:6px;min-width:280px}
+  .spark-h{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+  .spark svg{display:block;overflow:visible}
+  .spark .axhint{font-size:10px;color:var(--faint);font-family:var(--mono)}
+  .terms{flex:1;min-width:300px;display:flex;flex-direction:column;gap:0}
+  .term{display:grid;grid-template-columns:58px 54px minmax(120px,1fr) 44px;gap:12px;align-items:center;
+    padding:6px 0;border-top:1px dashed var(--line)}
+  .term:first-child{border-top:0}
+  .term .tq{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink)}
+  .term .tg{display:inline-flex;align-items:center;justify-content:center;min-width:44px;padding:2px 6px;border-radius:6px;font-weight:700;font-size:12px;color:#fff}
+  .term .tg.na{background:transparent;color:var(--faint);font-weight:400}
+  .term .tbar{height:8px;border-radius:4px;overflow:hidden;display:flex;background:var(--gO)}
+  .term .tbar i{display:block;height:100%}
+  .term .ta{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+  .tdet-none{padding:4px 18px 16px 40px;font-size:12px;color:var(--faint);font-style:italic}
 
   .course .code{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
   .course .title{font-size:12.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:30ch}
@@ -303,7 +325,9 @@ function instrShort(i){if(!i)return '—';if(i.indexOf(',')<0)return i;const [l,
 
 function init(DATA){
   const C={}; DATA.cols.forEach((c,i)=>C[c]=i);
-  const T=DATA.titles, R=DATA.recs;
+  const T=DATA.titles, R=DATA.recs, H=DATA.hist||[];
+  const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
+  const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
   const state={q:'',subject:'',level:'ug',offered:true,sort:'g',minoff:3,limit:60};
   const PAGE=60;
@@ -363,8 +387,49 @@ function init(DATA){
     return `<div class="bar">${segs}</div><div class="distlab">${labs}</div>`;
   }
 
+  function sparkSVG(terms){ // terms oldest-first: [{yr,q,g}]
+    const pts=terms.filter(t=>t.g!=null);
+    if(pts.length<2) return '';
+    const W=280,Hh=46,pl=6,pr=6,pt=6,pb=6;
+    const gs=pts.map(p=>p.g);
+    let lo=Math.min(...gs), hi=Math.max(...gs);
+    if(hi-lo<0.3){const mid=(hi+lo)/2;lo=mid-0.15;hi=mid+0.15;}
+    lo=Math.max(0,lo-0.1); hi=Math.min(4,hi+0.1);
+    const x=i=>pl+(W-pl-pr)*(pts.length===1?0.5:i/(pts.length-1));
+    const y=g=>pt+(Hh-pt-pb)*(1-(g-lo)/(hi-lo));
+    const line=pts.map((p,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(p.g).toFixed(1)}`).join(' ');
+    const dots=pts.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.g).toFixed(1)}" r="${i===pts.length-1?3.4:2.2}" fill="${gpaColor(p.g)}" stroke="var(--surface-2)" stroke-width="1"/>`).join('');
+    return `<svg viewBox="0 0 ${W} ${Hh}" width="${W}" height="${Hh}" role="img" aria-label="GPA trend">
+      <path d="${line}" fill="none" stroke="var(--accent-2)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>${dots}</svg>`;
+  }
+  function detailHTML(r){
+    const idx=RI.get(r), h=H[idx];
+    if(!h||!h.length) return `<div class="tdetail"><div class="tdet-none">No term-by-term grade data (this row comes from RateMyProfessors course history).</div></div>`;
+    // h newest-first: [yr,q,g,A,B,C,D,F,W]
+    const terms=h.map(x=>({yr:x[0],q:x[1],g:x[2],A:x[3],B:x[4],Cc:x[5],D:x[6],F:x[7],W:x[8]}));
+    const oldestFirst=[...terms].reverse();
+    const spark=sparkSVG(oldestFirst.map(t=>({yr:t.yr,q:t.q,g:t.g})));
+    const first=oldestFirst.find(t=>t.g!=null), last=[...oldestFirst].reverse().find(t=>t.g!=null);
+    const trend = (spark && first && last) ? `<span class="axhint">20${first.q?'':''}${first.yr} → 20${last.yr} · ${terms.length} term${terms.length>1?'s':''}</span>` : `<span class="axhint">${terms.length} term${terms.length>1?'s':''}</span>`;
+    const rows=terms.map(t=>{
+      const cols=[['A',t.A,'var(--gA)'],['B',t.B,'var(--gB)'],['C',t.Cc,'var(--gC)'],['D',t.D,'var(--gD)'],['F',t.F,'var(--gF)'],['W',t.W,'var(--gW)']];
+      let sum=0; cols.forEach(c=>sum+=(c[1]||0)); const other=clamp(100-sum,0,100);
+      let seg=cols.map(c=>(c[1]>0?`<i style="width:${c[1]}%;background:${c[2]}" title="${c[0]} ${c[1].toFixed(1)}%"></i>`:'')).join('');
+      if(other>0.5) seg+=`<i style="width:${other}%;background:var(--gO)"></i>`;
+      const g=t.g;
+      const gcell=g==null?'<span class="tg na">—</span>':`<span class="tg" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`;
+      const acell=t.A==null?'':`A${t.A.toFixed(0)}`;
+      return `<div class="term"><span class="tq">${esc(t.q)}${t.yr}</span>${gcell}<div class="tbar">${seg}</div><span class="ta">${acell}</span></div>`;
+    }).join('');
+    return `<div class="tdetail"><div class="tdet-inner">
+      <div class="spark-wrap"><div class="spark-h">GPA over time ${trend}</div><div class="spark">${spark||'<span class="axhint">single term</span>'}</div></div>
+      <div class="terms">${rows}</div>
+    </div></div>`;
+  }
+
   function rowHTML(r){
     const isRmp=r[C.src]===1;
+    const idx=RI.get(r), isOpen=expanded.has(idx);
     const code=r[C.s]+'-'+r[C.c];
     const title=isRmp?'Graduate course · RMP-rated':(r[C.t]>=0?(T[r[C.t]]||''):'');
     const off=r[C.off]?'<span class="badge-off" title="This course code is in the current schedule. The instructor for this term is not known — the name shown is a past instructor.">Offered</span>':'';
@@ -383,8 +448,8 @@ function init(DATA){
     const yr=r[C.y],recent=(yr!=null&&yr>=25);
     const sample=isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
-    return `<div class="trow">
-      <div class="course"><span class="code">${esc(code)}</span>${off}<div class="title">${esc(title)}</div></div>
+    return `<div class="trow" data-i="${idx}" aria-expanded="${isOpen}">
+      <div class="course"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}<div class="title">${esc(title)}</div></div>
       <div class="instr"><span class="k">Past instructor</span><span class="nm">${esc(instrShort(r[C.i]))}</span>${rmpStar}</div>
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
@@ -398,7 +463,9 @@ function init(DATA){
     current=compute();
     const rowsEl=$('rows'), emptyEl=$('empty');
     if(current.length===0){rowsEl.innerHTML='';emptyEl.hidden=false;}
-    else{emptyEl.hidden=true;rowsEl.innerHTML=current.slice(0,state.limit).map(rowHTML).join('');}
+    else{emptyEl.hidden=true;rowsEl.innerHTML=current.slice(0,state.limit).map(r=>{
+      return rowHTML(r)+(expanded.has(RI.get(r))?detailHTML(r):'');
+    }).join('');}
     const mw=$('moreWrap');
     if(current.length>state.limit){mw.hidden=false;$('moreBtn').textContent=`Show ${Math.min(PAGE,current.length-state.limit)} more · ${current.length.toLocaleString()} total`;}
     else mw.hidden=true;
@@ -434,6 +501,13 @@ function init(DATA){
   const offBtn=$('offered');
   offBtn.addEventListener('click',()=>{state.offered=!state.offered;offBtn.setAttribute('aria-pressed',state.offered?'true':'false');state.limit=PAGE;render();});
   $('moreBtn').addEventListener('click',()=>{state.limit+=PAGE;render();});
+  $('rows').addEventListener('click',e=>{
+    if(e.target.closest('a')) return; // let RMP links work
+    const row=e.target.closest('.trow'); if(!row) return;
+    const idx=+row.dataset.i;
+    if(expanded.has(idx)) expanded.delete(idx); else expanded.add(idx);
+    render();
+  });
   $('thead').addEventListener('click',e=>{
     const el=e.target.closest('.sortable'); if(!el||!el.dataset.sort) return;
     state.sort=el.dataset.sort; $('sort').value=el.dataset.sort; state.limit=PAGE; render();
