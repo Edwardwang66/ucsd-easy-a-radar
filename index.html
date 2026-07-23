@@ -1104,6 +1104,140 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 })();
 </script>
 
+<!-- ============================================================
+     Feedback widget — floating button + modal. Posts to /api/feedback,
+     which files a GitHub issue. Self-contained; uses the page's CSS vars.
+     ============================================================ -->
+<style>
+  #fbBtn{position:fixed;right:18px;bottom:18px;z-index:60;display:flex;gap:7px;align-items:center;
+    background:var(--accent);color:#fff;border:none;border-radius:999px;padding:11px 16px;
+    font-family:var(--sans);font-size:13.5px;font-weight:600;cursor:pointer;
+    box-shadow:var(--shadow);transition:transform .12s ease,background .12s ease}
+  #fbBtn:hover{background:var(--accent-2);transform:translateY(-1px)}
+  #fbBtn svg{width:16px;height:16px}
+  #fbOverlay{position:fixed;inset:0;z-index:70;background:rgba(10,18,28,.5);
+    display:none;align-items:center;justify-content:center;padding:16px}
+  #fbOverlay.open{display:flex}
+  .fb-card{background:var(--surface);color:var(--ink);border:1px solid var(--line);
+    border-radius:var(--r);box-shadow:var(--shadow);width:min(460px,100%);max-height:90vh;
+    overflow:auto;padding:20px 20px 18px}
+  .fb-card h3{margin:0 0 4px;font-size:17px}
+  .fb-card p.sub{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.45}
+  .fb-seg{display:flex;gap:8px;margin-bottom:12px}
+  .fb-seg button{flex:1;border:1px solid var(--line-strong);background:var(--surface-2);
+    color:var(--muted);border-radius:9px;padding:9px;font-family:var(--sans);font-size:13px;
+    font-weight:600;cursor:pointer}
+  .fb-seg button.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+  .fb-card label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px;font-weight:600}
+  .fb-card textarea,.fb-card input[type=text]{width:100%;box-sizing:border-box;background:var(--surface-2);
+    border:1px solid var(--line-strong);border-radius:9px;color:var(--ink);font-family:var(--sans);
+    font-size:14px;padding:10px 11px;margin-bottom:13px}
+  .fb-card textarea{min-height:110px;resize:vertical}
+  .fb-card textarea:focus,.fb-card input[type=text]:focus{outline:2px solid var(--accent);border-color:transparent}
+  .fb-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+  .fb-actions{display:flex;gap:10px;justify-content:flex-end;align-items:center}
+  .fb-actions .msg{margin-right:auto;font-size:12.5px}
+  .fb-actions .msg.err{color:var(--gF)}
+  .fb-actions .msg.ok{color:var(--gA)}
+  .fb-btn-ghost{background:transparent;border:1px solid var(--line-strong);color:var(--muted);
+    border-radius:9px;padding:9px 14px;font-family:var(--sans);font-size:13px;cursor:pointer}
+  .fb-btn-primary{background:var(--accent);border:none;color:#fff;border-radius:9px;padding:9px 16px;
+    font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer}
+  .fb-btn-primary:disabled{opacity:.55;cursor:default}
+</style>
+
+<button id="fbBtn" type="button" aria-label="Send feedback">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  Feedback
+</button>
+
+<div id="fbOverlay" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+  <div class="fb-card">
+    <h3 id="fbTitle">Report a bug or suggest an improvement</h3>
+    <p class="sub">Found something broken, or have an idea? Let me know — it goes straight to the project's issue tracker.</p>
+    <div class="fb-seg" id="fbSeg">
+      <button type="button" data-type="bug" class="on">🐞 Bug</button>
+      <button type="button" data-type="idea">💡 Idea</button>
+    </div>
+    <label for="fbDesc">What happened / what would you change?</label>
+    <textarea id="fbDesc" placeholder="Describe the bug (what you did, what you expected) or your suggestion…"></textarea>
+    <label for="fbContact">Contact (optional — if you want a reply)</label>
+    <input type="text" id="fbContact" placeholder="Email or WeChat, optional" autocomplete="off">
+    <input type="text" class="fb-hp" id="fbWebsite" tabindex="-1" autocomplete="off" aria-hidden="true" placeholder="Leave this empty">
+    <div class="fb-actions">
+      <span class="msg" id="fbMsg"></span>
+      <button type="button" class="fb-btn-ghost" id="fbCancel">Cancel</button>
+      <button type="button" class="fb-btn-primary" id="fbSend">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var overlay=document.getElementById('fbOverlay');
+  var openBtn=document.getElementById('fbBtn');
+  var cancel=document.getElementById('fbCancel');
+  var send=document.getElementById('fbSend');
+  var desc=document.getElementById('fbDesc');
+  var contact=document.getElementById('fbContact');
+  var website=document.getElementById('fbWebsite');
+  var msg=document.getElementById('fbMsg');
+  var seg=document.getElementById('fbSeg');
+  var type='bug', openedAt=0;
+
+  seg.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-type]'); if(!b) return;
+    type=b.getAttribute('data-type');
+    [].forEach.call(seg.children,function(c){c.classList.toggle('on',c===b);});
+  });
+
+  function open(){
+    openedAt=Date.now();
+    msg.textContent=''; msg.className='msg';
+    overlay.classList.add('open');
+    setTimeout(function(){desc.focus();},50);
+  }
+  function close(){ overlay.classList.remove('open'); }
+
+  openBtn.addEventListener('click',open);
+  cancel.addEventListener('click',close);
+  overlay.addEventListener('click',function(e){ if(e.target===overlay) close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&overlay.classList.contains('open')) close(); });
+
+  send.addEventListener('click',async function(){
+    var text=desc.value.trim();
+    if(text.length<4){ msg.textContent='Please add a bit more detail.'; msg.className='msg err'; desc.focus(); return; }
+    send.disabled=true; msg.textContent='Sending…'; msg.className='msg';
+    try{
+      var res=await fetch('/api/feedback',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          type:type,
+          description:text,
+          contact:contact.value.trim(),
+          website:website.value,
+          elapsed:Date.now()-openedAt,
+          page:location.pathname+location.search
+        })
+      });
+      var data=await res.json().catch(function(){return {};});
+      if(res.ok&&data.ok){
+        msg.textContent='Thanks! Sent'+(data.number?(' (#'+data.number+')'):'')+'.'; msg.className='msg ok';
+        desc.value=''; contact.value='';
+        setTimeout(close,1400);
+      }else{
+        msg.textContent=(data&&data.error)||'Something went wrong — try again.'; msg.className='msg err';
+      }
+    }catch(err){
+      msg.textContent='Network error — try again.'; msg.className='msg err';
+    }finally{
+      send.disabled=false;
+    }
+  });
+})();
+</script>
+
 <!-- Vercel Web Analytics — static-site (non-framework) integration.
      Requires Web Analytics to be enabled in the Vercel dashboard: Project → Analytics → Enable.
      Vercel serves /_vercel/insights/script.js from the edge once enabled; it 404s only on
