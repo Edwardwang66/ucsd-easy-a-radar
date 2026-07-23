@@ -56,6 +56,16 @@ MANUAL_ALIAS = {
     "Siavash Mirarab": "Mir Arabbaygi, Siavash",  # surname restructured (Mir Arabbaygi → Mirarab); same course ECE 30
 }
 
+# Also-known-as: catalog name -> other name forms this professor appears under (preferred
+# name, maiden/legal-name variant, spelling variant). These are first-timers with no grade
+# rows to link, so this doesn't change matching — it just makes the alternate name findable
+# in search (and documents the variant). Exported as data.json `aka`.
+MANUAL_AKA = {
+    "Laura Acosta Gonzalez": ["Laura Acosta"],           # dept page lists her as "Laura Acosta"
+    "Zohreh Sharif Khodaei": ["Zohreh Sharifkhodaei"],   # appears as one-word "Sharifkhodaei"
+    "Noelle Alexa Novales": ["Alexa Novales"],           # goes by "Alexa Novales"
+}
+
 # L6 — manual blocks: (catalog name, grade name) pairs that share a surname + initial but are
 # DIFFERENT people (namesakes). Matching would otherwise falsely tag the grade professor
 # "Teaching now". The REVIEW report below surfaces candidates; confirmed namesakes go here.
@@ -360,6 +370,7 @@ def main(dry=False):
     # --- meta + serialise ---
     d["alias"] = {k: v for k, v in sorted(alias.items())}
     d["block"] = [list(p) for p in sorted(MANUAL_BLOCK)]
+    d["aka"] = {k: v for k, v in sorted(MANUAL_AKA.items())}
     d["newProf"] = new_prof
     d["meta"]["fa26CurrentRows"] = cur
     d["meta"]["fa26Aliases"] = len(alias)

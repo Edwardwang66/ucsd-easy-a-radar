@@ -232,6 +232,7 @@
   .term-instr .who.isnew{color:var(--muted)}
   .firstx{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.03em;color:var(--accent-2);
     border:1px dashed color-mix(in srgb,var(--accent-2) 45%,transparent);border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:1px}
+  .instr .aka{font-size:10.5px;color:var(--faint);font-style:italic;margin-left:2px;cursor:help}
 
   /* ---- view tabs ---- */
   .viewtabs{display:inline-flex;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
@@ -533,11 +534,14 @@ function init(DATA){
       case 'grad':return lv>=200;
     }
   }
+  const AKA=(DATA&&DATA.aka)||{};   // catalog name -> other name forms (preferred/legal/spelling variants)
   function matchQ(r,q){
     if(!q) return true;
     const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
     const title=(r[C.t]>=0?(T[r[C.t]]||''):'').toLowerCase(), instr=(r[C.i]||'').toLowerCase();
-    return code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q);
+    if(code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q)) return true;
+    const aka=AKA[r[C.i]]; // also match the professor's known name variants
+    return !!aka&&aka.some(n=>n.toLowerCase().includes(q));
   }
   function tie(a,b){const ga=a[C.g],gb=b[C.g];if(ga!=null&&gb!=null&&ga!==gb)return gb-ga;if(ga!=null&&gb==null)return -1;if(ga==null&&gb!=null)return 1;return b[C.n]-a[C.n];}
   function compute(){
@@ -682,9 +686,12 @@ function init(DATA){
       :isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
     const instrLabel=isNew2?'New instructor':'Past instructor';
+    const aka=AKA[r[C.i]];
+    const nmTitle=aka?` title="Also known as ${esc(aka.join(', '))}"`:'';
+    const akaTag=aka?`<span class="aka" title="Also known as ${esc(aka.join(', '))}">aka ${esc(aka[0])}</span>`:'';
     return `<div class="trow" data-i="${idx}" aria-expanded="${isOpen}">
       <div class="course"><div class="top"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}${nowBadge}${addBtn}</div><div class="title">${esc(title)}</div></div>
-      <div class="instr"><span class="k">${instrLabel}</span><span class="nm">${esc(instrShort(r[C.i]))}</span>${rmpStar}${nowLine}</div>
+      <div class="instr"><span class="k">${instrLabel}</span><span class="nm"${nmTitle}>${esc(instrShort(r[C.i]))}</span>${akaTag}${rmpStar}${nowLine}</div>
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
       <div class="rmp"><span class="k">RMP</span>${rmpCell}</div>
