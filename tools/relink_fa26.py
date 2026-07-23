@@ -349,6 +349,23 @@ def main(dry=False):
         if rmp:
             rmp_hits += 1
 
+    # --- fill RMP for professors the original name-join missed, matched against the full RMP
+    #     roster (tools/rmp_ucsd.json) offline. Keyed by the EXACT instructor name as it appears
+    #     in recs, so it fills only that person (no surname+initial collisions). Only fills rows
+    #     that have no RMP yet. ---
+    extra_path = Path(__file__).resolve().parent / "rmp_fa26_extra.json"
+    rmp_extra = json.loads(extra_path.read_text()) if extra_path.exists() else {}
+    extra_report = []
+    for rec_name, rmp in rmp_extra.items():
+        n = 0
+        for r in d["recs"]:
+            if r[C["rid"]] is None and (r[C["i"]] or "") == rec_name:
+                r[C["rq"]], r[C["rd"]] = rmp["rq"], rmp["rd"]
+                r[C["rw"]], r[C["rn"]], r[C["rid"]] = rmp["rw"], rmp["rn"], rmp["rid"]
+                n += 1
+        if n:
+            extra_report.append((rmp.get("fa", rec_name), rmp["rmpName"], rec_name, n))
+
     # --- namesake review: cur=1 links where the FA26 first name only shares an INITIAL (not a
     #     full given token) with the grade record. Most are nicknames (Tim↔Timothy) and fine;
     #     the odd one is a different person sharing surname+initial → add it to MANUAL_BLOCK. ---
@@ -395,6 +412,10 @@ def main(dry=False):
     print(f"  with an RMP match   : {rmp_hits}"
           + ("" if rmp_cache else "  (run tools/fetch_rmp_firsttime.py to populate)"))
     print(f"blocked namesakes     : {len(MANUAL_BLOCK)}")
+    if rmp_extra:
+        print(f"\nRMP join-misses filled from full roster ({len(extra_report)} name-entries):")
+        for fa_name, rmp_name, rec_name, n in sorted(extra_report):
+            print(f"   + {fa_name:26} = RMP {rmp_name:22} -> {rec_name}×{n}")
     if review:
         print(f"\nREVIEW aliases — same surname & subject but no shared course ({len(review)}); "
               f"add to MANUAL_ALIAS only if truly the same person:")
