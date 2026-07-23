@@ -215,6 +215,89 @@
   footer ul{margin:6px 0 0;padding-left:18px}
   footer li{margin:3px 0}
 
+  /* ---- current-term (FA26) instructor bits ---- */
+  .badge-now{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--gA);
+    border-radius:5px;padding:1px 5px;margin-left:6px;vertical-align:1px;text-transform:uppercase}
+  .instr .now{font-size:11px;color:var(--gA);font-weight:600;display:flex;align-items:center;gap:4px;margin-top:1px}
+  .instr .now .dotnow{width:6px;height:6px;border-radius:50%;background:var(--gA);display:inline-block;flex:none}
+  .term-instr{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:12px;color:var(--muted);
+    padding:8px 12px;margin:10px 18px 2px 40px;background:color-mix(in srgb,var(--gA) 8%,var(--surface));
+    border:1px solid color-mix(in srgb,var(--gA) 30%,var(--line));border-radius:9px}
+  .term-instr .th{font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.03em;font-size:10.5px}
+  .term-instr .who{color:var(--ink);font-weight:600}
+  .term-instr .who.match{color:var(--gA)}
+
+  /* ---- view tabs ---- */
+  .viewtabs{display:inline-flex;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
+  .viewtab{border:0;background:transparent;color:var(--muted);padding:8px 16px;border-radius:8px;font-size:13.5px;
+    font-weight:600;cursor:pointer;font-family:var(--sans);display:flex;align-items:center;gap:7px}
+  .viewtab[aria-selected="true"]{background:var(--accent);color:#fff}
+  .viewtab:not([aria-selected="true"]):hover{color:var(--ink)}
+  .viewtab .cnt{font-size:11px;font-family:var(--mono);background:color-mix(in srgb,var(--gA) 22%,transparent);
+    color:var(--gA);border-radius:999px;padding:1px 7px;font-weight:700}
+  .viewtab[aria-selected="true"] .cnt{background:rgba(255,255,255,.22);color:#fff}
+
+  /* ---- add-to-schedule button on rows ---- */
+  .addbtn{margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--accent-2);
+    border-radius:7px;padding:3px 9px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--sans);white-space:nowrap;flex:none}
+  .addbtn:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .addbtn.added{color:var(--gA);border-color:color-mix(in srgb,var(--gA) 45%,transparent);
+    background:color-mix(in srgb,var(--gA) 10%,transparent)}
+  .course .top{display:flex;align-items:center;gap:2px}
+
+  /* ---- schedule builder ---- */
+  #scheduleView{display:none}
+  #scheduleView.active{display:block}
+  #rankView.hidden{display:none}
+  .sched-empty{padding:56px 20px;text-align:center;color:var(--muted)}
+  .sched-empty .big{font-size:17px;color:var(--ink);font-weight:700;margin-bottom:6px}
+  .sched-grid{display:grid;grid-template-columns:minmax(300px,360px) 1fr;gap:16px;align-items:start}
+  @media (max-width:900px){.sched-grid{grid-template-columns:1fr}}
+  .sched-side{display:flex;flex-direction:column;gap:10px}
+  .sched-summary{display:flex;gap:10px;flex-wrap:wrap}
+  .sched-summary .st{flex:1;min-width:88px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:var(--shadow)}
+  .sched-summary .st .v{font-size:20px;font-weight:800;letter-spacing:-.02em}
+  .sched-summary .st .l{font-size:11px;color:var(--muted);margin-top:3px}
+  .sched-summary .st .v.warn{color:var(--gF)}
+  .sci{background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:11px 12px;box-shadow:var(--shadow)}
+  .sci .h{display:flex;align-items:flex-start;gap:8px}
+  .sci .code{font-family:var(--mono);font-weight:700;font-size:13.5px}
+  .sci .ttl{font-size:12px;color:var(--muted);margin-top:1px;line-height:1.35}
+  .sci .rm{margin-left:auto;border:0;background:transparent;color:var(--faint);cursor:pointer;font-size:17px;line-height:1;padding:0 2px;flex:none}
+  .sci .rm:hover{color:var(--gF)}
+  .sci .ctrls{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .sci .ctrls label{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+  .sci select{padding:5px 22px 5px 8px;border-radius:7px;font-size:12px;background-position:right 7px center}
+  .sci .meets{margin-top:8px;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+  .sci .meets .m{display:flex;gap:8px;font-family:var(--mono)}
+  .sci .meets .m .mt{color:var(--accent-2);font-weight:600;min-width:22px}
+  .sci .meets .m.tba{color:var(--faint);font-style:italic}
+  .sci .prof{font-size:11.5px;color:var(--ink);margin-top:6px}
+  .sci .prof .lab{color:var(--muted)}
+  .sci.conf{border-left-color:var(--gF)!important}
+  .conf-note{font-size:11px;color:var(--gF);margin-top:6px;font-weight:600}
+
+  .cal-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .cal{display:grid;grid-template-columns:46px repeat(5,1fr);position:relative}
+  .cal .cell{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .cal .hd{position:sticky;top:0;background:var(--surface-2);font-size:11px;font-weight:700;color:var(--muted);
+    text-align:center;padding:8px 0;text-transform:uppercase;letter-spacing:.04em;z-index:2;border-bottom:1px solid var(--line)}
+  .cal .gutter{position:relative;padding-top:8px}
+  .cal .daycol{position:relative;padding-top:8px}
+  .cal .hr{height:34px;border-bottom:1px dashed var(--line);position:relative}
+  .cal .hrlab{position:absolute;top:-7px;right:6px;font-size:9.5px;color:var(--faint);font-family:var(--mono)}
+  .cal .ev{position:absolute;left:3px;right:3px;border-radius:6px;padding:3px 5px;overflow:hidden;color:#fff;
+    font-size:10.5px;line-height:1.2;box-shadow:0 1px 2px rgba(0,0,0,.2);cursor:default}
+  .cal .ev .ec{font-weight:700;font-family:var(--mono)}
+  .cal .ev .et{opacity:.9;font-size:9.5px}
+  .cal .ev.clash{outline:2px solid #fff;outline-offset:-2px;box-shadow:0 0 0 2px var(--gF)}
+  #leaflet-map{height:340px;width:100%;background:var(--surface-2)}
+  .map-card{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .map-head{padding:11px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+  .map-head b{color:var(--ink)}
+  .leaflet-popup-content{font-family:var(--sans);font-size:12px}
+  .cal-note{padding:9px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--faint)}
+
   @media (max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}}
   @media (max-width:720px){
     .thead{display:none}
@@ -249,6 +332,14 @@
 
   <section class="stats" id="stats"></section>
 
+  <div class="viewtabs" id="viewtabs" role="tablist" style="margin-bottom:14px">
+    <button class="viewtab" id="tab-rank" role="tab" aria-selected="true">Rankings</button>
+    <button class="viewtab" id="tab-sched" role="tab" aria-selected="false">
+      <span>My Schedule</span><span class="cnt" id="schedTabCnt" hidden>0</span>
+    </button>
+  </div>
+
+ <div id="rankView">
   <div class="toolbar">
     <div class="row1">
       <label class="search">
@@ -290,6 +381,9 @@
       <button class="toggle" id="offered" aria-pressed="true">
         <span class="sw"></span><span>Offered this term only</span>
       </button>
+      <button class="toggle" id="curonly" aria-pressed="false" title="Only rows whose professor is teaching this course in Fall 2026">
+        <span class="sw"></span><span>Teaching FA26 only</span>
+      </button>
       <div class="sortwrap">
         <span>Taught ≥</span>
         <select id="minoff" aria-label="Minimum times taught">
@@ -302,7 +396,7 @@
   </div>
 
   <div class="note" role="note">
-    <b>How to read the professor column:</b> the schedule snapshot lists course codes only, so we don't know who teaches each course this term. The name in each row is a <b>past instructor</b> of that course (2015–2026) — use it to see how the course has been graded and rated, not to predict this term's section.
+    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
   </div>
 
   <div class="legend">
@@ -331,13 +425,40 @@
     </div>
   </div>
   <div class="more" id="moreWrap" hidden><button id="moreBtn"></button></div>
+ </div><!-- /rankView -->
+
+ <div id="scheduleView" role="tabpanel" aria-label="My schedule">
+   <div class="sched-empty" id="schedEmpty">
+     <div class="big">Build your Fall 2026 schedule</div>
+     <div>Go to <b>Rankings</b>, find courses you like, and hit <b>+ Schedule</b> on any offered row.<br>
+       Pick your sections here and see them laid out on a weekly calendar and campus map.</div>
+   </div>
+   <div class="sched-grid" id="schedGrid" hidden>
+     <div class="sched-side">
+       <div class="sched-summary" id="schedSummary"></div>
+       <div id="schedItems"></div>
+     </div>
+     <div>
+       <div class="cal-card">
+         <div class="cal" id="cal"></div>
+         <div class="cal-note">Times from the live WebReg FA26 catalog. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn.</div>
+       </div>
+       <div class="map-card">
+         <div class="map-head" id="mapHead"><b>Campus map</b> — buildings for your selected sections</div>
+         <div id="leaflet-map"></div>
+       </div>
+     </div>
+   </div>
+ </div><!-- /scheduleView -->
 
   <footer>
     <div class="meth">
       <h3>Data &amp; methodology</h3>
       <ul>
         <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
-        <li><b>Offered this term</b> — matched against the current schedule snapshot (<span id="schedcount"></span> course codes; <b>codes only — the snapshot has no instructor names</b>). An <code>Offered</code> tag means the course code is in the schedule, so it runs this term — but we do <b>not</b> know which professor teaches it. Names shown are past instructors of that course.</li>
+        <li><b>Offered this term</b> — matched against the live <b>Fall 2026</b> WebReg catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
+        <li><b>This term's instructor (FA26)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each Fall 2026 section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way.</li>
+        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
@@ -368,14 +489,15 @@ function init(DATA){
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
-  const state={q:'',subject:'',prof:'',level:'ug',offered:true,sort:'y',minoff:1,limit:60};
+  const state={q:'',subject:'',prof:'',level:'ug',offered:true,curonly:false,sort:'y',minoff:1,limit:60};
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
   const set=new Set(); const subjCount={};
   for(const r of R){ set.add(r[C.s]); subjCount[r[C.s]]=(subjCount[r[C.s]]||0)+1; }
   const subs=[...set].sort();
-  $('schedcount').textContent=(DATA.meta&&DATA.meta.schedCodes||1780).toLocaleString();
+  $('schedcount').textContent=(DATA.meta&&(DATA.meta.catalogCourses||DATA.meta.schedCodes)||1778).toLocaleString();
+  {const cc=$('curcount'); if(cc) cc.textContent=(DATA.meta&&DATA.meta.fa26CurrentRows||0).toLocaleString();}
 
   function riskOf(r){const d=r[C.gD],f=r[C.gF],w=r[C.gW];if(d==null&&f==null&&w==null)return null;return (d||0)+(f||0)+(w||0);}
   function sortVal(r,key){ if(key==='risk')return riskOf(r); return r[C[key]]; }
@@ -400,6 +522,7 @@ function init(DATA){
     const q=state.q.trim().toLowerCase(), out=[];
     for(const r of R){
       if(state.offered && !r[C.off]) continue;
+      if(state.curonly && r[C.cur]!==1) continue;
       if(state.subject && r[C.s]!==state.subject) continue;
       if(state.prof && r[C.i]!==state.prof) continue;
       if(!levelOk(r[C.lv])) continue;
@@ -461,9 +584,17 @@ function init(DATA){
     return `<svg viewBox="0 0 ${W} ${Hh}" width="${W}" height="${Hh}" role="img" aria-label="GPA trend">
       <path d="${line}" fill="none" stroke="var(--accent-2)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>${dots}</svg>`;
   }
+  function faBlockHTML(r){
+    const faList=(DATA.fa&&DATA.fa[CK(r[C.s],r[C.c])])||null;
+    if(!r[C.off]||!faList||!faList.length) return '';
+    const myk=ourKeyJS(r[C.i]||'');
+    const who=faList.map(n=>{const ck=catKeyJS(n);const m=!!(myk&&ck&&myk[0]===ck[0]&&myk[1]===ck[1]);return `<span class="who${m?' match':''}">${esc(n)}${m?' ✓':''}</span>`;}).join('');
+    return `<div class="term-instr"><span class="th">Fall 2026 instructor${faList.length>1?'s':''}</span>${who}</div>`;
+  }
   function detailHTML(r){
     const idx=RI.get(r), h=H[idx];
-    if(!h||!h.length) return `<div class="tdetail"><div class="tdet-none">No term-by-term grade data (this row comes from RateMyProfessors course history).</div></div>`;
+    const fb=faBlockHTML(r);
+    if(!h||!h.length) return `<div class="tdetail">${fb}<div class="tdet-none">No term-by-term grade data (this row comes from RateMyProfessors course history).</div></div>`;
     // h newest-first: [yr,q,g,A,B,C,D,F,W]
     const terms=h.map(x=>({yr:x[0],q:x[1],g:x[2],A:x[3],B:x[4],Cc:x[5],D:x[6],F:x[7],W:x[8]}));
     const oldestFirst=[...terms].reverse();
@@ -480,7 +611,7 @@ function init(DATA){
       const acell=t.A==null?'':`A${t.A.toFixed(0)}`;
       return `<div class="term"><span class="tq">${esc(t.q)}${t.yr}</span>${gcell}<div class="tbar">${seg}</div><span class="ta">${acell}</span></div>`;
     }).join('');
-    return `<div class="tdetail"><div class="tdet-inner">
+    return `<div class="tdetail">${fb}<div class="tdet-inner">
       <div class="spark-wrap"><div class="spark-h">GPA over time ${trend}</div><div class="spark">${spark||'<span class="axhint">single term</span>'}</div></div>
       <div class="terms">${rows}</div>
     </div></div>`;
@@ -491,7 +622,15 @@ function init(DATA){
     const idx=RI.get(r), isOpen=expanded.has(idx);
     const code=r[C.s]+'-'+r[C.c];
     const title=isRmp?'Graduate course · RMP-rated':(r[C.t]>=0?(T[r[C.t]]||''):'');
-    const off=r[C.off]?'<span class="badge-off" title="This course code is in the current schedule. The instructor for this term is not known — the name shown is a past instructor.">Offered</span>':'';
+    const off=r[C.off]?'<span class="badge-off" title="This course runs in Fall 2026.">Offered</span>':'';
+    const fakey=CK(r[C.s],r[C.c]);
+    const faList=(DATA.fa&&DATA.fa[fakey])||null;
+    const isCur=r[C.cur]===1;
+    const nowBadge=isCur?'<span class="badge-now" title="This professor is teaching this course in Fall 2026.">Teaching now</span>':'';
+    const addBtn=r[C.off]?`<button class="addbtn ${SCH.has(fakey)?'added':''}" data-add="${esc(fakey)}" title="Add to My Schedule">${SCH.has(fakey)?'✓ Added':'+ Schedule'}</button>`:'';
+    let nowLine='';
+    if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
+    else if(r[C.off]&&faList) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>FA26: ${esc(faList.slice(0,3).join(', '))}${faList.length>3?' +'+(faList.length-3):''}</span>`;
     const g=r[C.g];
     const gpaCell=isRmp?'<span class="rmponly">RMP only</span>':(g==null?'<span class="na">—</span>':`<span class="b" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`);
     const dist=isRmp?'<span class="nodata">No grade data on record</span>':distHTML(r);
@@ -508,8 +647,8 @@ function init(DATA){
     const sample=isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
     return `<div class="trow" data-i="${idx}" aria-expanded="${isOpen}">
-      <div class="course"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}<div class="title">${esc(title)}</div></div>
-      <div class="instr"><span class="k">Past instructor</span><span class="nm">${esc(instrShort(r[C.i]))}</span>${rmpStar}</div>
+      <div class="course"><div class="top"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}${nowBadge}${addBtn}</div><div class="title">${esc(title)}</div></div>
+      <div class="instr"><span class="k">Past instructor</span><span class="nm">${esc(instrShort(r[C.i]))}</span>${rmpStar}${nowLine}</div>
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
       <div class="rmp"><span class="k">RMP</span>${rmpCell}</div>
@@ -611,9 +750,12 @@ function init(DATA){
   });
   const offBtn=$('offered');
   offBtn.addEventListener('click',()=>{state.offered=!state.offered;offBtn.setAttribute('aria-pressed',state.offered?'true':'false');state.limit=PAGE;render();});
+  const curBtn=$('curonly');
+  curBtn.addEventListener('click',()=>{state.curonly=!state.curonly;curBtn.setAttribute('aria-pressed',state.curonly?'true':'false');state.limit=PAGE;render();});
   moreBtn.addEventListener('click',appendMore);
   $('rows').addEventListener('click',e=>{
     if(e.target.closest('a')) return; // let RMP links work
+    const ab=e.target.closest('.addbtn'); if(ab){e.stopPropagation();if(SCH.has(ab.dataset.add))removeFromSched(ab.dataset.add);else addToSched(ab.dataset.add);return;}
     const row=e.target.closest('.trow'); if(!row) return;
     const idx=+row.dataset.i;
     if(expanded.has(idx)) expanded.delete(idx); else expanded.add(idx);
@@ -625,6 +767,169 @@ function init(DATA){
     const el=e.target.closest('.sortable'); if(!el||!el.dataset.sort) return;
     state.sort=el.dataset.sort; $('sort').value=el.dataset.sort; state.limit=PAGE; render();
   });
+
+  // ================= Schedule builder (Fall 2026) =================
+  const CK=(s,c)=>String(s).toUpperCase()+' '+String(c).toUpperCase().replace(/[^0-9A-Z]/g,'');
+  const deacc=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  function catKeyJS(n){const p=deacc(n).trim().split(/\s+/);return p.length>=2?[p[p.length-1].toLowerCase(),p[0][0].toLowerCase()]:null;}
+  function ourKeyJS(n){n=deacc(n).trim();if(n.indexOf(',')>=0){const i=n.split(',');const rr=(i[1]||'').trim();return [i[0].trim().toLowerCase(),rr?rr[0].toLowerCase():''];}const p=n.split(/\s+/);return p.length>=2?[p[p.length-1].toLowerCase(),p[0][0].toLowerCase()]:null;}
+
+  const SCH_KEY='easyA_sched_fa26_v1';
+  let SCHED=null, schPromise=null;
+  function loadSchState(){try{const a=JSON.parse(localStorage.getItem(SCH_KEY));if(Array.isArray(a))return a;}catch(e){}return [];}
+  function saveSchState(){try{localStorage.setItem(SCH_KEY,JSON.stringify(schItems.map(it=>({k:it.k,group:it.group,picks:it.picks||{}}))));}catch(e){}}
+  let schItems=loadSchState();
+  const schSet=()=>new Set(schItems.map(it=>it.k));
+  let SCH=schSet();
+  function ensureSched(){
+    if(SCHED) return Promise.resolve(SCHED);
+    if(schPromise) return schPromise;
+    schPromise=fetch('schedule.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{SCHED=j;return j;});
+    return schPromise;
+  }
+  const CAL_COLORS=['#0E63AC','#1F9D6B','#B9700E','#7A4FC0','#C0392B','#0E8F8F','#B0357A','#5B7A0E','#2C5FA8','#A15C2B'];
+  const DAYIDX={M:0,Tu:1,W:2,Th:3,F:4,Sa:5,Su:6}, DAYLAB=['Mon','Tue','Wed','Thu','Fri'];
+  const S_CODE=0,S_TYPE=1,S_DAYS=2,S_START=3,S_END=4,S_BLD=5,S_ROOM=6,S_INSTR=7,S_CANC=10;
+  function parseDays(s){const out=[],re=/Su|Sa|Th|Tu|M|W|F/g;let m;while((m=re.exec(s||''))!==null)out.push(DAYIDX[m[0]]);return out;}
+  function parseMin(t){const m=/^(\d{1,2}):(\d{2})\s*([ap])?/i.exec(String(t||''));if(!m)return null;let h=+m[1];const mi=+m[2],ap=(m[3]||'').toLowerCase();if(ap==='p'&&h!==12)h+=12;if(ap==='a'&&h===12)h=0;return h*60+mi;}
+  function activeGroups(course){const g={};for(const s of course.sec){if(s[S_CANC]||s[S_TYPE]==='FI')continue;const c=s[S_CODE]||'';if(!/^[A-Za-z]/.test(c))continue;const gl=c[0].toUpperCase();(g[gl]=g[gl]||[]).push(s);}return g;}
+  function itemSections(it){
+    const course=SCHED&&SCHED.courses[it.k]; if(!course)return {course:null,secs:[],opts:{},groups:{},gl:''};
+    const groups=activeGroups(course);
+    let gl=it.group; if(!groups[gl]){gl=Object.keys(groups).sort()[0]||'';it.group=gl;}
+    const gs=groups[gl]||[], byType={};
+    for(const s of gs){(byType[s[S_TYPE]]=byType[s[S_TYPE]]||[]).push(s);}
+    const secs=[],opts={};
+    for(const ty of Object.keys(byType)){
+      const list=byType[ty];
+      if(list.length===1){secs.push(list[0]);}
+      else{opts[ty]=list;const pick=it.picks&&it.picks[ty];secs.push(list.find(s=>s[S_CODE]===pick)||list[0]);}
+    }
+    return {course,secs,opts,groups,gl};
+  }
+  function schEvents(){
+    const evs=[];
+    schItems.forEach((it,ci)=>{
+      const {course,secs}=itemSections(it); if(!course)return;
+      const color=CAL_COLORS[ci%CAL_COLORS.length];
+      for(const s of secs){
+        const days=parseDays(s[S_DAYS]),a=parseMin(s[S_START]),b=parseMin(s[S_END]);
+        if(a==null||b==null||!days.length)continue;
+        for(const d of days) evs.push({d,a,b,ci,color,code:it.k,type:s[S_TYPE]});
+      }
+    });
+    for(let i=0;i<evs.length;i++)for(let j=i+1;j<evs.length;j++){
+      if(evs[i].ci!==evs[j].ci&&evs[i].d===evs[j].d&&evs[i].a<evs[j].b&&evs[j].a<evs[i].b){evs[i].clash=evs[j].clash=true;}
+    }
+    return evs;
+  }
+  const DAY_START=480,DAY_END=1320,HRH=34;
+  function renderCal(evs){
+    const cal=$('cal'); if(!cal)return;
+    let html='<div class="hd"></div>'+DAYLAB.map(d=>`<div class="hd">${d}</div>`).join('');
+    html+='<div class="cell gutter">';
+    for(let m=DAY_START;m<DAY_END;m+=60){const h=m/60,lab=(h%12===0?12:h%12)+(h<12?'a':'p');html+=`<div class="hr"><span class="hrlab">${lab}</span></div>`;}
+    html+='</div>';
+    for(let d=0;d<5;d++){
+      html+='<div class="cell daycol">';
+      for(let m=DAY_START;m<DAY_END;m+=60)html+='<div class="hr"></div>';
+      for(const e of evs.filter(x=>x.d===d)){
+        const top=8+(clamp(e.a,DAY_START,DAY_END)-DAY_START)/60*HRH;
+        const hgt=Math.max(15,(clamp(e.b,DAY_START,DAY_END)-clamp(e.a,DAY_START,DAY_END))/60*HRH);
+        html+=`<div class="ev${e.clash?' clash':''}" style="top:${top}px;height:${hgt}px;background:${e.color}"><span class="ec">${esc(e.code)}</span> <span class="et">${esc(e.type)}</span></div>`;
+      }
+      html+='</div>';
+    }
+    cal.innerHTML=html;
+  }
+  let mapObj=null,mapLayer=null,leafletLoading=null;
+  function loadLeaflet(){
+    if(window.L)return Promise.resolve();
+    if(leafletLoading)return leafletLoading;
+    leafletLoading=new Promise((res,rej)=>{
+      const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(css);
+      const js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';js.onload=res;js.onerror=rej;document.head.appendChild(js);
+    });
+    return leafletLoading;
+  }
+  function renderMap(){
+    const head=$('mapHead'),bl=SCHED.buildings,pins={};
+    schItems.forEach(it=>{const {course,secs}=itemSections(it);if(!course)return;for(const s of secs){const b=s[S_BLD];if(!b||!bl[b])continue;(pins[b]=pins[b]||{loc:bl[b],list:[]}).list.push(it.k+' '+s[S_TYPE]+(s[S_ROOM]?' '+s[S_ROOM]:''));}});
+    const names=Object.keys(pins);
+    head.innerHTML='<b>Campus map</b> — '+(names.length?names.length+' building'+(names.length>1?'s':''):'no located buildings for your sections yet');
+    loadLeaflet().then(()=>{
+      if(!mapObj){mapObj=L.map('leaflet-map',{scrollWheelZoom:false}).setView([32.8801,-117.2340],15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(mapObj);}
+      if(mapLayer)mapLayer.remove();
+      mapLayer=L.layerGroup().addTo(mapObj);
+      const pts=[];
+      for(const nm of names){const p=pins[nm];L.marker(p.loc).addTo(mapLayer).bindPopup('<b>'+esc(nm)+'</b><br>'+[...new Set(p.list)].map(esc).join('<br>'));pts.push(p.loc);}
+      if(pts.length)mapObj.fitBounds(pts,{padding:[40,40],maxZoom:16});
+      setTimeout(()=>mapObj.invalidateSize(),60);
+    }).catch(()=>{head.innerHTML='<b>Campus map</b> — could not load map tiles (offline?)';});
+  }
+  function schItemHTML(it,ci){
+    const {course,secs,opts,groups,gl}=itemSections(it),color=CAL_COLORS[ci%CAL_COLORS.length];
+    if(!course)return `<div class="sci"><div class="h"><span class="code">${esc(it.k)}</span><button class="rm" data-rm="${esc(it.k)}">×</button></div><div class="ttl">Not offered in Fall 2026.</div></div>`;
+    const grpKeys=Object.keys(groups).sort();
+    const grpSel=grpKeys.length>1?`<label>Sec <select data-grp="${esc(it.k)}">${grpKeys.map(g=>`<option value="${g}"${g===gl?' selected':''}>${g}</option>`).join('')}</select></label>`:'';
+    const optSel=Object.keys(opts).map(ty=>{const list=opts[ty],cur=secs.find(s=>s[S_TYPE]===ty);return `<label>${esc(ty)} <select data-pick="${esc(it.k)}" data-ty="${esc(ty)}">${list.map(s=>`<option value="${esc(s[S_CODE])}"${(cur&&cur[S_CODE]===s[S_CODE])?' selected':''}>${esc(s[S_CODE])} · ${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}</option>`).join('')}</select></label>`;}).join('');
+    const meets=secs.map(s=>{const tba=!(s[S_DAYS]&&s[S_START]);return `<div class="m${tba?' tba':''}"><span class="mt">${esc(s[S_TYPE])}</span><span>${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>${esc(s[S_BLD]||'')}${s[S_ROOM]?' '+esc(s[S_ROOM]):''}</span></div>`;}).join('');
+    const profs=[...new Set(secs.map(s=>s[S_INSTR]).filter(Boolean))];
+    return `<div class="sci ${it._conf?'conf':''}" style="border-left-color:${color}">
+      <div class="h"><div><div class="code">${esc(it.k)}</div><div class="ttl">${esc(course.t)}</div></div><button class="rm" data-rm="${esc(it.k)}" title="Remove">×</button></div>
+      <div class="ctrls">${grpSel}${optSel}</div>
+      <div class="meets">${meets}</div>
+      ${profs.length?`<div class="prof"><span class="lab">Instructor:</span> ${esc(profs.join(', '))}</div>`:''}
+      ${it._conf?'<div class="conf-note">⚠ Time conflict with another course</div>':''}
+    </div>`;
+  }
+  function renderSchedule(){
+    const has=schItems.length>0;
+    $('schedEmpty').hidden=has; $('schedGrid').hidden=!has;
+    const cnt=$('schedTabCnt'); cnt.hidden=!has; cnt.textContent=schItems.length;
+    if(!has)return;
+    const evs=schEvents(), confSet=new Set(evs.filter(e=>e.clash).map(e=>e.ci));
+    schItems.forEach((it,ci)=>it._conf=confSet.has(ci));
+    let units=0; schItems.forEach(it=>{const c=SCHED.courses[it.k];if(c){const u=parseFloat(c.u);if(!isNaN(u))units+=u;}});
+    $('schedSummary').innerHTML=`
+      <div class="st"><div class="v">${schItems.length}</div><div class="l">Courses</div></div>
+      <div class="st"><div class="v">${units%1?units.toFixed(1):units}</div><div class="l">Units</div></div>
+      <div class="st"><div class="v ${confSet.size?'warn':''}">${confSet.size}</div><div class="l">Conflicts</div></div>`;
+    $('schedItems').innerHTML=schItems.map((it,ci)=>schItemHTML(it,ci)).join('');
+    renderCal(evs); renderMap();
+  }
+  function updateAddButtons(){document.querySelectorAll('.addbtn[data-add]').forEach(b=>{const on=SCH.has(b.dataset.add);b.classList.toggle('added',on);b.textContent=on?'✓ Added':'+ Schedule';});}
+  function tabCount(){const cnt=$('schedTabCnt');cnt.hidden=schItems.length===0;cnt.textContent=schItems.length;}
+  function addToSched(k){
+    return ensureSched().then(()=>{
+      if(SCH.has(k)||!SCHED.courses[k])return;
+      const groups=activeGroups(SCHED.courses[k]),gl=Object.keys(groups).sort()[0]||'';
+      schItems.push({k,group:gl,picks:{}}); SCH=schSet(); saveSchState();
+      updateAddButtons(); tabCount();
+      if(curView==='sched') renderSchedule();
+    }).catch(()=>{});
+  }
+  function removeFromSched(k){schItems=schItems.filter(it=>it.k!==k);SCH=schSet();saveSchState();updateAddButtons();tabCount();if(curView==='sched')renderSchedule();}
+  $('schedItems').addEventListener('change',e=>{
+    const g=e.target.closest('select[data-grp]'); if(g){const it=schItems.find(i=>i.k===g.dataset.grp);if(it){it.group=g.value;it.picks={};saveSchState();renderSchedule();}return;}
+    const p=e.target.closest('select[data-pick]'); if(p){const it=schItems.find(i=>i.k===p.dataset.pick);if(it){it.picks=it.picks||{};it.picks[p.dataset.ty]=p.value;saveSchState();renderSchedule();}}
+  });
+  $('schedItems').addEventListener('click',e=>{const r=e.target.closest('[data-rm]');if(r)removeFromSched(r.dataset.rm);});
+
+  let curView='rank';
+  function setView(v){
+    curView=v;
+    $('tab-rank').setAttribute('aria-selected',v==='rank'?'true':'false');
+    $('tab-sched').setAttribute('aria-selected',v==='sched'?'true':'false');
+    $('rankView').classList.toggle('hidden',v!=='rank');
+    $('scheduleView').classList.toggle('active',v==='sched');
+    if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The Fall 2026 catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
+  }
+  $('tab-rank').addEventListener('click',()=>setView('rank'));
+  $('tab-sched').addEventListener('click',()=>setView('sched'));
+  tabCount();
+
   render();
 }
 
