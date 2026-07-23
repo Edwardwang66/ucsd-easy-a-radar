@@ -3,6 +3,9 @@
 A single-page tool that ranks UCSD courses by how GPA-friendly they've been, from real
 2015–2026 grade distributions, joined with RateMyProfessors.
 
+**Live:** https://easy-a-radar.vercel.app
+**Repo:** https://github.com/Edwardwang66/ucsd-easy-a-radar
+
 ## Deploy to Vercel
 
 This is a **static site** (no build step). Two files matter:
