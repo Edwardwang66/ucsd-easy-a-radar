@@ -229,6 +229,10 @@
   .term-instr .th{font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.03em;font-size:10.5px}
   .term-instr .who{color:var(--ink);font-weight:600}
   .term-instr .who.match{color:var(--gA)}
+  .term-instr .who.isnew{color:var(--muted)}
+  .firstx{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.03em;color:var(--accent-2);
+    border:1px dashed color-mix(in srgb,var(--accent-2) 45%,transparent);border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:1px}
+  .instr .aka{font-size:10.5px;color:var(--faint);font-style:italic;margin-left:2px;cursor:help}
 
   /* ---- view tabs ---- */
   .viewtabs{display:inline-flex;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
@@ -406,7 +410,7 @@
   </div>
 
   <div class="note" role="note">
-    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
+    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Instructors with <b>no grade record</b> in our 2015–2026 data (new to UCSD, or who taught in a capacity we don't have grades for) are marked <span class="firstx">0×</span> and listed last. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
   </div>
 
   <div class="legend">
@@ -474,7 +478,7 @@
       <ul>
         <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
         <li><b>Offered this term</b> — matched against the live <b>Fall 2026</b> WebReg catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
-        <li><b>This term's instructor (FA26)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each Fall 2026 section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way.</li>
+        <li><b>This term's instructor (FA26)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each Fall 2026 section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way. Neither source carries an instructor id, so names are linked by a precision-first ladder: normalise order/accents, handle compound surnames (<i>Massimiliano Di Ventra</i> ↔ <i>Di Ventra, Massimiliano</i>) and Mc/apostrophe spellings, match on a first <i>or middle</i> initial (<i>Ryan Wagner</i> ↔ <i>Wagner, Timothy Ryan</i>), and auto-alias genuine renames by shared course (<i>Paul Cao</i> teaches the same courses <i>Cao, Yingjun</i> has taught). A professor teaching at UCSD for the first time has no grade history, so their name is marked <span class="firstx">0×</span> and sorted after the returning instructors.</li>
         <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the Fall 2026 term (Sep 24 – Dec 4), campus holidays excluded and Pacific-time DST handled.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
@@ -530,11 +534,14 @@ function init(DATA){
       case 'grad':return lv>=200;
     }
   }
+  const AKA=(DATA&&DATA.aka)||{};   // catalog name -> other name forms (preferred/legal/spelling variants)
   function matchQ(r,q){
     if(!q) return true;
     const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
     const title=(r[C.t]>=0?(T[r[C.t]]||''):'').toLowerCase(), instr=(r[C.i]||'').toLowerCase();
-    return code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q);
+    if(code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q)) return true;
+    const aka=AKA[r[C.i]]; // also match the professor's known name variants
+    return !!aka&&aka.some(n=>n.toLowerCase().includes(q));
   }
   function tie(a,b){const ga=a[C.g],gb=b[C.g];if(ga!=null&&gb!=null&&ga!==gb)return gb-ga;if(ga!=null&&gb==null)return -1;if(ga==null&&gb!=null)return 1;return b[C.n]-a[C.n];}
   function compute(){
@@ -545,12 +552,14 @@ function init(DATA){
       if(state.subject && r[C.s]!==state.subject) continue;
       if(state.prof && r[C.i]!==state.prof) continue;
       if(!levelOk(r[C.lv])) continue;
-      if(r[C.src]!==1 && r[C.n]<state.minoff) continue;
+      if(r[C.src]===0 && r[C.n]<state.minoff) continue;   // min-times filter only gates real grade rows
       if(!matchQ(r,q)) continue;
       out.push(r);
     }
     const key=state.sort, dir=(key==='risk'||key==='rd')?1:-1;
     out.sort((a,b)=>{
+      const a2=a[C.src]===2, b2=b[C.src]===2;               // first-term (0×) rows always sink to the bottom
+      if(a2!==b2) return a2?1:-1;
       let va=sortVal(a,key), vb=sortVal(b,key);
       const an=(va==null), bn=(vb==null);
       if(an&&bn) return tie(a,b);
@@ -606,14 +615,19 @@ function init(DATA){
   function faBlockHTML(r){
     const faList=(DATA.fa&&DATA.fa[CK(r[C.s],r[C.c])])||null;
     if(!r[C.off]||!faList||!faList.length) return '';
-    const myk=ourKeyJS(r[C.i]||'');
-    const who=faList.map(n=>{const ck=catKeyJS(n);const m=!!(myk&&ck&&myk[0]===ck[0]&&myk[1]===ck[1]);return `<span class="who${m?' match':''}">${esc(n)}${m?' ✓':''}</span>`;}).join('');
+    const myks=ourKeysJS(r[C.i]||'');
+    const who=orderFa(faList).map(n=>{
+      const isNew=NEWPROF.has(n);
+      const m=!isNew&&!blocked(n,r[C.i]||'')&&catKeysJS(n).some(ck=>myks.some(mk=>keyEq(mk,ck)));
+      const nx=isNew?' <span class="firstx" title="No prior grade-distribution record in 2015–2026 (may be new to UCSD, or taught in a capacity without recorded grades)">0×</span>':'';
+      return `<span class="who${m?' match':''}${isNew?' isnew':''}">${esc(n)}${m?' ✓':''}${nx}</span>`;
+    }).join('');
     return `<div class="term-instr"><span class="th">Fall 2026 instructor${faList.length>1?'s':''}</span>${who}</div>`;
   }
   function detailHTML(r){
     const idx=RI.get(r), h=H[idx];
     const fb=faBlockHTML(r);
-    if(!h||!h.length) return `<div class="tdetail">${fb}<div class="tdet-none">No term-by-term grade data (this row comes from RateMyProfessors course history).</div></div>`;
+    if(!h||!h.length){const msg=r[C.src]===2?'No grade-distribution history in our 2015–2026 data \u2014 this professor is new to UCSD, or previously taught in a capacity we don\'t have grades for. Listed so you can see who\'s on the Fall 2026 schedule.':'No term-by-term grade data (this row comes from RateMyProfessors course history).';return `<div class="tdetail">${fb}<div class="tdet-none">${msg}</div></div>`;}
     // h newest-first: [yr,q,g,A,B,C,D,F,W]
     const terms=h.map(x=>({yr:x[0],q:x[1],g:x[2],A:x[3],B:x[4],Cc:x[5],D:x[6],F:x[7],W:x[8]}));
     const oldestFirst=[...terms].reverse();
@@ -637,7 +651,7 @@ function init(DATA){
   }
 
   function rowHTML(r){
-    const isRmp=r[C.src]===1;
+    const isRmp=r[C.src]===1, isNew2=r[C.src]===2;
     const idx=RI.get(r), isOpen=expanded.has(idx);
     const code=r[C.s]+'-'+r[C.c];
     const title=isRmp?'Graduate course · RMP-rated':(r[C.t]>=0?(T[r[C.t]]||''):'');
@@ -645,14 +659,19 @@ function init(DATA){
     const fakey=CK(r[C.s],r[C.c]);
     const faList=(DATA.fa&&DATA.fa[fakey])||null;
     const isCur=r[C.cur]===1;
-    const nowBadge=isCur?'<span class="badge-now" title="This professor is teaching this course in Fall 2026.">Teaching now</span>':'';
+    const nowBadge=isNew2?'<span class="firstx" title="No prior grade-distribution record in 2015–2026 (may be new to UCSD, or taught in a capacity without recorded grades)">0× no grades</span>'
+                  :(isCur?'<span class="badge-now" title="This professor is teaching this course in Fall 2026.">Teaching now</span>':'');
     const addBtn=r[C.off]?`<button class="addbtn ${SCH.has(fakey)?'added':''}" data-add="${esc(fakey)}" title="Add to My Schedule">${SCH.has(fakey)?'✓ Added':'+ Schedule'}</button>`:'';
     let nowLine='';
-    if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
-    else if(r[C.off]&&faList) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>FA26: ${esc(faList.slice(0,3).join(', '))}${faList.length>3?' +'+(faList.length-3):''}</span>`;
+    if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>No prior grade record</span>';
+    else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
+    else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>FA26: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
     const g=r[C.g];
-    const gpaCell=isRmp?'<span class="rmponly">RMP only</span>':(g==null?'<span class="na">—</span>':`<span class="b" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`);
-    const dist=isRmp?'<span class="nodata">No grade data on record</span>':distHTML(r);
+    const gpaCell=isNew2?'<span class="firstx" title="No grade history yet">0×</span>'
+                 :isRmp?'<span class="rmponly">RMP only</span>'
+                 :(g==null?'<span class="na">—</span>':`<span class="b" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`);
+    const dist=isNew2?'<span class="nodata">No grade-distribution record on file</span>'
+              :isRmp?'<span class="nodata">No grade data on record</span>':distHTML(r);
     const rq=r[C.rq],rd=r[C.rd],rwta=r[C.rw],rn=r[C.rn],rid=r[C.rid];
     let rmpCell;
     if(rid==null){rmpCell='<span class="none">no RMP match</span>';}
@@ -663,11 +682,16 @@ function init(DATA){
     }
     const rmpStar=rq==null?'':`<span class="rmpq"><span class="star">★</span>${rq.toFixed(1)}</span>`;
     const yr=r[C.y],recent=(yr!=null&&yr>=25);
-    const sample=isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
+    const sample=isNew2?`<span class="n">0×</span><div class="yr">first term</div>`
+      :isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
+    const instrLabel=isNew2?'New instructor':'Past instructor';
+    const aka=AKA[r[C.i]];
+    const nmTitle=aka?` title="Also known as ${esc(aka.join(', '))}"`:'';
+    const akaTag=aka?`<span class="aka" title="Also known as ${esc(aka.join(', '))}">aka ${esc(aka[0])}</span>`:'';
     return `<div class="trow" data-i="${idx}" aria-expanded="${isOpen}">
       <div class="course"><div class="top"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}${nowBadge}${addBtn}</div><div class="title">${esc(title)}</div></div>
-      <div class="instr"><span class="k">Past instructor</span><span class="nm">${esc(instrShort(r[C.i]))}</span>${rmpStar}${nowLine}</div>
+      <div class="instr"><span class="k">${instrLabel}</span><span class="nm"${nmTitle}>${esc(instrShort(r[C.i]))}</span>${akaTag}${rmpStar}${nowLine}</div>
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
       <div class="rmp"><span class="k">RMP</span>${rmpCell}</div>
@@ -701,7 +725,8 @@ function init(DATA){
     rowsEl.innerHTML=chunkHTML(current.slice(0,Math.max(shown,0)));
     updateMore();
   }
-  function renderStats(list){
+  function renderStats(all){
+    const list=all.filter(r=>r[C.src]!==2);   // first-term 0× rows carry no grade/RMP data
     const withG=list.filter(r=>r[C.g]!=null).map(r=>r[C.g]).sort((a,b)=>a-b);
     const med=withG.length?withG[Math.floor(withG.length/2)]:null;
     const av=list.filter(r=>r[C.gA]!=null).map(r=>r[C.gA]);
@@ -790,8 +815,24 @@ function init(DATA){
   // ================= Schedule builder (Fall 2026) =================
   const CK=(s,c)=>String(s).toUpperCase()+' '+String(c).toUpperCase().replace(/[^0-9A-Z]/g,'');
   const deacc=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  function catKeyJS(n){const p=deacc(n).trim().split(/\s+/);return p.length>=2?[p[p.length-1].toLowerCase(),p[0][0].toLowerCase()]:null;}
-  function ourKeyJS(n){n=deacc(n).trim();if(n.indexOf(',')>=0){const i=n.split(',');const rr=(i[1]||'').trim();return [i[0].trim().toLowerCase(),rr?rr[0].toLowerCase():''];}const p=n.split(/\s+/);return p.length>=2?[p[p.length-1].toLowerCase(),p[0][0].toLowerCase()]:null;}
+  const collapse=s=>String(s||'').replace(/\s+/g,' ').trim();
+  // Name aliases: some Fall-2026 catalog names differ from a professor's grade-history
+  // name (nickname or given/legal-name swap, e.g. "Paul Cao" \u2194 "Cao, Yingjun"). DATA.alias
+  // maps the catalog name to that professor's [surname, first-initial] grade key.
+  const ALIAS=(DATA&&DATA.alias)||{};
+  const NEWPROF=new Set((DATA&&DATA.newProf)||[]);   // FA26 instructors with no grade history (first term)
+  const BLOCK=new Set(((DATA&&DATA.block)||[]).map(p=>p[0]+'||'+p[1]));   // confirmed namesakes: never link these
+  const blocked=(faName,gradeName)=>BLOCK.has(faName+'||'+gradeName);
+  const despace=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');   // "Mc Culloch"/"McCulloch" -> "mcculloch"
+  // Grade-history side ("Last, First Middle"): full surname × {first initial, each
+  // middle initial} — so professors who go by a middle name still link (L3).
+  function ourKeysJS(n){n=collapse(deacc(n));if(!n)return [];let last,given;if(n.indexOf(',')>=0){const i=n.indexOf(',');last=collapse(n.slice(0,i)).toLowerCase();given=collapse(n.slice(i+1)).split(' ');}else{const p=n.split(' ');if(p.length<2)return [];last=p[p.length-1].toLowerCase();given=p.slice(0,-1);}const inits=given.filter(t=>t&&/[a-z]/i.test(t[0])).map(t=>t[0].toLowerCase());const surs=[...new Set([last,despace(last)])];const out=[];surs.forEach(s=>inits.forEach(i=>out.push([s,i])));return out;}
+  // Catalog side ("First ... Last"): try BOTH the last token (e.g. "Ching Wei Ho"\u2192ho) and the
+  // whole trailing surname (e.g. "Massimiliano Di Ventra"\u2192di ventra); alias overrides both.
+  function catKeysJS(name){if(ALIAS[name])return [[String(ALIAS[name][0]).toLowerCase(),String(ALIAS[name][1]).toLowerCase()]];let n=collapse(deacc(name));if(!n)return [];if(n.indexOf(',')>=0)return ourKeysJS(name);const p=n.split(' ');if(p.length<2)return [];const ini=p[0][0].toLowerCase();const last=p[p.length-1].toLowerCase(),full=p.slice(1).join(' ').toLowerCase();return [...new Set([last,full,despace(last),despace(full)])].map(s=>[s,ini]);}
+  const keyEq=(a,b)=>!!(a&&b&&a[0]===b[0]&&a[1]===b[1]);
+  // Keep experienced instructors first; move first-time (0×) instructors to the end (stable).
+  function orderFa(list){return [...list].map((n,i)=>[n,i]).sort((a,b)=>(NEWPROF.has(a[0])?1:0)-(NEWPROF.has(b[0])?1:0)||a[1]-b[1]).map(x=>x[0]);}
 
   const SCH_KEY='easyA_sched_fa26_v1';
   let SCHED=null, schPromise=null;

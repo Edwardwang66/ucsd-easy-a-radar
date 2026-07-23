@@ -37,8 +37,18 @@ No environment variables, no server. `fetch('data.json')` is same-origin, so it 
   sourced from the [WebReg Course Planner](https://github.com/SahirSSharma/WebReg-Course-Planner)
   catalog. When a row's past instructor is teaching the course again this term, the row is tagged
   `Teaching now` — so its grade history is directly relevant. The `fa` map in `data.json` holds
-  `"SUBJ NUM" → [current instructors]`; the `cur` column flags matching rows. Match is by last name +
-  first initial (accent-insensitive), so a nickname mismatch (e.g. *Libby* vs *Elizabeth*) can miss.
+  `"SUBJ NUM" → [current instructors]`; the `cur` column flags matching rows. Neither source carries
+  a stable instructor id, so catalog names are matched to grade-history names by a **precision-first
+  ladder** (`tools/relink_fa26.py`, mirrored in `index.html`): normalise accents/order → try both the
+  last token and the full compound surname (*Massimiliano Di Ventra* ↔ *Di Ventra, Massimiliano*) →
+  despace Mc/apostrophe spellings (*McCulloch* ↔ *Mc Culloch*) → match on the first **or a middle**
+  initial (*Ryan Wagner* ↔ *Wagner, Timothy Ryan*) → and, for genuine renames, **auto-alias by course
+  overlap** (*Paul Cao* teaches CSE 12/100 and *Cao, Yingjun* has CSE 12/100 grade history → same
+  person). Of the 27 professors listed under a different name than their grades, 23 resolve
+  automatically; the `alias` map in `data.json` is generated, and only 4 hand-confirmed entries remain
+  (`MANUAL_ALIAS`). Professors teaching at UCSD for the first time have no grade history; they're
+  collected in `newProf`, shown as `src:2` rows marked **0×**, and sorted last. See
+  [`docs/name-matching.md`](docs/name-matching.md) for the full design.
 - **Schedule builder** — the **My Schedule** tab lets you add offered courses, pick lecture/discussion/lab
   sections, and see them on a weekly calendar (with conflict detection) and a Leaflet campus map. All
   section times, rooms, instructors and building coordinates come from `schedule.json`. Leaflet + OSM
@@ -56,6 +66,11 @@ current-term instructor columns (`fa` map + `cur` flag) and `schedule.json` are 
 and `data/buildings.json` (MIT-licensed, © Sahir Sharma). To refresh, pull a newer catalog snapshot
 and re-run the join. The schemas (`cols` / `titles` / `recs` / `fa`, and `secCols` / `courses` /
 `buildings`) are self-describing.
+
+To re-link the current-term instructors after any data refresh, run
+`python3 tools/relink_fa26.py` (add `--dry-run` to preview). It recomputes the `cur` flags, the
+`alias` map and the `newProf` list, appends the `0×` first-term rows, and prints any ambiguous
+name matches for review. See [`docs/name-matching.md`](docs/name-matching.md).
 
 Credit: Fall 2026 section + instructor + building data comes from the **WebReg Course Planner** by
 Sahir Sharma — this project joins it with historical grade distributions and RateMyProfessors.
