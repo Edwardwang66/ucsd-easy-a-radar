@@ -409,7 +409,7 @@
   </div>
 
   <div class="note" role="note">
-    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Instructors new to UCSD (no grade history yet) are marked <span class="firstx">0×</span> and listed last. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
+    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Instructors with <b>no grade record</b> in our 2015–2026 data (new to UCSD, or who taught in a capacity we don't have grades for) are marked <span class="firstx">0×</span> and listed last. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
   </div>
 
   <div class="legend">
@@ -615,7 +615,7 @@ function init(DATA){
     const who=orderFa(faList).map(n=>{
       const isNew=NEWPROF.has(n);
       const m=!isNew&&!blocked(n,r[C.i]||'')&&catKeysJS(n).some(ck=>myks.some(mk=>keyEq(mk,ck)));
-      const nx=isNew?' <span class="firstx" title="First time teaching at UCSD — no grade history yet">0×</span>':'';
+      const nx=isNew?' <span class="firstx" title="No prior grade-distribution record in 2015–2026 (may be new to UCSD, or taught in a capacity without recorded grades)">0×</span>':'';
       return `<span class="who${m?' match':''}${isNew?' isnew':''}">${esc(n)}${m?' ✓':''}${nx}</span>`;
     }).join('');
     return `<div class="term-instr"><span class="th">Fall 2026 instructor${faList.length>1?'s':''}</span>${who}</div>`;
@@ -623,7 +623,7 @@ function init(DATA){
   function detailHTML(r){
     const idx=RI.get(r), h=H[idx];
     const fb=faBlockHTML(r);
-    if(!h||!h.length){const msg=r[C.src]===2?'First time teaching at UCSD — no grade history yet. Listed so you can see who\'s on the Fall 2026 schedule.':'No term-by-term grade data (this row comes from RateMyProfessors course history).';return `<div class="tdetail">${fb}<div class="tdet-none">${msg}</div></div>`;}
+    if(!h||!h.length){const msg=r[C.src]===2?'No grade-distribution history in our 2015–2026 data \u2014 this professor is new to UCSD, or previously taught in a capacity we don\'t have grades for. Listed so you can see who\'s on the Fall 2026 schedule.':'No term-by-term grade data (this row comes from RateMyProfessors course history).';return `<div class="tdetail">${fb}<div class="tdet-none">${msg}</div></div>`;}
     // h newest-first: [yr,q,g,A,B,C,D,F,W]
     const terms=h.map(x=>({yr:x[0],q:x[1],g:x[2],A:x[3],B:x[4],Cc:x[5],D:x[6],F:x[7],W:x[8]}));
     const oldestFirst=[...terms].reverse();
@@ -655,18 +655,18 @@ function init(DATA){
     const fakey=CK(r[C.s],r[C.c]);
     const faList=(DATA.fa&&DATA.fa[fakey])||null;
     const isCur=r[C.cur]===1;
-    const nowBadge=isNew2?'<span class="firstx" title="First time teaching at UCSD — no grade history yet">0× first term</span>'
+    const nowBadge=isNew2?'<span class="firstx" title="No prior grade-distribution record in 2015–2026 (may be new to UCSD, or taught in a capacity without recorded grades)">0× no grades</span>'
                   :(isCur?'<span class="badge-now" title="This professor is teaching this course in Fall 2026.">Teaching now</span>':'');
     const addBtn=r[C.off]?`<button class="addbtn ${SCH.has(fakey)?'added':''}" data-add="${esc(fakey)}" title="Add to My Schedule">${SCH.has(fakey)?'✓ Added':'+ Schedule'}</button>`:'';
     let nowLine='';
-    if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>First time teaching this term</span>';
+    if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>No prior grade record</span>';
     else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
     else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>FA26: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
     const g=r[C.g];
     const gpaCell=isNew2?'<span class="firstx" title="No grade history yet">0×</span>'
                  :isRmp?'<span class="rmponly">RMP only</span>'
                  :(g==null?'<span class="na">—</span>':`<span class="b" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`);
-    const dist=isNew2?'<span class="nodata">First time teaching — no grade data yet</span>'
+    const dist=isNew2?'<span class="nodata">No grade-distribution record on file</span>'
               :isRmp?'<span class="nodata">No grade data on record</span>':distHTML(r);
     const rq=r[C.rq],rd=r[C.rd],rwta=r[C.rw],rn=r[C.rn],rid=r[C.rid];
     let rmpCell;
