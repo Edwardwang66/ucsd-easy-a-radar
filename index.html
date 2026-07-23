@@ -411,7 +411,7 @@
   </div>
 
   <div class="note" role="note">
-    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Instructors with <b>no grade record</b> in our 2015–2026 data (new to UCSD, or who taught in a capacity we don't have grades for) are marked <span class="firstx">0×</span> and listed last. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
+    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Every Fall-2026 course appears, even ones with no grade history: an instructor with no grade data for a course is marked <span class="firstx">0×</span>, and courses with no assigned instructor yet (or research/independent-study courses) are tagged <span class="firstx">TBA</span> — all sorted last. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
   </div>
 
   <div class="legend">
@@ -559,7 +559,7 @@ function init(DATA){
     }
     const key=state.sort, dir=(key==='risk'||key==='rd')?1:-1;
     out.sort((a,b)=>{
-      const a2=a[C.src]===2, b2=b[C.src]===2;               // first-term (0×) rows always sink to the bottom
+      const a2=a[C.src]>=2, b2=b[C.src]>=2;                 // no-grade-data rows (0×/TBA) always sink to the bottom
       if(a2!==b2) return a2?1:-1;
       let va=sortVal(a,key), vb=sortVal(b,key);
       const an=(va==null), bn=(vb==null);
@@ -628,7 +628,11 @@ function init(DATA){
   function detailHTML(r){
     const idx=RI.get(r), h=H[idx];
     const fb=faBlockHTML(r);
-    if(!h||!h.length){const msg=r[C.src]===2?'No grade-distribution history in our 2015–2026 data \u2014 this professor is new to UCSD, or previously taught in a capacity we don\'t have grades for. Listed so you can see who\'s on the Fall 2026 schedule.':'No term-by-term grade data (this row comes from RateMyProfessors course history).';return `<div class="tdetail">${fb}<div class="tdet-none">${msg}</div></div>`;}
+    if(!h||!h.length){
+      const msg=r[C.src]===2?'No grade-distribution data for this course — the professor may be new to UCSD, or this course (often a grad/seminar course) has no recorded grade breakdown. Listed so the rankings match the Fall 2026 schedule.'
+        :r[C.src]===3?'This course runs in Fall 2026 but has no assigned instructor yet (or is a research / independent-study course with many advisors) and no grade-distribution history. Listed so the rankings match the schedule.'
+        :'No term-by-term grade data (this row comes from RateMyProfessors course history).';
+      return `<div class="tdetail">${fb}<div class="tdet-none">${msg}</div></div>`;}
     // h newest-first: [yr,q,g,A,B,C,D,F,W]
     const terms=h.map(x=>({yr:x[0],q:x[1],g:x[2],A:x[3],B:x[4],Cc:x[5],D:x[6],F:x[7],W:x[8]}));
     const oldestFirst=[...terms].reverse();
@@ -652,26 +656,32 @@ function init(DATA){
   }
 
   function rowHTML(r){
-    const isRmp=r[C.src]===1, isNew2=r[C.src]===2;
+    const isRmp=r[C.src]===1, isNew2=r[C.src]===2, isTBA=r[C.src]===3;
     const idx=RI.get(r), isOpen=expanded.has(idx);
     const code=r[C.s]+'-'+r[C.c];
-    const title=isRmp?'Graduate course · RMP-rated':(r[C.t]>=0?(T[r[C.t]]||''):'');
     const off=r[C.off]?'<span class="badge-off" title="This course runs in Fall 2026.">Offered</span>':'';
     const fakey=CK(r[C.s],r[C.c]);
     const faList=(DATA.fa&&DATA.fa[fakey])||null;
+    const umbrella=isTBA&&faList&&faList.length>1;   // research / independent study (many advisors)
+    const isNewProf=isNew2&&NEWPROF.has(r[C.i]||'');
     const isCur=r[C.cur]===1;
-    const nowBadge=isNew2?'<span class="firstx" title="No prior grade-distribution record in 2015–2026 (may be new to UCSD, or taught in a capacity without recorded grades)">0× no grades</span>'
+    const title=isRmp?'Graduate course · RMP-rated':(r[C.t]>=0?(T[r[C.t]]||''):'');
+    const nowBadge=isNew2?'<span class="firstx" title="No grade-distribution data for this course × professor">0×</span>'
+                  :isTBA?(umbrella?'<span class="firstx" title="Research / independent study — many possible instructors">research</span>':'<span class="firstx" title="Instructor not assigned yet in the catalog">TBA</span>')
                   :(isCur?'<span class="badge-now" title="This professor is teaching this course in Fall 2026.">Teaching now</span>':'');
     const addBtn=r[C.off]?`<button class="addbtn ${SCH.has(fakey)?'added':''}" data-add="${esc(fakey)}" title="Add to My Schedule">${SCH.has(fakey)?'✓ Added':'+ Schedule'}</button>`:'';
     let nowLine='';
-    if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>No prior grade record</span>';
+    if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Teaching this term · no grade data</span>';
+    else if(isTBA) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>${umbrella?'Research / independent study':'Instructor to be announced'}</span>`;
     else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
     else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>FA26: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
     const g=r[C.g];
-    const gpaCell=isNew2?'<span class="firstx" title="No grade history yet">0×</span>'
+    const gpaCell=isNew2?'<span class="firstx" title="No grade data for this course">0×</span>'
+                 :isTBA?'<span class="na">—</span>'
                  :isRmp?'<span class="rmponly">RMP only</span>'
                  :(g==null?'<span class="na">—</span>':`<span class="b" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`);
-    const dist=isNew2?'<span class="nodata">No grade-distribution record on file</span>'
+    const dist=isNew2?'<span class="nodata">No grade data for this course</span>'
+              :isTBA?`<span class="nodata">${umbrella?'Research / independent study':'Instructor to be announced'}</span>`
               :isRmp?'<span class="nodata">No grade data on record</span>':distHTML(r);
     const rq=r[C.rq],rd=r[C.rd],rwta=r[C.rw],rn=r[C.rn],rid=r[C.rid];
     let rmpCell;
@@ -683,16 +693,18 @@ function init(DATA){
     }
     const rmpStar=rq==null?'':`<span class="rmpq"><span class="star">★</span>${rq.toFixed(1)}</span>`;
     const yr=r[C.y],recent=(yr!=null&&yr>=25);
-    const sample=isNew2?`<span class="n">0×</span><div class="yr">first term</div>`
+    const sample=isNew2?`<span class="n">0×</span><div class="yr">no grades</div>`
+      :isTBA?`<span class="n">—</span><div class="yr">${umbrella?faList.length+' instr':'TBA'}</div>`
       :isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
-    const instrLabel=isNew2?'New instructor':'Past instructor';
+    const instrLabel=isTBA?'FA26':isNew2?(isNewProf?'New instructor':'FA26 instructor'):'Past instructor';
+    const displayName=isTBA?(umbrella?`Instructors vary · ${faList.length}`:'Instructor TBA'):instrShort(r[C.i]);
     const aka=AKA[r[C.i]];
     const nmTitle=aka?` title="Also known as ${esc(aka.join(', '))}"`:'';
     const akaTag=aka?`<span class="aka" title="Also known as ${esc(aka.join(', '))}">aka ${esc(aka[0])}</span>`:'';
     return `<div class="trow" data-i="${idx}" aria-expanded="${isOpen}">
       <div class="course"><div class="top"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}${nowBadge}${addBtn}</div><div class="title">${esc(title)}</div></div>
-      <div class="instr"><span class="k">${instrLabel}</span><span class="nm"${nmTitle}>${esc(instrShort(r[C.i]))}</span>${akaTag}${rmpStar}${nowLine}</div>
+      <div class="instr"><span class="k">${instrLabel}</span><span class="nm ${isTBA?'na':''}"${nmTitle}>${esc(displayName)}</span>${akaTag}${rmpStar}${nowLine}</div>
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
       <div class="rmp"><span class="k">RMP</span>${rmpCell}</div>
@@ -727,7 +739,7 @@ function init(DATA){
     updateMore();
   }
   function renderStats(all){
-    const list=all.filter(r=>r[C.src]!==2);   // first-term 0× rows carry no grade/RMP data
+    const list=all.filter(r=>r[C.src]<2);   // 0× / TBA rows carry no grade data — exclude from stats
     const withG=list.filter(r=>r[C.g]!=null).map(r=>r[C.g]).sort((a,b)=>a-b);
     const med=withG.length?withG[Math.floor(withG.length/2)]:null;
     const av=list.filter(r=>r[C.gA]!=null).map(r=>r[C.gA]);
