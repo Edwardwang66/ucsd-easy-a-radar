@@ -149,6 +149,9 @@
 
   .tdetail{background:var(--surface-2);border-bottom:1px solid var(--line);animation:fade .16s ease}
   @keyframes fade{from{opacity:0}to{opacity:1}}
+  .prereq{margin:2px 18px 10px 40px;padding:9px 12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;font-size:12.5px;line-height:1.5;color:var(--fg)}
+  .prereq-lab{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);font-weight:700;margin-right:8px}
+  @media(max-width:640px){.prereq{margin-left:18px}}
   .tdet-inner{display:flex;gap:26px;padding:6px 18px 18px 40px;flex-wrap:wrap}
   .spark-wrap{display:flex;flex-direction:column;gap:6px;min-width:280px}
   .spark-h{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
@@ -538,6 +541,11 @@ function init(DATA){
     }
   }
   const AKA=(DATA&&DATA.aka)||{};   // catalog name -> other name forms (preferred/legal/spelling variants)
+  const PRE=(DATA&&DATA.pre)||{};   // "SUBJ NUM" -> prerequisite text (from catalog.ucsd.edu)
+  function preHTML(r){
+    const p=PRE[r[C.s]+' '+r[C.c]]; if(!p) return '';
+    return `<div class="prereq"><span class="prereq-lab">Prerequisites</span> ${esc(p)}</div>`;
+  }
   function matchQ(r,q){
     if(!q) return true;
     const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
@@ -634,7 +642,7 @@ function init(DATA){
       const msg=r[C.src]===2?'No grade-distribution data for this course — the professor may be new to UCSD, or this course (often a grad/seminar course) has no recorded grade breakdown. Listed so the rankings match the Fall 2026 schedule.'
         :r[C.src]===3?'This course runs in Fall 2026 but has no assigned instructor yet (or is a research / independent-study course with many advisors) and no grade-distribution history. Listed so the rankings match the schedule.'
         :'No term-by-term grade data (this row comes from RateMyProfessors course history).';
-      return `<div class="tdetail">${fb}<div class="tdet-none">${msg}</div></div>`;}
+      return `<div class="tdetail">${fb}${preHTML(r)}<div class="tdet-none">${msg}</div></div>`;}
     // h newest-first: [yr,q,g,A,B,C,D,F,W]
     const terms=h.map(x=>({yr:x[0],q:x[1],g:x[2],A:x[3],B:x[4],Cc:x[5],D:x[6],F:x[7],W:x[8]}));
     const oldestFirst=[...terms].reverse();
@@ -651,7 +659,7 @@ function init(DATA){
       const acell=t.A==null?'':`A${t.A.toFixed(0)}`;
       return `<div class="term"><span class="tq">${esc(t.q)}${t.yr}</span>${gcell}<div class="tbar">${seg}</div><span class="ta">${acell}</span></div>`;
     }).join('');
-    return `<div class="tdetail">${fb}<div class="tdet-inner">
+    return `<div class="tdetail">${fb}${preHTML(r)}<div class="tdet-inner">
       <div class="spark-wrap"><div class="spark-h">GPA over time ${trend}</div><div class="spark">${spark||'<span class="axhint">single term</span>'}</div></div>
       <div class="terms">${rows}</div>
     </div></div>`;
