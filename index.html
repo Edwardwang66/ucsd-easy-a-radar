@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
 <title>UCSD Easy-A Radar</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions + RateMyProfessors.">
 <style>
@@ -214,6 +215,8 @@
   footer code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);padding:1px 5px;border-radius:4px;border:1px solid var(--line)}
   footer ul{margin:6px 0 0;padding-left:18px}
   footer li{margin:3px 0}
+  footer .disclaimer{margin:12px 0 0;padding-top:11px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.6}
+  footer .disclaimer b{color:var(--muted)}
 
   /* ---- current-term (FA26) instructor bits ---- */
   .badge-now{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.04em;color:#fff;background:var(--gA);
@@ -477,6 +480,7 @@
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
       </ul>
+      <p class="disclaimer"><b>Disclaimer.</b> This tool is for reference only and is not affiliated with UC San Diego. Grade and rating data may be incomplete or out of date. It does not constitute academic advice — every enrollment decision, including which course and section to take, is the student's own responsibility. Always confirm requirements and offerings with official UCSD sources and your academic advisor.</p>
     </div>
   </footer>
 </div>
@@ -499,7 +503,8 @@ function instrShort(i){if(!i)return '—';if(i.indexOf(',')<0)return i;const [l,
 
 function init(DATA){
   const C={}; DATA.cols.forEach((c,i)=>C[c]=i);
-  const T=DATA.titles, R=DATA.recs, H=DATA.hist||[];
+  const T=DATA.titles, R=DATA.recs;
+  let H=DATA.hist||null, histReady=!!DATA.hist; // history loads lazily after first paint
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
@@ -1010,6 +1015,15 @@ function init(DATA){
   tabCount();
 
   render();
+
+  // lazily load per-term history in the background (≈40% of the data, only needed on row expand)
+  if(!histReady){
+    fetch('hist.json').then(r=>r.ok?r.json():null).then(hd=>{
+      if(!hd) return;
+      H=hd.hist||hd; histReady=true;
+      if(expanded.size) rerenderShown(); // fill any already-open detail panels
+    }).catch(()=>{});
+  }
 }
 
 document.getElementById('themeBtn').addEventListener('click',()=>{
