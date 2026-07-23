@@ -83,7 +83,9 @@
 
   .toolbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);
     backdrop-filter:saturate(1.4) blur(10px);border:1px solid var(--line);border-radius:var(--r);
-    padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow)}
+    padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--shadow);
+    transition:transform .26s cubic-bezier(.4,0,.2,1)}
+  .filters-toggle{display:none}  /* mobile-only trigger; revealed in the ≤720px block */
   .row1{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .search{flex:1;min-width:230px;position:relative;display:flex;align-items:center}
   .search svg{position:absolute;left:12px;width:16px;height:16px;color:var(--faint)}
@@ -334,6 +336,50 @@
     .course .title{max-width:none;white-space:normal}
     .instr .nm{white-space:normal}
   }
+  /* ============ Mobile toolbar: compact, collapsible, auto-hiding ============ */
+  @media (max-width:720px){
+    /* iOS zooms the page when focusing an input under 16px — bump toolbar controls to 16 */
+    .toolbar input,.toolbar select{font-size:16px}
+
+    .toolbar{padding:10px}
+    .row1{gap:8px;align-items:center}
+    .search{flex:1 1 auto;min-width:0}
+    /* collapsed: keep the search box + trigger on a single compact line */
+    .toolbar:not(.filters-open) .row1{flex-wrap:nowrap}
+
+    /* Compact trigger that lives next to the search box */
+    .filters-toggle{display:inline-flex;align-items:center;gap:7px;flex:none;
+      border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+      border-radius:9px;padding:0 12px;height:42px;font-size:13.5px;font-weight:600;
+      font-family:var(--sans);cursor:pointer}
+    .filters-toggle svg{width:15px;height:15px;flex:none}
+    .filters-toggle .ft-badge{background:var(--accent);color:#fff;border-radius:999px;
+      min-width:18px;height:18px;padding:0 5px;font-size:11px;font-weight:700;line-height:1;
+      display:inline-flex;align-items:center;justify-content:center}
+    .filters-toggle .ft-caret{font-size:11px;color:var(--faint);transition:transform .18s}
+    .toolbar.filters-open .filters-toggle{color:var(--ink);border-color:var(--accent);background:var(--accent-soft)}
+    .toolbar.filters-open .filters-toggle .ft-caret{transform:rotate(180deg)}
+
+    /* Until "Filters" is opened, only the search box shows — the rest tucks away */
+    .toolbar:not(.filters-open) .combo,
+    .toolbar:not(.filters-open) .row1 .sortwrap,
+    .toolbar:not(.filters-open) .row2{display:none}
+
+    /* Opened: stack every control full-width for comfortable tapping */
+    .toolbar.filters-open .combo{flex:1 1 100%;min-width:0}
+    .toolbar.filters-open .row1 .sortwrap{flex:1 1 100%;justify-content:space-between}
+    .toolbar.filters-open .row1 .sortwrap select{flex:1}
+    .toolbar.filters-open .row2{flex-direction:column;align-items:stretch;gap:9px;margin-top:1px}
+    .toolbar.filters-open .chips{width:100%}
+    .toolbar.filters-open .chips .chip{flex:1;text-align:center;padding:8px 6px}
+    .toolbar.filters-open .toggle{justify-content:space-between}
+    .toolbar.filters-open .row2 .sortwrap{justify-content:space-between}
+    .toolbar.filters-open .grow{display:none}
+
+    /* Slide the whole bar out of the way while scrolling down through results */
+    .toolbar.hud-hidden{transform:translateY(-116%)}
+  }
+
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -370,6 +416,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <input id="q" type="search" placeholder="Search course code, title, or professor — e.g. CSE 8A, Butler, Calculus" autocomplete="off">
       </label>
+      <button class="filters-toggle" id="filtersToggle" type="button" aria-expanded="false" aria-label="Show filters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        <span>Filters</span>
+        <span class="ft-badge" id="ftBadge" hidden></span>
+        <span class="ft-caret" aria-hidden="true">▾</span>
+      </button>
       <div class="combo" id="subjectCombo">
         <input id="subjectInput" type="text" placeholder="All subjects" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="subjectList" aria-label="Filter by subject">
         <span class="cv-caret" aria-hidden="true">▾</span>
@@ -1129,6 +1181,93 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
   }
+})();
+</script>
+
+<!-- ============================================================
+     Mobile toolbar UX: collapse the filters behind a compact button,
+     and auto-hide the sticky bar while scrolling down through results
+     (it slides back in the moment you scroll up). Self-contained; only
+     acts at ≤720px so the desktop layout is untouched.
+     ============================================================ -->
+<script>
+(function(){
+  var toolbar=document.querySelector('.toolbar');
+  if(!toolbar) return;
+  var mq=matchMedia('(max-width:720px)');
+  var ftBtn=document.getElementById('filtersToggle');
+  var ftBadge=document.getElementById('ftBadge');
+
+  // ---- collapsible filter panel ----
+  function setOpen(open){
+    toolbar.classList.toggle('filters-open',open);
+    if(ftBtn) ftBtn.setAttribute('aria-expanded',open?'true':'false');
+  }
+  if(ftBtn){
+    ftBtn.addEventListener('click',function(){
+      var open=!toolbar.classList.contains('filters-open');
+      setOpen(open);
+      if(open) toolbar.classList.remove('hud-hidden'); // never open into a hidden bar
+    });
+  }
+
+  // Count non-default filters so the badge tells the user something is applied
+  // even while the panel is collapsed. Reads the DOM the app itself maintains.
+  function countActive(){
+    var n=0;
+    toolbar.querySelectorAll('.combo.has-value').forEach(function(){n++;});
+    var s=document.getElementById('sort'); if(s&&s.value!=='g') n++;
+    var lv=toolbar.querySelector('#levels .chip[aria-pressed="true"]'); if(lv&&lv.getAttribute('data-lv')!=='ug') n++;
+    var off=document.getElementById('offered'); if(off&&off.getAttribute('aria-pressed')!=='true') n++;
+    var cur=document.getElementById('curonly'); if(cur&&cur.getAttribute('aria-pressed')==='true') n++;
+    var mo=document.getElementById('minoff'); if(mo&&mo.value!=='1') n++;
+    return n;
+  }
+  function updateBadge(){
+    if(!ftBadge) return;
+    var n=countActive();
+    if(n>0){ ftBadge.textContent=n; ftBadge.hidden=false; }
+    else ftBadge.hidden=true;
+  }
+  // The app updates aria-pressed / .has-value inside its own handlers; run ours
+  // a tick later so we read the settled state. Covers clicks, typing, selects,
+  // and the combos' mousedown-driven pick/clear.
+  ['click','input','change','mousedown'].forEach(function(ev){
+    toolbar.addEventListener(ev,function(){ setTimeout(updateBadge,0); });
+  });
+  setTimeout(updateBadge,300);
+
+  // ---- auto-hide on scroll (mobile only) ----
+  var lastY=window.pageYOffset||0, hidden=false, ticking=false;
+  var TOP=90, DELTA=6;
+  function typingInBar(){
+    var ae=document.activeElement;
+    return !!(ae&&ae.tagName==='INPUT'&&toolbar.contains(ae)); // only text entry blocks hiding
+  }
+  function keepShown(){
+    return toolbar.classList.contains('filters-open')
+      || !!toolbar.querySelector('.combo-list:not([hidden])')  // a dropdown is open
+      || typingInBar();                                        // user is in the search/combo field
+  }
+  function setHidden(h){ if(h===hidden) return; hidden=h; toolbar.classList.toggle('hud-hidden',h); }
+  function onScroll(){
+    if(ticking) return; ticking=true;
+    requestAnimationFrame(function(){
+      ticking=false;
+      var y=window.pageYOffset||0;
+      if(!mq.matches){ setHidden(false); lastY=y; return; }   // desktop: always visible
+      if(y<=TOP||keepShown()){ setHidden(false); lastY=y; return; }
+      var dy=y-lastY;
+      if(dy>DELTA) setHidden(true);          // scrolling down → tuck away
+      else if(dy<-DELTA) setHidden(false);   // scrolling up → bring it back
+      lastY=y;
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+
+  function onMq(){ if(!mq.matches){ setHidden(false); setOpen(false); } }
+  if(mq.addEventListener) mq.addEventListener('change',onMq);
+  else if(mq.addListener) mq.addListener(onMq);
 })();
 </script>
 
