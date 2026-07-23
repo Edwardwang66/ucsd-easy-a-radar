@@ -44,8 +44,11 @@ No environment variables, no server. `fetch('data.json')` is same-origin, so it 
   (*McCulloch* ↔ *Mc Culloch*) → match on the first **or a middle** initial (*Ryan Wagner* ↔
   *Wagner, Timothy Ryan*) → and, for genuine renames, **alias by course overlap** (*Paul Cao* teaches
   CSE 12/100 and *Cao, Yingjun* has CSE 12/100 grade history → same person). The resolved `alias` map
-  lives in `data.json`. Professors teaching at UCSD for the first time have no grade history; they're
-  collected in `newProf`, shown as `src:2` rows marked **0×**, and sorted last.
+  lives in `data.json`. Every offered course (the `fa` map is rebuilt from `schedule.json`) appears in
+  the rankings, not just ones with grade history: a course × professor with no grade data is a `src:2`
+  row marked **0×** (an established professor keeps their RMP; someone new to UCSD is a first-timer,
+  listed in `newProf`), a course with no assigned instructor or a research/independent-study course is
+  a `src:3` **TBA** row, and all of these sort last.
 - **Schedule builder** — the **My Schedule** tab lets you add offered courses, pick lecture/discussion/lab
   sections, and see them on a weekly calendar (with conflict detection) and a Leaflet campus map. All
   section times, rooms, instructors and building coordinates come from `schedule.json`. Leaflet + OSM
