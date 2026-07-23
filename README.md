@@ -54,7 +54,13 @@ No environment variables, no server. `fetch('data.json')` is same-origin, so it 
   section times, rooms, instructors and building coordinates come from `schedule.json`. Leaflet + OSM
   tiles load from a CDN at runtime; if that's blocked the calendar still works and the map degrades
   gracefully. Selections persist in `localStorage`.
-- **RMP** — RateMyProfessors school 1079, matched by name (~80% of rows). Difficulty lower = easier.
+- **RMP** — RateMyProfessors school 1079, matched by name (~81% of rows). Difficulty lower = easier.
+  The live search API rate-limits, so `tools/fetch_rmp_ucsd.py` pulls the full ~4,000-professor
+  roster (`tools/rmp_ucsd.json`) once; FA26 instructors the original join missed are matched against
+  it offline — order-agnostic (RMP sometimes stores first/last swapped, e.g. *Bellare Mihir*),
+  variant-aware (accents, hyphens, compound surnames, nicknames like *Yeshaiahu → Shaya Fainman*),
+  and department-corroborated — and recorded in `tools/rmp_fa26_extra.json`, keyed by the exact
+  grade-record name so a fill can never bleed onto a namesake.
 - **Grad backfill** — 200+ courses with no grade data are filled from professors' RMP course
   history (`RMP only` rows); those scores are the professor's overall rating, not course-specific.
 
