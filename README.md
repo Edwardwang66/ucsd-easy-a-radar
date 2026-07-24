@@ -14,7 +14,7 @@ This is a **static site** (no build step). Three files matter:
 - `data.json` — the ranking dataset (grades × professors × RMP, + FA26 current instructors)
 - `schedule.json` — the Fall 2026 section catalog (times, rooms, instructors, building coords) used by the schedule builder
 - `plans.json` — UCSD official undergraduate academic plans (2022–2026), used by the Degree Planner's **Undergraduate** mode
-- `gradplans.json` — ECE graduate degree-planner requirements, used by the Degree Planner's **Graduate** mode (ISRC/EC80 modeled in full; the other twelve ECE research areas carry the shared M.S. framework)
+- `gradplans.json` — ECE graduate degree-planner requirements for all thirteen ECE research areas, used by the Degree Planner's **Graduate** mode
 
 **Option A — Vercel CLI**
 ```bash
@@ -140,12 +140,16 @@ returns `index.html` and serves `*.json` as static files works.
   history (`RMP only` rows); those scores are the professor's overall rating, not course-specific.
 - **Degree Planner** — two modes. **Undergraduate** loads UCSD's official college academic plans
   (2022–2026, from `plans.json`) as an editable quarter-by-quarter grid. **Graduate** (from
-  `gradplans.json`) is an ECE M.S./Ph.D. worksheet by requirement category: **ISRC (EC80)** is
-  modeled in full from its official 2025–2026 degree planner (Core 16u / Additional 12u / Technical
-  Electives 20u); the other twelve ECE research areas carry the shared ECE M.S. framework (Plan I
-  52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA) and link to their official worksheet PDF. To
-  extend a framework area to a full model, add its `groups` (with `courses`) to `gradplans.json`,
-  mirroring EC80, then re-run `node build.js`. Reference only — confirm with an ECE graduate advisor.
+  `gradplans.json`) is an ECE M.S./Ph.D. worksheet by requirement category. All **thirteen ECE
+  research areas** are modeled from their own official 2025–2027 degree planners — ISRC (EC80),
+  CE (EC79), ECS (EC78), SIP (EC82), MLDS (EC93), CTS, AEM, AOS, AP-EDM, MDS, MI, NDS and PHO —
+  each with its own core / additional / technical-elective **groups**, course lists and unit quotas
+  (which genuinely differ by area: cores of 8–16u, tech electives of 12–24u, and MI even has extra
+  Writing and Human-Physiology buckets). The plan choice sets the degree total (Plan I 52u / Plan II
+  48u, ≥12/16 units of 201+ ECE, 3.0 GPA). Each group is `required` (auto-filled), `pick` (choose
+  from a list) or `free` (add anything). To refresh an area, pull its current worksheet PDF, update
+  that program's `groups` in `gradplans.json`, then re-run `node build.js`. Reference only — confirm
+  with an ECE graduate advisor and the official worksheet.
 
 ## Regenerating data.json / schedule.json
 
