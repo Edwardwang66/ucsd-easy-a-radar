@@ -830,8 +830,76 @@
      .dp-add input.nm,.dp-add input.un{font-size:16px}
    }
    @media print{.dp-controls,.dp-toolbar,.dp-add,.dp-legend,.dp-course .del,.dp-course .gr,.dp-course input[type=checkbox],.dp-notes textarea{display:none!important}}
+
+   /* Undergrad / Graduate mode toggle */
+   .dp-mode{display:inline-flex;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;margin:2px 0 10px}
+   .dp-mode button{border:0;background:transparent;color:var(--muted);padding:8px 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+   .dp-mode button[aria-selected="true"]{background:var(--accent);color:#fff}
+   .dp-mode button:not([aria-selected="true"]):hover{color:var(--ink)}
+
+   /* ---- Graduate planner (requirement-category worksheet) ---- */
+   #dpGrad[hidden]{display:none}
+   .gp-groups{display:flex;flex-direction:column;gap:14px;margin-top:10px}
+   .gp-group{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+   .gp-ghead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 15px;background:var(--surface-2);border-bottom:1px solid var(--line);flex-wrap:wrap}
+   .gp-gname{font-weight:700;color:var(--ink);font-size:14.5px}
+   .gp-gname .kind{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:20px;margin-left:8px;vertical-align:middle}
+   .gp-gname .kind.req{background:color-mix(in srgb,var(--accent-2) 16%,transparent);color:var(--accent-2)}
+   .gp-gname .kind.pick{background:color-mix(in srgb,#7A4FC0 18%,transparent);color:#7A4FC0}
+   .gp-gname .kind.free{background:color-mix(in srgb,#0E8F8F 18%,transparent);color:#0E8F8F}
+   .gp-gu{font-family:var(--mono);font-size:12.5px;font-weight:700;white-space:nowrap}
+   .gp-gu.ok{color:#1F9D6B}.gp-gu.lo{color:var(--muted)}.gp-gu.hi{color:var(--gold)}
+   .gp-gbar{height:6px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+   .gp-gbar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#1F9D6B);width:0}
+   .gp-gbar>span.done{background:linear-gradient(90deg,#1F9D6B,#1F9D6B)}
+   .gp-grule{padding:8px 15px 0;font-size:12px;color:var(--muted);line-height:1.5}
+   .gp-gbody{padding:9px 12px 12px;display:flex;flex-direction:column;gap:7px}
+   .gp-course{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent-2);border-radius:8px;padding:7px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+   .gp-course.done{opacity:.55}
+   .gp-course.done .cc{text-decoration:line-through}
+   .gp-course .cc{font-weight:700;font-family:var(--mono);font-size:13px;white-space:nowrap}
+   .gp-course .ct{flex:1;min-width:120px;font-size:12.5px;color:var(--muted);line-height:1.3}
+   .gp-course .cu{font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+   .gp-course input.qt{width:52px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:11.5px;font-family:var(--mono);text-align:center;text-transform:uppercase}
+   .gp-course input.qt::placeholder{text-transform:none;color:var(--faint)}
+   .gp-course .gr{border:none;background:none;color:var(--accent-2);cursor:pointer;font-size:11px;font-family:var(--mono);padding:0 1px;white-space:nowrap}
+   .gp-course .gr:hover{text-decoration:underline}
+   .gp-course .del{border:none;background:none;color:var(--faint);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
+   .gp-course .del:hover{color:#C0392B}
+   .gp-course .note{flex-basis:100%;font-size:11px;color:var(--gold)}
+   .gp-opt{background:color-mix(in srgb,var(--surface-2) 60%,transparent);border:1px dashed var(--line-strong);border-radius:8px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+   .gp-opt:hover{background:var(--accent-soft);border-color:var(--accent)}
+   .gp-opt .cc{font-weight:700;font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+   .gp-opt .ct{flex:1;min-width:110px;font-size:12px;color:var(--muted)}
+   .gp-opt .plus{color:var(--accent-2);font-weight:700;font-size:14px}
+   .gp-optwrap{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+   .gp-optlabel{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:4px 0 1px}
+   .gp-add{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+   .gp-add input.cd{width:96px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:var(--surface);color:var(--ink);font-family:var(--mono)}
+   .gp-add input.tl{flex:1;min-width:130px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;background:var(--surface);color:var(--ink)}
+   .gp-add input.un{width:46px;padding:6px 4px;border:1px solid var(--line);border-radius:6px;font-size:12.5px;text-align:center;background:var(--surface);color:var(--ink)}
+   .gp-add button{padding:5px 11px;font-size:13px;border:1px solid var(--line-strong);background:var(--surface-2);border-radius:6px;cursor:pointer;color:var(--accent-2);font-weight:700}
+   .gp-add button:hover{background:var(--accent-soft)}
+   .gp-stub{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);color:var(--ink);border-radius:10px;padding:11px 14px;font-size:12.5px;line-height:1.5;margin:10px 0}
+   .gp-stub b{color:var(--accent-2)}
+   .gp-stub a{color:var(--accent-2);font-weight:600}
+   .gp-rules{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;box-shadow:var(--shadow)}
+   .gp-rules h4{margin:0 0 7px;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+   .gp-rules ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink);line-height:1.55}
+   .gp-rules li{margin:3px 0}
+   @media(max-width:640px){
+     .gp-course .ct,.gp-opt .ct{min-width:0;flex-basis:100%}
+     .gp-add input.tl{flex-basis:100%}
+   }
+   @media print{.dp-mode,.gp-opt,.gp-add,.gp-optwrap,.gp-course .del,.gp-course .gr{display:none!important}}
    </style>
 
+   <div class="dp-mode" role="tablist" aria-label="Planner level">
+     <button id="dpModeUG" role="tab" aria-selected="true">Undergraduate</button>
+     <button id="dpModeGrad" role="tab" aria-selected="false">Graduate</button>
+   </div>
+
+   <div id="dpUG">
    <p class="ge-intro">Build your quarter-by-quarter plan. Pick your <b>college, entering year and major</b> to load UCSD's <b>official academic plan</b> (2022–2026) as a starting point — then make it yours: drag courses between quarters, add or drop them, check off what you've finished, and watch your unit totals stay in the full-time zone. Each course links straight to its <b>grade ranking</b> so you can swap in GPA-friendly options.</p>
 
    <div class="dp-controls">
@@ -883,6 +951,48 @@
        <textarea id="dpNotes" placeholder="Prerequisites to watch, alternative courses, advising reminders…"></textarea></div>
      <p class="dp-src">Official plans from plans.ucsd.edu (entering years 2022–2026). A starting guide, not official advice — confirm requirements with your college advisor.</p>
    </div>
+   </div><!-- /dpUG -->
+
+   <div id="dpGrad" hidden>
+     <p class="ge-intro">Plan an <b>ECE M.S. / Ph.D.</b> degree by requirement category. Pick your <b>research area</b> and <b>plan</b> to load its official worksheet — <b>ISRC (EC80)</b> is modeled in full; the other twelve areas load the shared ECE M.S. framework and link to their official worksheet. Add courses to each requirement bucket, tag the quarter you'll take them, check off what's done, and watch each bucket fill toward its unit quota. Every course links to its <b>grade ranking</b> so you can pick GPA-friendly options.</p>
+
+     <div class="dp-controls">
+       <div class="dp-field" style="flex:1;min-width:220px"><label>Research Area (ECE)</label>
+         <select id="gpProg"><option value="">Select…</option></select></div>
+       <div class="dp-field"><label>Plan</label>
+         <select id="gpPlan" disabled><option value="">—</option></select></div>
+       <button class="dp-btn" id="gpLoad" disabled>Load Worksheet</button>
+     </div>
+
+     <div id="gpEmpty" class="dp-empty">Loading ECE graduate programs…</div>
+
+     <div id="gpApp" hidden>
+       <div class="dp-toolbar">
+         <button class="dp-btn ghost sm" id="gpReset">↺ Reset worksheet</button>
+         <span class="sp"></span>
+         <button class="dp-btn ghost sm" id="gpImport">⭱ Import</button>
+         <button class="dp-btn ghost sm" id="gpExport">⭳ Save to file</button>
+         <button class="dp-btn ghost sm" id="gpPrint">⎙ Print</button>
+         <input type="file" id="gpFile" accept="application/json" hidden>
+       </div>
+       <div id="gpTitle" style="font-size:16px;font-weight:700;margin:6px 0 1px"></div>
+       <div id="gpSub" style="color:var(--muted);font-size:12.5px;margin-bottom:8px"></div>
+       <div class="dp-summary">
+         <div class="dp-stat"><div class="k">Total Planned</div><div class="v"><span id="gpTotal">0</span> <small>units</small></div>
+           <div class="dp-bar"><span id="gpBar" style="width:0%"></span></div></div>
+         <div class="dp-stat"><div class="k">Completed</div><div class="v"><span id="gpDone">0</span> <small>units</small></div></div>
+         <div class="dp-stat"><div class="k" id="gpTargetK">Remaining to 48</div><div class="v"><span id="gpRemain">48</span> <small>units</small></div></div>
+         <div class="dp-stat"><div class="k">201+ ECE units</div><div class="v" id="gp201">0</div>
+           <div style="font-size:11px;color:var(--muted);margin-top:3px" id="gp201need">need 16</div></div>
+       </div>
+       <div id="gpStub" class="gp-stub" hidden></div>
+       <div class="gp-groups" id="gpGroups"></div>
+       <div class="gp-rules" id="gpRules"></div>
+       <div class="dp-notes"><label>My notes</label>
+         <textarea id="gpNotes" placeholder="Advisor-approved substitutions, comprehensive-exam courses, prerequisites to watch…"></textarea></div>
+       <p class="dp-src">Requirements from UCSD ECE degree planners (research-areas), 2025–2026 & 2026–2027. A reference tool, not official advice — confirm every course with your ECE graduate advisor and the official worksheet.</p>
+     </div>
+   </div><!-- /dpGrad -->
  </div><!-- /plannerView -->
 
   <footer>
@@ -897,6 +1007,7 @@
         <li><b>Meeting-time filter</b> — the 🕐 filter keeps only courses that can actually fit your week: in at least one section group, every required meeting type (lecture / discussion / lab) must have a section inside your chosen days &amp; hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you're free. Sections with TBA times always count as fitting.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
+        <li><b>Degree Planner</b> — the <b>Undergraduate</b> mode loads UCSD's official college academic plans (2022–2026) as a quarter-by-quarter grid. The <b>Graduate</b> mode is an <b>ECE M.S. / Ph.D.</b> worksheet organised by requirement category: <b>ISRC (EC80)</b> is modeled in full from its official 2025–2026 degree planner (Core 16u, Additional 12u, Technical Electives 20u), while the other twelve ECE research areas load the shared ECE M.S. framework (Plan I 52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA) and link to their official worksheet. It tracks units per bucket, total units toward the plan, and the 201+ ECE minimum — a reference guide, not official advice.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
       </ul>
       <p class="disclaimer"><b>Disclaimer.</b> This tool is for reference only and is not affiliated with UC San Diego. Grade and rating data may be incomplete or out of date. It does not constitute academic advice — every enrollment decision, including which course and section to take, is the student's own responsibility. Always confirm requirements and offerings with official UCSD sources and your academic advisor.</p>
@@ -2134,6 +2245,7 @@ function init(DATA){
 
   /* ===================== Degree Planner ===================== */
   const DP_KEY='earPlanner_v1';
+  const DP_MODE_KEY='earPlannerMode_v1';
   const DP_QLABEL=['Fall','Winter','Spring','Summer'];
   let dpDB=null, dpPromise=null, dpInited=false;
   let dpModel=null, dpOfficial=null, dpMajors=[], dpMajorCode='';
@@ -2156,6 +2268,11 @@ function init(DATA){
   }
   function initPlanner(){
     if(dpInited) return; dpInited=true;
+    // Undergrad / Graduate mode toggle (works independently of plans.json loading)
+    $('dpModeUG').onclick=()=>dpSetMode('ug');
+    $('dpModeGrad').onclick=()=>dpSetMode('grad');
+    let savedMode='ug'; try{savedMode=localStorage.getItem(DP_MODE_KEY)||'ug';}catch(e){}
+    if(savedMode==='grad') dpSetMode('grad');
     dpEnsureData().then(db=>{
       const cs=$('dpCollege');
       db.collegeOrder.forEach(code=>{const o=document.createElement('option');o.value=code;o.textContent=db.colleges[code];cs.appendChild(o);});
@@ -2341,7 +2458,215 @@ function init(DATA){
     }
     $('dpNotes').value=dpModel.notes||''; dpRender();
   }
+
+  // Undergrad <-> Graduate mode switch inside the Degree Planner tab.
+  function dpSetMode(mode){
+    const grad=mode==='grad';
+    $('dpModeUG').setAttribute('aria-selected',grad?'false':'true');
+    $('dpModeGrad').setAttribute('aria-selected',grad?'true':'false');
+    $('dpUG').hidden=grad; $('dpGrad').hidden=!grad;
+    try{localStorage.setItem(DP_MODE_KEY,mode);}catch(e){}
+    if(grad) initGradPlanner();
+  }
   /* =================== end Degree Planner =================== */
+
+  /* ===================== Graduate Degree Planner ===================== */
+  const GP_KEY='earGradPlanner_v1';
+  let gpDB=null, gpPromise=null, gpInited=false;
+  let gpModel=null, gpOfficial=null, gpProgram=null, gpPlan=null;
+  const gpKey=()=>'g'+Math.random().toString(36).slice(2,8);
+  function gpEnsureData(){
+    if(gpDB) return Promise.resolve(gpDB);
+    if(gpPromise) return gpPromise;
+    gpPromise=fetch('gradplans.4082c3087d.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
+    return gpPromise;
+  }
+  function gpProgLabel(p){return p.area+' — '+p.name+' ('+p.code+')';}
+  function initGradPlanner(){
+    if(gpInited) return; gpInited=true;
+    gpEnsureData().then(db=>{
+      const sel=$('gpProg');
+      const ordered=db.programs.slice().sort((a,b)=>(b.detailed?1:0)-(a.detailed?1:0)||a.name.localeCompare(b.name));
+      ordered.forEach(p=>{const o=document.createElement('option');o.value=p.code;o.textContent=gpProgLabel(p)+(p.detailed?'':' · framework');sel.appendChild(o);});
+      sel.onchange=gpOnProg;
+      $('gpPlan').onchange=()=>{$('gpLoad').disabled=!$('gpPlan').value;};
+      $('gpLoad').onclick=gpLoadWorksheet;
+      $('gpReset').onclick=()=>{if(gpOfficial){gpModel=JSON.parse(JSON.stringify(gpOfficial));gpSave();gpRender();}};
+      $('gpExport').onclick=gpExport;
+      $('gpImport').onclick=()=>$('gpFile').click();
+      $('gpFile').onchange=gpImport;
+      $('gpPrint').onclick=()=>window.print();
+      $('gpNotes').oninput=()=>{if(gpModel){gpModel.notes=$('gpNotes').value;gpSave();}};
+      $('gpEmpty').textContent='Choose a research area and plan above to start.';
+      gpRestore();
+    }).catch(err=>{$('gpEmpty').textContent='Could not load graduate program data (gradplans.json). '+((err&&err.message)||'');});
+  }
+  function gpOnProg(){
+    const code=$('gpProg').value, ps=$('gpPlan');
+    if(!code){ps.disabled=true;ps.innerHTML='<option>—</option>';$('gpLoad').disabled=true;return;}
+    ps.disabled=false;
+    ps.innerHTML='<option value="">Select…</option>'+gpDB.plans.map(p=>'<option value="'+p.id+'">'+dpEsc(p.name)+' · '+p.totalUnits+'u</option>').join('');
+    ps.value='II'; $('gpLoad').disabled=false;
+  }
+  function gpFindProgram(code){return gpDB.programs.find(p=>p.code===code);}
+  function gpFindPlan(id){return gpDB.plans.find(p=>p.id===id);}
+  // Build the requirement groups for a program+plan. Detailed programs carry their
+  // own groups; framework-only areas get a single coursework bucket sized to the plan.
+  function gpBuildGroups(prog,plan){
+    if(prog.detailed) return JSON.parse(JSON.stringify(prog.groups));
+    return [{id:'work',name:'Coursework',units:plan.totalUnits,kind:'free',
+      rule:'Add the core, depth and technical-elective courses from this area’s official worksheet (linked above) and track total units toward the plan requirement.',courses:[]}];
+  }
+  function gpLoadWorksheet(){
+    const prog=gpFindProgram($('gpProg').value), plan=gpFindPlan($('gpPlan').value);
+    if(!prog||!plan)return;
+    const groups=gpBuildGroups(prog,plan);
+    const courses=[];
+    // Pre-populate required buckets (e.g. the four ECE core courses) so the worksheet
+    // starts as a checklist; pick/free buckets start empty for the student to fill.
+    groups.forEach(g=>{if(g.kind==='required')(g.courses||[]).forEach(c=>courses.push({key:gpKey(),group:g.id,code:c.code,title:c.title,units:+c.units||4,note:c.note||'',quarter:'',done:false}));});
+    gpModel={meta:{code:prog.code,area:prog.area,name:prog.name,plan:plan.id,detailed:!!prog.detailed,pdf:prog.pdf||'',groups},courses,notes:''};
+    gpOfficial=JSON.parse(JSON.stringify(gpModel));
+    $('gpNotes').value=''; gpSave(); gpRender();
+  }
+  function gpGroupCourses(gid){return gpModel.courses.filter(c=>c.group===gid);}
+  function gpSubjNum(code){const m=String(code||'').match(/([A-Za-z]{2,})\s*0*(\d+)/);return m?{subj:m[1].toUpperCase(),num:+m[2]}:null;}
+  function gpIs201ECE(c){const s=gpSubjNum(c.code);return !!s&&s.subj==='ECE'&&s.num>=201;}
+  function gpAdd(gid,code,title,units,note){
+    gpModel.courses.push({key:gpKey(),group:gid,code:code,title:title||'',units:isNaN(units)?4:units,note:note||'',quarter:'',done:false});
+    gpSave(); gpRender();
+  }
+  function gpGoToCourse(code){
+    const s=gpSubjNum(code); if(!s){setView('rank');return;}
+    try{
+      state.q=code; $('q').value=code; state.subjects=new Set(); state.subjLabel='';
+      state.offered=false; state.sort='g'; state.level='grad'; state.limit=PAGE;
+      $('sort').value='g';
+      document.querySelectorAll('#levels .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.lv==='grad'?'true':'false'));
+      $('offered').setAttribute('aria-pressed','false');
+      setView('rank'); renderSubjChips();
+      document.querySelector('.toolbar').scrollIntoView({block:'start'}); render();
+    }catch(e){setView('rank');}
+  }
+  function gpRender(){
+    if(!gpModel)return;
+    $('gpEmpty').hidden=true; $('gpApp').hidden=false;
+    const plan=gpFindPlan(gpModel.meta.plan);
+    $('gpTitle').textContent=gpModel.meta.area+' — '+gpModel.meta.name;
+    $('gpSub').innerHTML=dpEsc(gpDB.meta.dept)+' · '+dpEsc(plan.name)+' · '+plan.totalUnits+' units'
+      +(gpModel.meta.pdf?' · <a href="'+dpEsc(gpModel.meta.pdf)+'" target="_blank" rel="noopener" style="color:var(--accent-2)">official worksheet ↗</a>':'');
+    // Framework-only note for non-detailed areas.
+    const stub=$('gpStub');
+    if(!gpModel.meta.detailed){
+      stub.hidden=false;
+      stub.innerHTML='This area uses the <b>shared ECE M.S. framework</b>. Only <b>ISRC (EC80)</b> has its full course list modeled here yet — for '+dpEsc(gpModel.meta.area)+', open the '
+        +(gpModel.meta.pdf?'<a href="'+dpEsc(gpModel.meta.pdf)+'" target="_blank" rel="noopener">official '+dpEsc(gpModel.meta.area)+' worksheet ↗</a>':'official worksheet')
+        +' and add its core, depth and technical-elective courses below. Unit totals and the 201+ ECE minimum are still tracked.';
+    } else stub.hidden=true;
+    const host=$('gpGroups'); host.innerHTML='';
+    gpModel.meta.groups.forEach(g=>host.appendChild(gpGroupEl(g)));
+    gpRenderRules(plan);
+    gpUpdateSummary();
+  }
+  function gpGroupEl(g){
+    const wrap=document.createElement('div'); wrap.className='gp-group';
+    const mine=gpGroupCourses(g.id), gu=dpSum(mine);
+    const flag=g.units?(gu>=g.units?'ok':gu>0?'lo':'lo'):'ok';
+    const kindLbl={required:'required',pick:'pick',free:'electives'}[g.kind]||'';
+    const kindCls={required:'req',pick:'pick',free:'free'}[g.kind]||'';
+    wrap.innerHTML='<div class="gp-ghead"><div class="gp-gname">'+dpEsc(g.name)
+      +(kindLbl?'<span class="kind '+kindCls+'">'+kindLbl+'</span>':'')+'</div>'
+      +'<div class="gp-gu '+flag+'">'+dpFmt(gu)+(g.units?' / '+g.units:'')+' units</div></div>'
+      +'<div class="gp-gbar"><span class="'+(g.units&&gu>=g.units?'done':'')+'" style="width:'+(g.units?Math.min(100,gu/g.units*100):(gu>0?100:0))+'%"></span></div>'
+      +(g.rule?'<div class="gp-grule">'+dpEsc(g.rule)+'</div>':'');
+    const body=document.createElement('div'); body.className='gp-gbody';
+    mine.forEach(c=>body.appendChild(gpCourseEl(c)));
+    // Suggested-course catalog for this group (courses not yet added).
+    const have=new Set(mine.map(c=>c.code));
+    const opts=(g.courses||[]).filter(o=>!have.has(o.code)||o.note);
+    if(opts.length){
+      const ow=document.createElement('div'); ow.className='gp-optwrap';
+      ow.innerHTML='<div class="gp-optlabel">Add from the list</div>';
+      opts.forEach(o=>{
+        const el=document.createElement('div'); el.className='gp-opt';
+        el.innerHTML='<span class="cc">'+dpEsc(o.code)+'</span><span class="ct">'+dpEsc(o.title||'')+'</span><span class="cu">'+dpFmt(+o.units||4)+'u</span><span class="plus">+ add</span>';
+        el.onclick=()=>gpAdd(g.id,o.code,o.title,+o.units||4,o.note);
+        ow.appendChild(el);
+      });
+      body.appendChild(ow);
+    }
+    // Free-add row (any course).
+    const add=document.createElement('div'); add.className='gp-add';
+    add.innerHTML='<input class="cd" placeholder="ECE 285"><input class="tl" placeholder="Title (optional)"><input class="un" type="number" min="0" step="0.5" value="4">';
+    const b=document.createElement('button'); b.textContent='+ add';
+    b.onclick=()=>{const cd=add.querySelector('.cd').value.trim();if(!cd)return;const tl=add.querySelector('.tl').value.trim();const u=parseFloat(add.querySelector('.un').value);gpAdd(g.id,cd,tl,u);};
+    add.appendChild(b); body.appendChild(add);
+    wrap.appendChild(body);
+    return wrap;
+  }
+  function gpCourseEl(c){
+    const el=document.createElement('div'); el.className='gp-course'+(c.done?' done':'');
+    const s=gpSubjNum(c.code);
+    el.innerHTML='<input type="checkbox" '+(c.done?'checked':'')+' title="Mark completed">'
+      +'<span class="cc">'+dpEsc(c.code)+'</span>'
+      +'<span class="ct">'+dpEsc(c.title||'')+'</span>'
+      +'<input class="qt" placeholder="FA25" maxlength="5" value="'+dpEsc(c.quarter||'')+'" title="Term you’ll take it">'
+      +'<span class="cu">'+dpFmt(c.units)+'u</span>'
+      +(s?'<button class="gr" title="See this course’s grade ranking">grades↗</button>':'')
+      +'<button class="del" title="Remove">✕</button>'
+      +(c.note?'<span class="note">⚠ '+dpEsc(c.note)+'</span>':'');
+    el.querySelector('input[type=checkbox]').onchange=e=>{c.done=e.target.checked;el.classList.toggle('done',c.done);gpSave();gpUpdateSummary();};
+    el.querySelector('.qt').onchange=e=>{c.quarter=e.target.value.trim().toUpperCase();e.target.value=c.quarter;gpSave();};
+    el.querySelector('.del').onclick=()=>{gpModel.courses=gpModel.courses.filter(x=>x.key!==c.key);gpSave();gpRender();};
+    const gr=el.querySelector('.gr'); if(gr)gr.onclick=()=>gpGoToCourse(c.code);
+    return el;
+  }
+  function gpRenderRules(plan){
+    const parts=[];
+    parts.push('<li><b>'+dpEsc(plan.name)+':</b> '+dpEsc(plan.note)+'</li>');
+    parts.push('<li><b>Technical electives ('+gpDB.techElective.units+' units):</b> '+dpEsc(gpDB.techElective.rule)+'</li>');
+    gpDB.techElective.extras.forEach(x=>parts.push('<li>'+dpEsc(x)+'</li>'));
+    gpDB.commonRules.forEach(r=>parts.push('<li>'+dpEsc(r)+'</li>'));
+    $('gpRules').innerHTML='<h4>Program rules — '+dpEsc(gpDB.meta.dept)+'</h4><ul>'+parts.join('')+'</ul>';
+  }
+  function gpUpdateSummary(){
+    const plan=gpFindPlan(gpModel.meta.plan), target=plan.totalUnits;
+    const total=dpSum(gpModel.courses), done=dpSum(gpModel.courses.filter(c=>c.done));
+    const u201=dpSum(gpModel.courses.filter(gpIs201ECE));
+    $('gpTotal').textContent=dpFmt(total);
+    $('gpDone').textContent=dpFmt(done);
+    $('gpBar').style.width=Math.min(100,total/target*100)+'%';
+    $('gpTargetK').textContent='Remaining to '+target;
+    $('gpRemain').textContent=dpFmt(Math.max(0,target-total));
+    const el=$('gp201'); el.textContent=dpFmt(u201);
+    $('gp201need').textContent='need '+plan.min201ECE;
+    el.style.color=u201>=plan.min201ECE?'#1F9D6B':'';
+  }
+  function gpExport(){
+    if(!gpModel)return; gpModel.notes=$('gpNotes').value;
+    const blob=new Blob([JSON.stringify(gpModel,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); const safe=(gpModel.meta.area||'plan').replace(/[^\w]+/g,'_').slice(0,30);
+    a.href=URL.createObjectURL(blob); a.download='ece_grad_plan_'+safe+'_'+gpModel.meta.plan+'.json'; a.click(); URL.revokeObjectURL(a.href);
+  }
+  function gpImport(e){
+    const f=e.target.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{try{const m=JSON.parse(r.result);if(!m.meta||!Array.isArray(m.courses)||!m.meta.groups)throw 0;m.courses.forEach((c,i)=>{if(!c.key)c.key='g'+i+'_'+Math.random().toString(36).slice(2,6);});gpModel=m;gpOfficial=gpOfficial||JSON.parse(JSON.stringify(m));$('gpNotes').value=m.notes||'';gpSave();gpRender();}catch(err){$('gpEmpty').hidden=false;$('gpApp').hidden=true;$('gpEmpty').textContent='Could not read that plan file.';}};
+    r.readAsText(f); e.target.value='';
+  }
+  function gpSave(){try{localStorage.setItem(GP_KEY,JSON.stringify({model:gpModel,official:gpOfficial}));}catch(e){}}
+  function gpRestore(){
+    let s; try{s=JSON.parse(localStorage.getItem(GP_KEY));}catch(e){}
+    if(!s||!s.model||!s.model.meta||!s.model.meta.groups)return;
+    gpModel=s.model; gpOfficial=s.official||JSON.parse(JSON.stringify(s.model));
+    const ps=$('gpProg');
+    if([...ps.options].some(o=>o.value===gpModel.meta.code)){
+      ps.value=gpModel.meta.code; gpOnProg();
+      $('gpPlan').value=gpModel.meta.plan; $('gpLoad').disabled=false;
+    }
+    $('gpNotes').value=gpModel.notes||''; gpRender();
+  }
+  /* =================== end Graduate Degree Planner =================== */
 
   tabCount();
 

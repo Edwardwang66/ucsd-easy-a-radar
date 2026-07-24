@@ -10,9 +10,11 @@ A single-page tool that ranks UCSD courses by how GPA-friendly they've been, fro
 
 This is a **static site** (no build step). Three files matter:
 
-- `index.html` — the app (fetches `data.json`, and `schedule.json` on demand)
+- `index.html` — the app (fetches `data.json`, and `schedule.json` / `plans.json` / `gradplans.json` on demand)
 - `data.json` — the ranking dataset (grades × professors × RMP, + FA26 current instructors)
 - `schedule.json` — the Fall 2026 section catalog (times, rooms, instructors, building coords) used by the schedule builder
+- `plans.json` — UCSD official undergraduate academic plans (2022–2026), used by the Degree Planner's **Undergraduate** mode
+- `gradplans.json` — ECE graduate degree-planner requirements, used by the Degree Planner's **Graduate** mode (ISRC/EC80 modeled in full; the other twelve ECE research areas carry the shared M.S. framework)
 
 **Option A — Vercel CLI**
 ```bash
@@ -81,7 +83,7 @@ web server. No build, no Node, no config.
 
 **What to upload:** everything except the dev-only files. Ship these —
 ```
-index.html  data.json  schedule.json  hist.json  schedule-instructor.js  vercel.json
+index.html  data.json  schedule.json  hist.json  plans.json  gradplans.json  schedule-instructor.js  vercel.json
 ```
 and skip `README.md`, `.git*`, `api/`, `tests/`, `.vercel/`, `node_modules/`. (`vercel.json`
 only sets cache headers; harmless to include or drop on other hosts.)
@@ -136,6 +138,14 @@ returns `index.html` and serves `*.json` as static files works.
   and department-corroborated.
 - **Grad backfill** — 200+ courses with no grade data are filled from professors' RMP course
   history (`RMP only` rows); those scores are the professor's overall rating, not course-specific.
+- **Degree Planner** — two modes. **Undergraduate** loads UCSD's official college academic plans
+  (2022–2026, from `plans.json`) as an editable quarter-by-quarter grid. **Graduate** (from
+  `gradplans.json`) is an ECE M.S./Ph.D. worksheet by requirement category: **ISRC (EC80)** is
+  modeled in full from its official 2025–2026 degree planner (Core 16u / Additional 12u / Technical
+  Electives 20u); the other twelve ECE research areas carry the shared ECE M.S. framework (Plan I
+  52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA) and link to their official worksheet PDF. To
+  extend a framework area to a full model, add its `groups` (with `courses`) to `gradplans.json`,
+  mirroring EC80, then re-run `node build.js`. Reference only — confirm with an ECE graduate advisor.
 
 ## Regenerating data.json / schedule.json
 
