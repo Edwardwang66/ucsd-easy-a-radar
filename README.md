@@ -25,7 +25,82 @@ vercel --prod # deploy to production
 Push this folder to a repo, "Import Project" on vercel.com, framework preset **Other**,
 leave build & output settings empty (it serves the folder as static files).
 
-No environment variables, no server. `fetch('data.json')` is same-origin, so it just works.
+The **site itself** needs no build, no server, and no environment variables —
+`fetch('data.json')` is same-origin, so it just works. The one exception is the
+optional feedback button, backed by a single serverless function (`api/feedback.js`)
+that files GitHub issues; it reads one env var on Vercel. See **Run locally** below.
+
+## Run locally
+
+**Just the site (no feedback button)** — any static server works, no setup:
+
+```bash
+cd easy-a-radar
+python3 -m http.server 8000   # then open http://localhost:8000
+```
+
+Rankings, the schedule builder, and the Leaflet map all work. Two things 404
+locally, both harmless and expected:
+
+- **The feedback button** POSTs to `/api/feedback`, which a plain static server
+  doesn't route — so filing feedback fails (use `vercel dev` below if you need it).
+- **`/_vercel/insights/script.js` and `/_vercel/speed-insights/script.js`** — Vercel's
+  Web Analytics / Speed Insights, served only from Vercel's edge once enabled. They're
+  loaded with `defer` and fail silently, so the 404s in your terminal log change nothing.
+
+**Full stack incl. the feedback API** — use the Vercel CLI so `/api/feedback` runs:
+
+```bash
+vercel dev    # serves the static files AND the serverless function
+```
+
+`api/feedback.js` needs one environment variable:
+
+- `GH_FEEDBACK_TOKEN` — a GitHub **fine-grained PAT scoped to this repo only**,
+  with **Issues: Read and write** (nothing else). Optional: `FEEDBACK_REPO`
+  (`owner/name`, defaults to `Edwardwang66/ucsd-easy-a-radar`).
+
+Put it in a local `.env.local` (git-ignored — never commit it):
+
+```
+GH_FEEDBACK_TOKEN=github_pat_xxx
+```
+
+> **Note on `.env.local` from `vercel`/`vercel env pull`:** if you link this folder
+> to the Vercel project, the CLI writes a `.env.local` for you — but `GH_FEEDBACK_TOKEN`
+> comes down **empty** (`GH_FEEDBACK_TOKEN=`). That's not a bug: the token is stored as a
+> **Sensitive** var on Vercel, which the CLI can only list by name, never read back. Fill in
+> your own PAT locally. Without it, `/api/feedback` returns `500 Server not configured` and
+> the rest of the site is unaffected.
+
+## Deploy to any static host
+
+Because the app is just `index.html` + the JSON data files, you can host it on **any**
+static platform — GitHub Pages, Netlify, Cloudflare Pages, an S3 bucket, or your own
+web server. No build, no Node, no config.
+
+**What to upload:** everything except the dev-only files. Ship these —
+```
+index.html  data.json  schedule.json  hist.json  schedule-instructor.js  vercel.json
+```
+and skip `README.md`, `.git*`, `api/`, `tests/`, `.vercel/`, `node_modules/`. (`vercel.json`
+only sets cache headers; harmless to include or drop on other hosts.)
+
+**GitHub Pages** — push this folder to a repo, then Settings → Pages → *Deploy from a branch*,
+pick `main` / root. Your site goes live at `https://<user>.github.io/<repo>/`.
+
+**Netlify / Cloudflare Pages** — "Add site" → connect the repo (or drag-and-drop the folder),
+framework preset **None/Other**, **leave the build command empty** and set the publish/output
+directory to `easy-a-radar` (or `.` if the repo root *is* this folder).
+
+**Plain web server (nginx/Apache/S3)** — just copy the files into the web root. Any server that
+returns `index.html` and serves `*.json` as static files works.
+
+> ⚠️ **Feedback button on static-only hosts:** static hosting can't run `api/feedback.js`
+> (that's a serverless function), so the feedback button won't file issues there — the entire
+> rest of the site works normally. If you need feedback, deploy on **Vercel** (above), which
+> serves the static files *and* the function together. The Leaflet map still needs internet
+> for its CDN tiles but degrades gracefully if blocked.
 
 ## Data notes (important, keep honest)
 

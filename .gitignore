@@ -1,3 +1,7 @@
 .vercel
 .DS_Store
 node_modules
+
+# Local env / secrets — never commit (e.g. GH_FEEDBACK_TOKEN)
+.env
+.env.*
