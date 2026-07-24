@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
 <!-- Start the critical dataset download during HTML parse, before the app JS runs.
-     as="fetch" + crossorigin so it matches the app's fetch('data.json') (no double download).
+     as="fetch" + crossorigin so it matches the app's fetch('data.1f3702a13c.json') (no double download).
      hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
-<link rel="preload" href="data.json" as="fetch" crossorigin>
-<link rel="prefetch" href="hist.json" as="fetch" crossorigin>
+<link rel="preload" href="data.1f3702a13c.json" as="fetch" crossorigin>
+<link rel="prefetch" href="hist.520c32e21c.json" as="fetch" crossorigin>
 <title>UCSD Easy-A Radar</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions + RateMyProfessors.">
 <style>
@@ -1395,7 +1395,7 @@ function init(DATA){
   function ensureSched(){
     if(SCHED) return Promise.resolve(SCHED);
     if(schPromise) return schPromise;
-    schPromise=fetch('schedule.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{SCHED=j;return j;});
+    schPromise=fetch('schedule.1b21cc734e.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{SCHED=j;return j;});
     return schPromise;
   }
   const CAL_COLORS=['#0E63AC','#1F9D6B','#B9700E','#7A4FC0','#C0392B','#0E8F8F','#B0357A','#5B7A0E','#2C5FA8','#A15C2B'];
@@ -1985,7 +1985,7 @@ function init(DATA){
 
   // lazily load per-term history in the background (≈40% of the data, only needed on row expand)
   if(!histReady){
-    fetch('hist.json').then(r=>r.ok?r.json():null).then(hd=>{
+    fetch('hist.520c32e21c.json').then(r=>r.ok?r.json():null).then(hd=>{
       if(!hd) return;
       H=hd.hist||hd; histReady=true;
       if(expanded.size) rerenderShown(); // fill any already-open detail panels
@@ -2002,7 +2002,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 (async function boot(){
   try{
     let data=window.__DATA__;
-    if(!data){const res=await fetch('data.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
+    if(!data){const res=await fetch('data.1f3702a13c.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
     init(data);
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
