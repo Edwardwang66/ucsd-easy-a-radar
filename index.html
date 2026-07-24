@@ -973,9 +973,9 @@
      <div class="dp-controls">
        <div class="dp-field"><label>School</label>
          <select id="gpSchool"><option value="">Select…</option></select></div>
-       <div class="dp-field"><label>Department</label>
+       <div class="dp-field"><label>Department / Program</label>
          <select id="gpDept" disabled><option value="">—</option></select></div>
-       <div class="dp-field" style="flex:1;min-width:170px"><label>Research Area</label>
+       <div class="dp-field" style="flex:1;min-width:190px"><label>Research Area / ISIS Code</label>
          <select id="gpProg" disabled><option value="">—</option></select></div>
        <div class="dp-field"><label>Plan</label>
          <select id="gpPlan" disabled><option value="">—</option></select></div>
@@ -2551,9 +2551,8 @@ function init(DATA){
     // full worksheets first, then the rest, alphabetical within each
     list.sort((a,b)=>(gpDeptWorksheet(b)?1:0)-(gpDeptWorksheet(a)?1:0)||a.name.localeCompare(b.name));
     ds.innerHTML='<option value="">Select…</option>'+list.map(d=>{
-      const code=d.majorCode?' ('+dpEsc(d.majorCode)+')':'';
       const tag=gpDeptWorksheet(d)?' · full planner':(gpDeptReady(d)?'':' · coming soon');
-      return '<option value="'+dpEsc(d.code)+'">'+dpEsc(d.name)+code+tag+'</option>';
+      return '<option value="'+dpEsc(d.code)+'">'+dpEsc(d.name)+tag+'</option>';
     }).join('');
     ds.disabled=list.length===0;
   }
@@ -2564,8 +2563,14 @@ function init(DATA){
     if(!code){note.hidden=true;return;}
     const d=(gpDB.departments||[]).find(x=>x.code===code);
     const progs=gpDB.programs.filter(p=>(p.dept||'ECE')===code);
-    if(progs.length){ note.hidden=true; gpFillPrograms(code); return; }        // worksheet (ECE)
-    if(d&&d.overview){ note.hidden=true; gpShowOverview(d); return; }           // overview card
+    if(progs.length){ note.hidden=true; gpFillPrograms(code); return; }        // worksheet programs
+    if(d&&d.overview){                                                          // overview: put the major (with ISIS code) in Research Area
+      note.hidden=true;
+      const label=d.name+(d.majorCode?' ('+d.majorCode+')':'');
+      $('gpProg').innerHTML='<option value="">Select…</option><option value="__ov__">'+dpEsc(label)+'</option>';
+      $('gpProg').disabled=false;
+      return;
+    }
     note.hidden=false;                                                          // not yet available
     note.innerHTML='<b>'+dpEsc(d?d.name:code)+'</b> isn’t modeled yet — check back later.';
     $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
@@ -2576,7 +2581,7 @@ function init(DATA){
     const degs=(o.degrees||[]).map(x=>'<span class="deg">'+dpEsc(x)+'</span>').join('');
     ov.innerHTML='<div class="gp-ov">'
       +'<h3>'+dpEsc(d.name)+(d.majorCode?' <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent-2)">'+dpEsc(d.majorCode)+'</span>':'')+'</h3>'
-      +'<div class="school">'+dpEsc(school?school.name:d.school)+' · UCSD ISIS major code</div>'
+      +'<div class="school">'+dpEsc(school?school.name:d.school)+(d.majorCode?' · ISIS '+dpEsc(d.majorCode):'')+'</div>'
       +(degs?'<div class="degrees">'+degs+'</div>':'')
       +(o.notes?'<div class="note">'+dpEsc(o.notes)+'</div>':'')
       +'<div class="actions">'
@@ -2599,7 +2604,14 @@ function init(DATA){
   }
   function gpOnProg(){
     const code=$('gpProg').value, ps=$('gpPlan');
+    gpHideOverview();
     if(!code){ps.disabled=true;ps.innerHTML='<option>—</option>';$('gpLoad').disabled=true;return;}
+    if(code==='__ov__'){ // overview major selected — show the program overview card
+      ps.disabled=true; ps.innerHTML='<option>—</option>'; $('gpLoad').disabled=true;
+      const d=(gpDB.departments||[]).find(x=>x.code===$('gpDept').value);
+      if(d) gpShowOverview(d);
+      return;
+    }
     const plans=gpPlansFor(gpFindProgram(code));
     ps.disabled=false;
     ps.innerHTML='<option value="">Select…</option>'+plans.map(p=>'<option value="'+dpEsc(p.id)+'">'+dpEsc(p.name)+' · '+p.totalUnits+'u</option>').join('');
