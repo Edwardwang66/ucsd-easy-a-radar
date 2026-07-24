@@ -258,6 +258,13 @@
   .viewtab .cnt{font-size:11px;font-family:var(--mono);background:color-mix(in srgb,var(--gA) 22%,transparent);
     color:var(--gA);border-radius:999px;padding:1px 7px;font-weight:700}
   .viewtab[aria-selected="true"] .cnt{background:rgba(255,255,255,.22);color:#fff}
+  /* Mobile: the four view tabs don't fit one row, so they used to push the
+     page wider than the viewport and trap it in horizontal scrolling. Let them
+     wrap full-width into two rows instead. */
+  @media(max-width:640px){
+    .viewtabs{display:flex;flex-wrap:wrap;width:100%;box-sizing:border-box}
+    .viewtab{flex:1 1 44%;justify-content:center;text-align:center;padding:9px 8px;font-size:12.5px;white-space:nowrap}
+  }
 
   /* ---- add-to-schedule button on rows ---- */
   .addbtn{margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--accent-2);
@@ -809,6 +816,19 @@
    .dp-notes label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
    .dp-notes textarea{width:100%;min-height:70px;border:1px solid var(--line-strong);border-radius:9px;padding:10px;resize:vertical;background:var(--surface);color:var(--ink);font-family:var(--sans);font-size:13px}
    .dp-src{color:var(--faint);font-size:11.5px;margin-top:16px}
+   .dp-yearnote{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);color:var(--ink);border-radius:10px;padding:9px 13px;font-size:12.5px;line-height:1.45;margin:2px 0 6px}
+   .dp-yearnote b{color:var(--accent-2)}
+   /* Mobile: stack the quarters vertically so each gets the full width —
+      the 3-/4-column grid otherwise squeezes them off-screen and the page
+      gets trapped scrolling sideways between quarters. */
+   @media(max-width:640px){
+     .dp-quarters{grid-template-columns:1fr}
+     .dp-q{border-right:none;border-bottom:1px dashed var(--line);min-height:0}
+     .dp-q:last-child{border-bottom:none}
+     .dp-qhead{padding:9px 13px;font-size:13px}
+     /* iOS zooms on inputs under 16px, which fights with page scrolling */
+     .dp-add input.nm,.dp-add input.un{font-size:16px}
+   }
    @media print{.dp-controls,.dp-toolbar,.dp-add,.dp-legend,.dp-course .del,.dp-course .gr,.dp-course input[type=checkbox],.dp-notes textarea{display:none!important}}
    </style>
 
@@ -826,6 +846,8 @@
        <select id="dpType" disabled><option value="">—</option></select></div>
      <button class="dp-btn" id="dpLoad" disabled>Load Official Plan</button>
    </div>
+
+   <div id="dpYearNote" class="dp-yearnote" hidden></div>
 
    <div id="dpEmpty" class="dp-empty">Loading plan data…</div>
 
@@ -2167,10 +2189,30 @@ function init(DATA){
   }
   function dpOnYearReady(){
     const c=$('dpCollege').value, y=+$('dpYear').value, mi=$('dpMajorInput');
-    dpResetMajor();
+    dpResetMajor(); dpYearNote(null);
     if(!c||!y)return;
     dpMajors=[...new Map(dpDB.plans.filter(p=>p.c===c&&p.y===y).map(p=>[p.m,p.t])).entries()].map(([m,t])=>({m,t})).sort((a,b)=>a.t.localeCompare(b.t));
     mi.disabled=false; mi.placeholder='Search '+dpMajors.length+' majors…';
+    dpYearNote(c,y);
+  }
+  // UCSD posts each entering class's official plans on a rolling schedule, so the
+  // newest year(s) can be sparsely populated. Flag that so students don't think
+  // their major is missing — and point them at the latest fully-published year.
+  function dpYearNote(c,y){
+    const el=$('dpYearNote'); if(!el)return;
+    if(!c||!y){el.hidden=true;el.innerHTML='';return;}
+    const cnt=new Set(dpDB.plans.filter(p=>p.c===c&&p.y===y).map(p=>p.m)).size;
+    const perYear={};
+    for(const p of dpDB.plans){if(p.c===c)(perYear[p.y]=perYear[p.y]||new Set()).add(p.m);}
+    const full=Math.max(...Object.values(perYear).map(s=>s.size));
+    // "Complete" = a year with a full catalogue; pick the most recent such year as the fallback.
+    const complete=Object.keys(perYear).map(Number).filter(yr=>perYear[yr].size>=full*0.9).sort((a,b)=>b-a);
+    const fallback=complete.find(yr=>yr!==y);
+    if(cnt>=full*0.6 || !fallback){el.hidden=true;el.innerHTML='';return;}
+    el.innerHTML='Only <b>'+cnt+'</b> of ~'+full+' official '+y+'–'+(y+1)+' plans are published for this college so far — '
+      +'UCSD releases them gradually. Don’t see your major? Pick <b>'+fallback+'–'+(fallback+1)
+      +'</b>; official plans rarely change year to year.';
+    el.hidden=false;
   }
   function dpResetMajor(){const mi=$('dpMajorInput');mi.value='';mi.disabled=true;mi.placeholder='Select college & year first';dpMajorCode='';dpMajors=[];dpCloseDrop();dpResetType();}
   function dpResetType(){const t=$('dpType');t.disabled=true;t.innerHTML='<option>—</option>';$('dpLoad').disabled=true;}
