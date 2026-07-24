@@ -26,7 +26,7 @@ const path = require("path");
 const crypto = require("crypto");
 
 const ROOT = __dirname;
-const ASSETS = ["data.json", "hist.json", "schedule.json", "plans.json"];
+const ASSETS = ["data.json", "hist.json", "schedule.json", "plans.json", "gradplans.json"];
 
 function shortHash(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex").slice(0, 10);
