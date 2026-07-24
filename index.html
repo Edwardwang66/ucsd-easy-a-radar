@@ -296,12 +296,18 @@
   .sci .meets .m{display:flex;gap:8px;font-family:var(--mono)}
   .sci .meets .m .mt{color:var(--accent-2);font-weight:600;min-width:22px}
   .sci .meets .m.tba{color:var(--faint);font-style:italic}
+  .sci .meets .m.fin .mt{color:var(--gold)}
+  .sci .meets .m.fin{color:var(--muted)}
   .sci .prof{font-size:11.5px;color:var(--ink);margin-top:6px}
   .sci .prof .lab{color:var(--muted)}
   .sci.conf{border-left-color:var(--gF)!important}
   .conf-note{font-size:11px;color:var(--gF);margin-top:6px;font-weight:600}
 
   .cal-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .cal-head{display:flex;gap:3px;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .cal-tab{border:0;background:transparent;color:var(--muted);padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .cal-tab.on{background:var(--accent);color:#fff}
+  .cal-tab:not(.on):hover{color:var(--ink)}
   .cal{display:grid;grid-template-columns:46px repeat(5,1fr);position:relative}
   .cal .cell{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
   .cal .hd{position:sticky;top:0;background:var(--surface-2);font-size:11px;font-weight:700;color:var(--muted);
@@ -321,6 +327,45 @@
   .map-head b{color:var(--ink)}
   .leaflet-popup-content{font-family:var(--sans);font-size:12px}
   .cal-note{padding:9px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--faint)}
+
+  /* ---- meeting-time filter ---- */
+  .timewrap{position:relative}
+  .timebtn{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);cursor:pointer;
+    border:1px solid var(--line-strong);background:var(--surface);border-radius:9px;padding:8px 12px;font-family:var(--sans)}
+  .timebtn:hover{color:var(--ink);border-color:var(--accent)}
+  .timebtn.on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+  .timebtn .tclr{margin-left:2px;color:var(--faint);font-size:15px;line-height:1;padding:0 2px}
+  .timebtn .tclr:hover{color:var(--gF)}
+  .time-pop{position:absolute;z-index:45;top:calc(100% + 6px);right:0;width:344px;background:var(--surface);
+    border:1px solid var(--line-strong);border-radius:12px;box-shadow:var(--shadow);padding:12px;display:flex;flex-direction:column;gap:10px}
+  @media(max-width:640px){.time-pop{position:fixed;left:12px;right:12px;top:auto;bottom:14px;width:auto;max-height:80vh;overflow:auto}}
+  .tp-modes{display:flex;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+  .tp-modes button{flex:1;border:0;background:transparent;color:var(--muted);padding:7px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .tp-modes button.on{background:var(--accent);color:#fff}
+  #tpSimplePane{display:flex;flex-direction:column;gap:10px}
+  .tp-days{display:flex;gap:4px}
+  .tp-days button{flex:1;border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);border-radius:7px;
+    padding:6px 0;font-size:11.5px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+  .tp-days button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tp-range{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .tp-range label{display:flex;gap:6px;align-items:center}
+  .tp-range select{padding:7px 26px 7px 10px;font-size:12.5px}
+  #tpGridPane{display:flex;flex-direction:column;gap:8px}
+  .tp-hint{font-size:11.5px;color:var(--muted);line-height:1.45}
+  .tp-grid{display:grid;grid-template-columns:36px repeat(7,1fr);gap:2px;user-select:none;touch-action:none}
+  .tp-grid .gh{font-size:10px;color:var(--muted);text-align:center;padding:3px 0;font-weight:700;cursor:pointer;border-radius:4px}
+  .tp-grid .gh:hover{background:var(--surface-2);color:var(--ink)}
+  .tp-grid .glab{font-size:9.5px;color:var(--faint);font-family:var(--mono);text-align:right;padding-right:4px;line-height:14px}
+  .tp-grid .gc{height:14px;border-radius:3px;background:var(--gO);cursor:pointer}
+  .tp-grid .gc:hover{outline:1px solid var(--accent)}
+  .tp-grid .gc.sel{background:var(--gA)}
+  .tp-gbtns{display:flex;gap:8px}
+  .tp-gbtns button,.tp-foot button{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+    border-radius:7px;padding:6px 11px;font-size:12px;cursor:pointer;font-family:var(--sans)}
+  .tp-gbtns button:hover,.tp-foot button:hover{color:var(--ink);border-color:var(--accent)}
+  .tp-foot{display:flex;align-items:center;gap:8px}
+  .tp-note{font-size:10.5px;color:var(--faint);margin-right:auto;line-height:1.4}
+  .tp-foot #tpOff{color:var(--gF)}
 
   @media (max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}}
   @media (max-width:720px){
@@ -415,6 +460,45 @@
           <option value="3">3×</option><option value="5">5×</option>
         </select>
       </div>
+      <div class="timewrap" id="timeWrap">
+        <button class="timebtn" id="timeBtn" type="button" aria-haspopup="true" aria-expanded="false"
+          title="Only show courses whose Fall 2026 sections fit inside your chosen meeting times">
+          <span aria-hidden="true">🕐</span><span id="timeLbl">Any time</span><span class="tclr" id="timeClear" role="button" aria-label="Clear time filter" hidden>×</span>
+        </button>
+        <div class="time-pop" id="timePop" hidden>
+          <div class="tp-modes" role="tablist">
+            <button type="button" id="tpSimple" class="on">Time range</button>
+            <button type="button" id="tpGrid">Weekly grid</button>
+          </div>
+          <div id="tpSimplePane">
+            <div class="tp-days" id="tpDays" role="group" aria-label="Class days">
+              <button type="button" data-d="0" aria-pressed="true">Mon</button>
+              <button type="button" data-d="1" aria-pressed="true">Tue</button>
+              <button type="button" data-d="2" aria-pressed="true">Wed</button>
+              <button type="button" data-d="3" aria-pressed="true">Thu</button>
+              <button type="button" data-d="4" aria-pressed="true">Fri</button>
+              <button type="button" data-d="5" aria-pressed="false">Sat</button>
+              <button type="button" data-d="6" aria-pressed="false">Sun</button>
+            </div>
+            <div class="tp-range">
+              <label>From <select id="tpFrom" aria-label="Earliest class time"></select></label>
+              <label>to <select id="tpTo" aria-label="Latest class time"></select></label>
+            </div>
+          </div>
+          <div id="tpGridPane" hidden>
+            <div class="tp-hint">Paint the hours you're free for class (drag to select, like When2Meet). A course stays only if a full set of its sections fits inside the green cells.</div>
+            <div class="tp-grid" id="tpGridEl"></div>
+            <div class="tp-gbtns">
+              <button type="button" id="tpAll">Select all</button>
+              <button type="button" id="tpNone">Clear grid</button>
+            </div>
+          </div>
+          <div class="tp-foot">
+            <span class="tp-note">Sections with TBA times are always kept. Filter implies “offered this term”.</span>
+            <button type="button" id="tpOff">Turn off</button>
+          </div>
+        </div>
+      </div>
       <span class="grow"></span>
     </div>
   </div>
@@ -445,7 +529,7 @@
     <div id="rows"><div class="loading">Loading grade data…</div></div>
     <div id="empty" class="empty" hidden>
       <div class="big">No matching courses</div>
-      <div>Try loosening the filters — turn off “Offered this term only”, or set level to “All”.</div>
+      <div>Try loosening the filters — turn off “Offered this term only” or the meeting-time filter, or set level to “All”.</div>
     </div>
   </div>
   <div class="more" id="moreWrap" hidden><button id="moreBtn"></button></div>
@@ -465,14 +549,18 @@
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
            Export to Calendar (.ics)
          </button>
-         <span class="exp-hint"><b>Apple Calendar:</b> open the downloaded file. <b>Google Calendar:</b> Settings → Import → choose the file. Weekly events run Sep 24 – Dec 4, 2026 with campus holidays skipped.</span>
+         <span class="exp-hint"><b>Apple Calendar:</b> open the downloaded file. <b>Google Calendar:</b> Settings → Import → choose the file. Weekly events run Sep 24 – Dec 4, 2026 with campus holidays skipped, plus one-time <b>final-exam</b> events in finals week.</span>
        </div>
        <div id="schedItems"></div>
      </div>
      <div>
        <div class="cal-card">
+         <div class="cal-head" role="tablist">
+           <button type="button" class="cal-tab on" id="calTabWeek">Classes · Week 1–10</button>
+           <button type="button" class="cal-tab" id="calTabFinals">Finals week · Dec 5–12</button>
+         </div>
          <div class="cal" id="cal"></div>
-         <div class="cal-note">Times from the live WebReg FA26 catalog. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn.</div>
+         <div class="cal-note">Times from the live WebReg FA26 catalog. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn. Instruction runs <b>Sep 24 – Dec 4</b> (weeks 1–10, official UCSD calendar); switch to <b>Finals week</b> to see your exams laid out on <b>Dec 5–12</b>. Both go into the calendar export.</div>
        </div>
        <div class="map-card">
          <div class="map-head" id="mapHead"><b>Campus map</b> — buildings for your selected sections</div>
@@ -489,7 +577,8 @@
         <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
         <li><b>Offered this term</b> — matched against the live <b>Fall 2026</b> WebReg catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
         <li><b>This term's instructor (FA26)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each Fall 2026 section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way. Neither source carries an instructor id, so names are linked by a precision-first ladder: normalise order/accents, handle compound surnames (<i>Massimiliano Di Ventra</i> ↔ <i>Di Ventra, Massimiliano</i>) and Mc/apostrophe spellings, match on a first <i>or middle</i> initial (<i>Ryan Wagner</i> ↔ <i>Wagner, Timothy Ryan</i>), and auto-alias genuine renames by shared course (<i>Paul Cao</i> teaches the same courses <i>Cao, Yingjun</i> has taught). A professor teaching at UCSD for the first time has no grade history, so their name is marked <span class="firstx">0×</span> and sorted after the returning instructors.</li>
-        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the Fall 2026 term (Sep 24 – Dec 4), campus holidays excluded and Pacific-time DST handled.</li>
+        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser. Each course card also shows its <b>final exam</b> (FI) date &amp; time for the selected section group, and overlapping finals are flagged as conflicts. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the Fall 2026 term (Sep 24 – Dec 4) plus one-time final-exam events, campus holidays excluded and Pacific-time DST handled.</li>
+        <li><b>Meeting-time filter</b> — the 🕐 filter keeps only courses that can actually fit your week: in at least one section group, every required meeting type (lecture / discussion / lab) must have a section inside your chosen days &amp; hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you're free. Sections with TBA times always count as fitting.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
@@ -523,7 +612,7 @@ function init(DATA){
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
-  const state={q:'',subject:'',prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60};
+  const state={q:'',subject:'',prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60,time:null};
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
@@ -564,6 +653,10 @@ function init(DATA){
     const q=state.q.trim().toLowerCase(), out=[];
     for(const r of R){
       if(state.offered && !r[C.off]) continue;
+      if(state.time && SCHED){                      // meeting-time filter (needs schedule.json)
+        if(!r[C.off]) continue;                     // no FA26 sections -> can't match a time window
+        if(!courseFits(CK(r[C.s],r[C.c]))) continue;
+      }
       if(state.curonly && r[C.cur]!==1) continue;
       if(state.subject && r[C.s]!==state.subject) continue;
       if(state.prof && r[C.i]!==state.prof) continue;
@@ -883,6 +976,22 @@ function init(DATA){
   function parseDays(s){const out=[],re=/Su|Sa|Th|Tu|M|W|F/g;let m;while((m=re.exec(s||''))!==null)out.push(DAYIDX[m[0]]);return out;}
   function parseMin(t){const m=/^(\d{1,2}):(\d{2})\s*([ap])?/i.exec(String(t||''));if(!m)return null;let h=+m[1];const mi=+m[2],ap=(m[3]||'').toLowerCase();if(ap==='p'&&h!==12)h+=12;if(ap==='a'&&h===12)h=0;return h*60+mi;}
   function activeGroups(course){const g={};for(const s of course.sec){if(s[S_CANC]||s[S_TYPE]==='FI')continue;const c=s[S_CODE]||'';if(!/^[A-Za-z]/.test(c))continue;const gl=c[0].toUpperCase();(g[gl]=g[gl]||[]).push(s);}return g;}
+  // Final exams: FI rows carry a date ("12/09/2026") instead of a section code, but the
+  // catalog lists each group's final right after that group's sections — so attach each FI
+  // to the letter group of the sections above it.
+  function finalsFor(course,gl){
+    const all=[]; let cur='';
+    for(const s of course.sec){
+      const c=s[S_CODE]||'';
+      if(/^[A-Za-z]/.test(c)){cur=c[0].toUpperCase();continue;}
+      if(s[S_TYPE]==='FI'&&!s[S_CANC]) all.push({gl:cur,s});
+    }
+    let mine=all.filter(f=>f.gl===gl);
+    if(!mine.length) mine=all.filter(f=>f.gl==='');   // FI listed before any lettered section: applies course-wide
+    return mine.map(f=>f.s);
+  }
+  const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  function parseFiDate(s){const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s[S_DAYS]||s[S_CODE]||'');if(!m)return null;return new Date(+m[3],+m[1]-1,+m[2]);}
   function itemSections(it){
     const course=SCHED&&SCHED.courses[it.k]; if(!course)return {course:null,secs:[],opts:{},groups:{},gl:''};
     const groups=activeGroups(course);
@@ -928,13 +1037,36 @@ function init(DATA){
     }
     flush();
   }
-  function renderCal(evs){
+  // Finals week (official UCSD FA26 calendar): Sat Dec 5 – Sat Dec 12, 2026.
+  const FINALS_D0=new Date(2026,11,5);
+  const FINALS_LABELS=['Sa 12/5','Su 12/6','Mo 12/7','Tu 12/8','We 12/9','Th 12/10','Fr 12/11','Sa 12/12'];
+  function finalsEvents(){
+    const evs=[];
+    schItems.forEach((it,ci)=>{
+      const {course,gl}=itemSections(it); if(!course)return;
+      const color=CAL_COLORS[ci%CAL_COLORS.length];
+      for(const s of finalsFor(course,gl)){
+        const dt=parseFiDate(s), a=parseMin(s[S_START]), b=parseMin(s[S_END]);
+        if(!dt||a==null||b==null)continue;
+        const d=Math.round((dt-FINALS_D0)/86400000);
+        if(d<0||d>=FINALS_LABELS.length)continue;
+        evs.push({d,a,b,ci,color,code:it.k,type:'FI'});
+      }
+    });
+    for(let i=0;i<evs.length;i++)for(let j=i+1;j<evs.length;j++){
+      if(evs[i].ci!==evs[j].ci&&evs[i].d===evs[j].d&&evs[i].a<evs[j].b&&evs[j].a<evs[i].b){evs[i].clash=evs[j].clash=true;}
+    }
+    return evs;
+  }
+  function renderCal(evs,labels){
+    labels=labels||DAYLAB;
     const cal=$('cal'); if(!cal)return;
-    let html='<div class="hd"></div>'+DAYLAB.map(d=>`<div class="hd">${d}</div>`).join('');
+    cal.style.gridTemplateColumns=`46px repeat(${labels.length},1fr)`;
+    let html='<div class="hd"></div>'+labels.map(d=>`<div class="hd">${d}</div>`).join('');
     html+='<div class="cell gutter">';
     for(let m=DAY_START;m<DAY_END;m+=60){const h=m/60,lab=(h%12===0?12:h%12)+(h<12?'a':'p');html+=`<div class="hr"><span class="hrlab">${lab}</span></div>`;}
     html+='</div>';
-    for(let d=0;d<5;d++){
+    for(let d=0;d<labels.length;d++){
       html+='<div class="cell daycol">';
       for(let m=DAY_START;m<DAY_END;m+=60)html+='<div class="hr"></div>';
       const dayEvs=evs.filter(x=>x.d===d);
@@ -983,13 +1115,18 @@ function init(DATA){
     const grpSel=grpKeys.length>1?`<label>Sec <select data-grp="${esc(it.k)}">${grpKeys.map(g=>`<option value="${g}"${g===gl?' selected':''}>${g}</option>`).join('')}</select></label>`:'';
     const optSel=Object.keys(opts).map(ty=>{const list=opts[ty],cur=secs.find(s=>s[S_TYPE]===ty);return `<label>${esc(ty)} <select data-pick="${esc(it.k)}" data-ty="${esc(ty)}">${list.map(s=>`<option value="${esc(s[S_CODE])}"${(cur&&cur[S_CODE]===s[S_CODE])?' selected':''}>${esc(s[S_CODE])} · ${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}</option>`).join('')}</select></label>`;}).join('');
     const meets=secs.map(s=>{const tba=!(s[S_DAYS]&&s[S_START]);return `<div class="m${tba?' tba':''}"><span class="mt">${esc(s[S_TYPE])}</span><span>${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>${esc(s[S_BLD]||'')}${s[S_ROOM]?' '+esc(s[S_ROOM]):''}</span></div>`;}).join('');
+    const finRows=finalsFor(course,gl).map(s=>{
+      const d=parseFiDate(s), wd=d?WD[d.getDay()]+' ':'';
+      return `<div class="m fin"><span class="mt">FI</span><span>${wd}${esc(s[S_DAYS]||'')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>Final exam</span></div>`;
+    }).join('');
     const profs=[...new Set(secs.map(s=>s[S_INSTR]).filter(Boolean))];
-    return `<div class="sci ${it._conf?'conf':''}" style="border-left-color:${color}">
+    return `<div class="sci ${(it._conf||it._finConf)?'conf':''}" style="border-left-color:${color}">
       <div class="h"><div><div class="code">${esc(it.k)}</div><div class="ttl">${esc(course.t)}</div></div><button class="rm" data-rm="${esc(it.k)}" title="Remove">×</button></div>
       <div class="ctrls">${grpSel}${optSel}</div>
-      <div class="meets">${meets}</div>
+      <div class="meets">${meets}${finRows}</div>
       ${profs.length?`<div class="prof"><span class="lab">Instructor:</span> ${esc(profs.join(', '))}</div>`:''}
       ${it._conf?'<div class="conf-note">⚠ Time conflict with another course</div>':''}
+      ${it._finConf?'<div class="conf-note">⚠ Final exam overlaps another course’s final</div>':''}
     </div>`;
   }
   function renderSchedule(){
@@ -999,14 +1136,40 @@ function init(DATA){
     if(!has){ $('schedItems').innerHTML=''; const _c=$('cal'); if(_c)_c.innerHTML=''; return; }
     const evs=schEvents(), confSet=new Set(evs.filter(e=>e.clash).map(e=>e.ci));
     schItems.forEach((it,ci)=>it._conf=confSet.has(ci));
+    // final-exam overlaps (same date, overlapping time, different courses)
+    const finEvs=[];
+    schItems.forEach((it,ci)=>{
+      const {course,gl}=itemSections(it); if(!course)return;
+      for(const s of finalsFor(course,gl)){
+        const d=parseFiDate(s), a=parseMin(s[S_START]), b=parseMin(s[S_END]);
+        if(!d||a==null)continue;
+        finEvs.push({ci,day:d.getTime(),a,b:b==null?a+179:b});
+      }
+    });
+    const finConf=new Set();
+    for(let i=0;i<finEvs.length;i++)for(let j=i+1;j<finEvs.length;j++){
+      const x=finEvs[i],y=finEvs[j];
+      if(x.ci!==y.ci&&x.day===y.day&&x.a<y.b&&y.a<x.b){finConf.add(x.ci);finConf.add(y.ci);}
+    }
+    schItems.forEach((it,ci)=>it._finConf=finConf.has(ci));
     let units=0; schItems.forEach(it=>{const c=SCHED.courses[it.k];if(c){const u=parseFloat(c.u);if(!isNaN(u))units+=u;}});
     $('schedSummary').innerHTML=`
       <div class="st"><div class="v">${schItems.length}</div><div class="l">Courses</div></div>
       <div class="st"><div class="v">${units%1?units.toFixed(1):units}</div><div class="l">Units</div></div>
-      <div class="st"><div class="v ${confSet.size?'warn':''}">${confSet.size}</div><div class="l">Conflicts</div></div>`;
+      <div class="st"><div class="v ${(confSet.size||finConf.size)?'warn':''}">${new Set([...confSet,...finConf]).size}</div><div class="l">Conflicts</div></div>`;
     $('schedItems').innerHTML=schItems.map((it,ci)=>schItemHTML(it,ci)).join('');
-    renderCal(evs); renderMap();
+    if(calMode==='finals') renderCal(finalsEvents(),FINALS_LABELS); else renderCal(evs);
+    renderMap();
   }
+  let calMode='week';
+  function setCalMode(m){
+    calMode=m;
+    $('calTabWeek').classList.toggle('on',m==='week');
+    $('calTabFinals').classList.toggle('on',m==='finals');
+    if(curView==='sched'&&SCHED) renderSchedule();
+  }
+  $('calTabWeek').addEventListener('click',()=>setCalMode('week'));
+  $('calTabFinals').addEventListener('click',()=>setCalMode('finals'));
   // -------- Calendar export (.ics) : Fall 2026 term --------
   // Official UCSD FA26: instruction Thu Sep 24 – Fri Dec 4, 2026.
   // Holidays (no class): Veterans Day Wed Nov 11; Thanksgiving Thu Nov 26 & Fri Nov 27.
@@ -1034,7 +1197,21 @@ function init(DATA){
     const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
     let count=0;
     schItems.forEach(it=>{
-      const {course,secs}=itemSections(it); if(!course)return;
+      const {course,secs,gl}=itemSections(it); if(!course)return;
+      for(const s of finalsFor(course,gl)){        // one-time final-exam events
+        const d=parseFiDate(s), a=parseMin(s[S_START]), b=parseMin(s[S_END]);
+        if(!d||a==null||b==null)continue;
+        const ds=dbasic(d);
+        L.push('BEGIN:VEVENT');
+        L.push('UID:'+it.k.replace(/\s+/g,'')+'-final-'+ds+'@easy-a-radar');
+        L.push('DTSTAMP:'+stamp);
+        L.push('DTSTART;TZID=America/Los_Angeles:'+ds+'T'+minHMS(a));
+        L.push('DTEND;TZID=America/Los_Angeles:'+ds+'T'+minHMS(b));
+        L.push(foldICS('SUMMARY:'+icsEsc('FINAL EXAM · '+it.k+' — '+course.t)));
+        L.push(foldICS('DESCRIPTION:'+icsEsc('Final exam · UCSD Fall 2026 · check WebReg for the room')));
+        L.push('END:VEVENT');
+        count++;
+      }
       for(const s of secs){
         const days=parseDays(s[S_DAYS]),a=parseMin(s[S_START]),b=parseMin(s[S_END]);
         if(a==null||b==null||!days.length)continue;
@@ -1089,6 +1266,159 @@ function init(DATA){
     const p=e.target.closest('select[data-pick]'); if(p){const it=schItems.find(i=>i.k===p.dataset.pick);if(it){it.picks=it.picks||{};it.picks[p.dataset.ty]=p.value;saveSchState();renderSchedule();}}
   });
   $('schedItems').addEventListener('click',e=>{const r=e.target.closest('[data-rm]');if(r)removeFromSched(r.dataset.rm);});
+
+  // ================= Meeting-time filter =================
+  // A course passes when, in at least one section group (A/B/...), every meeting type
+  // (LE/DI/LA/...) has at least one section whose meetings all fit the chosen window —
+  // i.e. there exists a fully valid section pick. Finals + cancelled are ignored;
+  // TBA-time sections always count as fitting so we never wrongly hide a course.
+  const timeBtn=$('timeBtn'), timePop=$('timePop'), timeLbl=$('timeLbl'), timeClear=$('timeClear');
+  const GRID_H0=7, GRID_H1=23;                       // grid + selects cover 7:00a–11:00p
+  const DAY_SHORT=['M','Tu','W','Th','F','Sa','Su'];  // index matches DAYIDX (Mon=0 … Sun=6)
+  let tpMode='simple', tpDaysSel=new Set([0,1,2,3,4]), gridCells=new Set();
+  let fitCache=new Map();
+  const fmtMin=m=>{const h=Math.floor(m/60),mm=m%60,h12=h%12===0?12:h%12;return h12+(mm?':'+String(mm).padStart(2,'0'):'')+(h<12?'a':'p');};
+  {let ho='';for(let m=GRID_H0*60;m<=GRID_H1*60;m+=30)ho+=`<option value="${m}">${fmtMin(m)}</option>`;
+   $('tpFrom').innerHTML=ho;$('tpTo').innerHTML=ho;$('tpFrom').value='480';$('tpTo').value='1080';}
+  function meetingOk(days,a,b){
+    const t=state.time;
+    if(t.mode==='simple'){
+      for(const d of days) if(!t.days.has(d)) return false;
+      return a>=t.from && b<=t.to;
+    }
+    const h0=Math.floor(a/60), h1=Math.ceil(b/60);   // every hour cell the meeting touches must be painted
+    for(const d of days) for(let h=h0;h<h1;h++) if(!t.cells.has(d+'-'+h)) return false;
+    return true;
+  }
+  function secOk(s){
+    const days=parseDays(s[S_DAYS]), a=parseMin(s[S_START]), b=parseMin(s[S_END]);
+    if(a==null||b==null||!days.length) return true;  // TBA / no scheduled meeting — keep
+    return meetingOk(days,a,b);
+  }
+  function courseFits(key){
+    if(fitCache.has(key)) return fitCache.get(key);
+    const course=SCHED&&SCHED.courses[key];
+    let ok=true;                                     // not in catalog (shouldn't happen for offered rows) — keep
+    if(course){
+      const groups=activeGroups(course), gks=Object.keys(groups);
+      if(gks.length){
+        ok=false;
+        for(const gl of gks){
+          const byType={};
+          for(const s of groups[gl]) (byType[s[S_TYPE]]=byType[s[S_TYPE]]||[]).push(s);
+          if(Object.keys(byType).every(ty=>byType[ty].some(secOk))){ ok=true; break; }
+        }
+      }
+    }
+    fitCache.set(key,ok);
+    return ok;
+  }
+  function timeSummary(){
+    const t=state.time; if(!t) return 'Any time';
+    if(t.mode==='simple'){
+      const ds=[...t.days].sort((a,b)=>a-b);
+      const dl=ds.length===7?'Any day':ds.map(d=>DAY_SHORT[d]).join('');
+      return dl+' '+fmtMin(t.from)+'–'+fmtMin(t.to);
+    }
+    return t.cells.size?('Grid · '+t.cells.size+'h painted'):'Grid · nothing painted';
+  }
+  function applyTime(){
+    if(tpMode==='simple'){
+      const from=+$('tpFrom').value, to=+$('tpTo').value;
+      state.time={mode:'simple',days:new Set(tpDaysSel),from,to:Math.max(to,from+30)};
+    }else{
+      state.time={mode:'grid',cells:new Set(gridCells)};
+    }
+    fitCache=new Map();
+    timeBtn.classList.add('on'); timeClear.hidden=false; timeLbl.textContent=timeSummary();
+    ensureSched().then(render).catch(()=>{});        // filter kicks in once schedule.json is here
+  }
+  function clearTime(){
+    state.time=null; fitCache=new Map();
+    timeBtn.classList.remove('on'); timeClear.hidden=true; timeLbl.textContent='Any time';
+    render();
+  }
+  function openPop(){
+    timePop.hidden=false; timeBtn.setAttribute('aria-expanded','true');
+    timePop.style.left=''; timePop.style.right='';
+    if(matchMedia('(max-width:640px)').matches) return;   // bottom-sheet mode: CSS handles position
+    timePop.style.right='auto'; timePop.style.left='0px'; // anchor left, then clamp into the viewport
+    const r=timePop.getBoundingClientRect();
+    const over=r.right-(innerWidth-10);
+    if(over>0) timePop.style.left=(-Math.min(over,Math.max(0,r.left-10)))+'px';
+  }
+  timeBtn.addEventListener('click',e=>{
+    if(e.target.closest('#timeClear')){ clearTime(); return; }
+    if(timePop.hidden) openPop();
+    else { timePop.hidden=true; timeBtn.setAttribute('aria-expanded','false'); }
+  });
+  document.addEventListener('click',e=>{
+    if(!timePop.hidden&&!e.target.closest('#timeWrap')){ timePop.hidden=true; timeBtn.setAttribute('aria-expanded','false'); }
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&!timePop.hidden){ timePop.hidden=true; timeBtn.setAttribute('aria-expanded','false'); }
+  });
+  function setTpMode(m){
+    tpMode=m;
+    $('tpSimple').classList.toggle('on',m==='simple');
+    $('tpGrid').classList.toggle('on',m==='grid');
+    $('tpSimplePane').hidden=m!=='simple';
+    $('tpGridPane').hidden=m!=='grid';
+    if(m==='grid'&&!gridCells.size){                 // first switch: seed the grid from the simple range
+      const from=+$('tpFrom').value, to=+$('tpTo').value;
+      for(const d of tpDaysSel) for(let h=Math.floor(from/60);h<Math.ceil(to/60);h++) gridCells.add(d+'-'+h);
+      paintGrid();
+    }
+    if(state.time) applyTime();
+  }
+  $('tpSimple').addEventListener('click',()=>setTpMode('simple'));
+  $('tpGrid').addEventListener('click',()=>setTpMode('grid'));
+  $('tpDays').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-d]'); if(!b) return;
+    const d=+b.dataset.d;
+    if(tpDaysSel.has(d)){ if(tpDaysSel.size>1) tpDaysSel.delete(d); } else tpDaysSel.add(d);
+    b.setAttribute('aria-pressed',tpDaysSel.has(d)?'true':'false');
+    applyTime();
+  });
+  function fixRange(ch){ // keep from < to; nudge the *other* select so the user's change sticks
+    const f=$('tpFrom'), t=$('tpTo');
+    if(+t.value<=+f.value){ if(ch==='from') t.value=String(Math.min(+f.value+60,GRID_H1*60)); else f.value=String(Math.max(+t.value-60,GRID_H0*60)); }
+  }
+  $('tpFrom').addEventListener('change',()=>{fixRange('from');applyTime();});
+  $('tpTo').addEventListener('change',()=>{fixRange('to');applyTime();});
+  const gridEl=$('tpGridEl');
+  {let html='<div></div>'+DAY_SHORT.map((d,i)=>`<div class="gh" data-col="${i}" title="Toggle the whole day">${d}</div>`).join('');
+   for(let h=GRID_H0;h<GRID_H1;h++){
+     html+=`<div class="glab">${fmtMin(h*60)}</div>`;
+     for(let d=0;d<7;d++) html+=`<div class="gc" data-cell="${d}-${h}"></div>`;
+   }
+   gridEl.innerHTML=html;}
+  function paintGrid(){gridEl.querySelectorAll('.gc').forEach(c=>c.classList.toggle('sel',gridCells.has(c.dataset.cell)));}
+  let painting=null;                                 // 'add' | 'del' while dragging
+  function paintCell(c){if(!c)return;const on=painting==='add';on?gridCells.add(c.dataset.cell):gridCells.delete(c.dataset.cell);c.classList.toggle('sel',on);}
+  gridEl.addEventListener('pointerdown',e=>{
+    const col=e.target.closest('.gh[data-col]');
+    if(col){
+      const d=+col.dataset.col;
+      let any=false; for(let h=GRID_H0;h<GRID_H1;h++) if(gridCells.has(d+'-'+h)){any=true;break;}
+      for(let h=GRID_H0;h<GRID_H1;h++){const k=d+'-'+h; any?gridCells.delete(k):gridCells.add(k);}
+      paintGrid(); applyTime(); return;
+    }
+    const c=e.target.closest('.gc'); if(!c) return;
+    e.preventDefault();
+    painting=gridCells.has(c.dataset.cell)?'del':'add';
+    paintCell(c);
+  });
+  gridEl.addEventListener('pointermove',e=>{         // elementFromPoint so touch drags work too
+    if(!painting) return;
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    paintCell(el&&el.closest?el.closest('.gc'):null);
+  });
+  document.addEventListener('pointerup',()=>{ if(painting){ painting=null; applyTime(); } });
+  document.addEventListener('pointercancel',()=>{ if(painting){ painting=null; applyTime(); } });
+  $('tpAll').addEventListener('click',()=>{for(let d=0;d<7;d++)for(let h=GRID_H0;h<GRID_H1;h++)gridCells.add(d+'-'+h);paintGrid();applyTime();});
+  $('tpNone').addEventListener('click',()=>{gridCells.clear();paintGrid();applyTime();});
+  $('tpOff').addEventListener('click',()=>{clearTime();timePop.hidden=true;timeBtn.setAttribute('aria-expanded','false');});
 
   let curView='rank';
   function setView(v){
