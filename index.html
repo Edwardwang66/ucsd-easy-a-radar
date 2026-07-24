@@ -809,6 +809,17 @@
    .dp-notes label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
    .dp-notes textarea{width:100%;min-height:70px;border:1px solid var(--line-strong);border-radius:9px;padding:10px;resize:vertical;background:var(--surface);color:var(--ink);font-family:var(--sans);font-size:13px}
    .dp-src{color:var(--faint);font-size:11.5px;margin-top:16px}
+   /* Mobile: stack the quarters vertically so each gets the full width —
+      the 3-/4-column grid otherwise squeezes them off-screen and the page
+      gets trapped scrolling sideways between quarters. */
+   @media(max-width:640px){
+     .dp-quarters{grid-template-columns:1fr}
+     .dp-q{border-right:none;border-bottom:1px dashed var(--line);min-height:0}
+     .dp-q:last-child{border-bottom:none}
+     .dp-qhead{padding:9px 13px;font-size:13px}
+     /* iOS zooms on inputs under 16px, which fights with page scrolling */
+     .dp-add input.nm,.dp-add input.un{font-size:16px}
+   }
    @media print{.dp-controls,.dp-toolbar,.dp-add,.dp-legend,.dp-course .del,.dp-course .gr,.dp-course input[type=checkbox],.dp-notes textarea{display:none!important}}
    </style>
 
