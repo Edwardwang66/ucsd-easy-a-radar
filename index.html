@@ -180,6 +180,9 @@
   .course .title{font-size:12.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:30ch}
   .badge-off{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.05em;color:var(--gA);
     border:1px solid color-mix(in srgb,var(--gA) 45%,transparent);border-radius:5px;padding:1px 5px;margin-left:7px;vertical-align:1px;text-transform:uppercase}
+  /* WebReg course-page link */
+  .seatlink{font-size:11px;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .seatlink:hover{text-decoration:underline}
 
   .instr{display:flex;flex-direction:column;gap:2px;min-width:0}
   .instr .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -284,6 +287,8 @@
   .exp-btn{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--accent);background:var(--accent-soft);
     color:var(--accent);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans)}
   .exp-btn:hover{background:var(--accent);color:#fff}
+  .exp-btn:disabled{opacity:.45;cursor:not-allowed;background:var(--surface);color:var(--muted);border-color:var(--line)}
+  .exp-btn:disabled:hover{background:var(--surface);color:var(--muted)}
   .exp-btn svg{width:15px;height:15px}
   .exp-hint{font-size:10.5px;color:var(--faint);line-height:1.45}
   .exp-hint b{color:var(--muted);font-weight:700}
@@ -302,8 +307,9 @@
   .sci .meets .m.tba{color:var(--faint);font-style:italic}
   .sci .meets .m.fin .mt{color:var(--gold)}
   .sci .meets .m.fin{color:var(--muted)}
-  .sci .prof{font-size:11.5px;color:var(--ink);margin-top:6px}
+  .sci .prof{font-size:11.5px;color:var(--ink);margin-top:6px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
   .sci .prof .lab{color:var(--muted)}
+  .sci .prof .sci-book{margin-left:auto}
   .sci.conf{border-left-color:var(--gF)!important}
   .conf-note{font-size:11px;color:var(--gF);margin-top:6px;font-weight:600}
 
@@ -690,6 +696,11 @@
      <div class="sched-side">
        <div class="sched-summary" id="schedSummary"></div>
        <div class="sched-actions">
+         <button class="exp-btn" id="openAllPages" title="Open every scheduled course's WebReg page, each in its own tab (UCSD login required)">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+           Open all course pages <span id="openAllCnt"></span>
+         </button>
+         <span class="exp-hint">Opens each course on <b>WebReg / TSS</b> in its own tab to enroll (UCSD login required). If your browser blocks the pop-ups, allow them for this site and click again.</span>
          <button class="exp-btn" id="exportIcs" title="Download an .ics calendar file of your Fall 2026 classes">
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
            Export to Calendar (.ics)
@@ -732,8 +743,9 @@
       <ul>
         <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
         <li><b>Offered this term</b> — matched against the live <b>Fall 2026</b> WebReg catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
+        <li><b>Course page link</b> — every offered course carries a <b>Course page ↗</b> link straight to its WebReg / TSS enrolment page (UCSD login required); in <b>My Schedule</b>, <b>Open all course pages</b> launches them all at once so you can enrol in one pass.</li>
         <li><b>This term's instructor (FA26)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each Fall 2026 section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way. Neither source carries an instructor id, so names are linked by a precision-first ladder: normalise order/accents, handle compound surnames (<i>Massimiliano Di Ventra</i> ↔ <i>Di Ventra, Massimiliano</i>) and Mc/apostrophe spellings, match on a first <i>or middle</i> initial (<i>Ryan Wagner</i> ↔ <i>Wagner, Timothy Ryan</i>), and auto-alias genuine renames by shared course (<i>Paul Cao</i> teaches the same courses <i>Cao, Yingjun</i> has taught). A professor teaching at UCSD for the first time has no grade history, so their name is marked <span class="firstx">0×</span> and sorted after the returning instructors.</li>
-        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser. Each course card also shows its <b>final exam</b> (FI) date &amp; time for the selected section group, and overlapping finals are flagged as conflicts. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the Fall 2026 term (Sep 24 – Dec 4) plus one-time final-exam events, campus holidays excluded and Pacific-time DST handled.</li>
+        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser. Each course card also shows its <b>final exam</b> (FI) date &amp; time for the selected section group, and overlapping finals are flagged as conflicts. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the Fall 2026 term (Sep 24 – Dec 4) plus one-time final-exam events, campus holidays excluded and Pacific-time DST handled. <b>Open all course pages</b> launches every scheduled course on WebReg in its own tab, so you can enrol in one pass (allow pop-ups for this site).</li>
         <li><b>Meeting-time filter</b> — the 🕐 filter keeps only courses that can actually fit your week: in at least one section group, every required meeting type (lecture / discussion / lab) must have a section inside your chosen days &amp; hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you're free. Sections with TBA times always count as fitting.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
@@ -972,6 +984,12 @@ function init(DATA){
     const p=PRE[r[C.s]+' '+r[C.c]]; if(!p) return '';
     return `<div class="prereq"><span class="prereq-lab">Prerequisites</span> ${esc(p)}</div>`;
   }
+  const SEATS=(DATA&&DATA.seats)||{};  // "SUBJ NUM" -> { u: WebReg/TSS course-page URL }
+  function seatOf(r){ return r[C.off] ? SEATS[CK(r[C.s],r[C.c])] : null; }   // only Fall-2026 rows carry a course-page link
+  function seatLink(r){
+    const s=seatOf(r); if(!s||!s.u) return '';
+    return `<a class="seatlink" href="${esc(s.u)}" target="_blank" rel="noopener" title="Open this course on WebReg / TSS (UCSD login required)">Course page ↗</a>`;
+  }
   function matchQ(r,q){
     if(!q) return true;
     const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
@@ -1151,9 +1169,10 @@ function init(DATA){
     const aka=AKA[r[C.i]];
     const nmTitle=aka?` title="Also known as ${esc(aka.join(', '))}"`:'';
     const akaTag=aka?`<span class="aka" title="Also known as ${esc(aka.join(', '))}">aka ${esc(aka[0])}</span>`:'';
+    const seatL=seatLink(r);
     return `<div class="trow" data-i="${idx}" aria-expanded="${isOpen}">
       <div class="course"><div class="top"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}${nowBadge}${addBtn}</div><div class="title">${esc(title)}</div></div>
-      <div class="instr"><span class="k">${instrLabel}</span><span class="nm ${isTBA?'na':''}"${nmTitle}>${esc(displayName)}</span>${akaTag}${rmpStar}${nowLine}</div>
+      <div class="instr"><span class="k">${instrLabel}</span><span class="nm ${isTBA?'na':''}"${nmTitle}>${esc(displayName)}</span>${akaTag}${rmpStar}${nowLine}${seatL}</div>
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
       <div class="rmp"><span class="k">RMP</span>${rmpCell}</div>
@@ -1522,11 +1541,13 @@ function init(DATA){
       return `<div class="m fin"><span class="mt">FI</span><span>${wd}${esc(s[S_DAYS]||'')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>Final exam</span></div>`;
     }).join('');
     const profs=[...new Set(secs.map(s=>s[S_INSTR]).filter(Boolean))];
+    const si=SEATS[it.k]||null;
+    const bookLink=si&&si.u?`<a class="seatlink" href="${esc(si.u)}" target="_blank" rel="noopener" title="Open ${esc(it.k)} on WebReg">Course page ↗</a>`:'';
     return `<div class="sci ${(it._conf||it._finConf)?'conf':''}" style="border-left-color:${color}">
       <div class="h"><div><div class="code">${esc(it.k)}</div><div class="ttl">${esc(course.t)}</div></div><button class="rm" data-rm="${esc(it.k)}" title="Remove">×</button></div>
       <div class="ctrls">${grpSel}${optSel}</div>
       <div class="meets">${meets}${finRows}</div>
-      ${profs.length?`<div class="prof"><span class="lab">Instructor:</span> ${esc(profs.join(', '))}</div>`:''}
+      ${(profs.length||bookLink)?`<div class="prof">${profs.length?`<span class="lab">Instructor:</span> ${esc(profs.join(', '))}`:''}${bookLink?`<span class="sci-book">${bookLink}</span>`:''}</div>`:''}
       ${it._conf?'<div class="conf-note">⚠ Time conflict with another course</div>':''}
       ${it._finConf?'<div class="conf-note">⚠ Final exam overlaps another course’s final</div>':''}
     </div>`;
@@ -1560,6 +1581,7 @@ function init(DATA){
       <div class="st"><div class="v">${units%1?units.toFixed(1):units}</div><div class="l">Units</div></div>
       <div class="st"><div class="v ${(confSet.size||finConf.size)?'warn':''}">${new Set([...confSet,...finConf]).size}</div><div class="l">Conflicts</div></div>`;
     $('schedItems').innerHTML=schItems.map((it,ci)=>schItemHTML(it,ci)).join('');
+    {const btn=$('openAllPages');if(btn){const nb=scheduledBookingUrls().length;btn.disabled=!nb;const c=$('openAllCnt');if(c)c.textContent=nb?`· ${nb}`:'';}}
     if(calMode==='finals') renderCal(finalsEvents(),FINALS_LABELS); else renderCal(evs);
     renderMap();
   }
@@ -1650,6 +1672,21 @@ function init(DATA){
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
   $('exportIcs').addEventListener('click',exportICS);
+  function scheduledBookingUrls(){
+    // preserve My Schedule order, one URL per course, only those with a live WebReg link
+    const seen=new Set(),out=[];
+    schItems.forEach(it=>{const s=SEATS[it.k];if(s&&s.u&&!seen.has(it.k)){seen.add(it.k);out.push({k:it.k,u:s.u});}});
+    return out;
+  }
+  function openAllCoursePages(){
+    const urls=scheduledBookingUrls();
+    if(!urls.length){alert('None of your scheduled courses has a WebReg course page yet.');return;}
+    if(urls.length>6 && !confirm(`Open ${urls.length} course pages, each in a new tab?\n\n${urls.map(x=>x.k).join(', ')}`)) return;
+    let blocked=0;
+    urls.forEach(x=>{const w=window.open(x.u,'_blank','noopener');if(!w)blocked++;});
+    if(blocked) alert(`Your browser blocked ${blocked} of ${urls.length} pop-up tab${blocked>1?'s':''}. Allow pop-ups for this site, then click again.`);
+  }
+  $('openAllPages').addEventListener('click',openAllCoursePages);
 
   function updateAddButtons(){document.querySelectorAll('.addbtn[data-add]').forEach(b=>{
     const k=b.dataset.add,instructor=b.dataset.instr||'',it=schItems.find(x=>x.k===k);
