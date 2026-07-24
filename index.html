@@ -784,6 +784,19 @@
    .dp-field select,.dp-field input{padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--ink);font-size:13.5px;font-family:var(--sans);min-width:160px}
    .dp-field select:disabled,.dp-field input:disabled{opacity:.5;cursor:not-allowed}
    .dp-field input:focus,.dp-field select:focus{outline:2px solid var(--accent);border-color:transparent}
+   /* Searchable Research Area combobox */
+   .gp-combo{position:relative}
+   .gp-hidden-sel{display:none!important}
+   .gp-combo-list{position:absolute;top:100%;left:0;right:0;z-index:60;margin-top:5px;max-height:340px;overflow-y:auto;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow);padding:5px}
+   .gp-combo-item{display:flex;flex-direction:column;gap:2px;padding:7px 10px;border-radius:7px;cursor:pointer}
+   .gp-combo-item .top{display:flex;align-items:center;gap:8px}
+   .gp-combo-item .cd{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--accent-2);flex:none}
+   .gp-combo-item .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;color:var(--ink)}
+   .gp-combo-item .dp{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+   .gp-combo-item .ws{font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--accent-2);background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent);border-radius:20px;padding:1px 6px;flex:none}
+   .gp-combo-item.active,.gp-combo-item:hover{background:var(--accent-soft)}
+   .gp-combo-empty{padding:9px 10px;font-size:12.5px;color:var(--muted)}
+   .gp-combo-group{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);padding:7px 10px 3px}
    .dp-drop{position:absolute;top:100%;left:0;right:0;z-index:40;margin-top:4px;max-height:300px;overflow:auto;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow);display:none}
    .dp-drop.show{display:block}
    .dp-drop .opt{padding:8px 11px;cursor:pointer;font-size:13px;color:var(--ink)}
@@ -925,6 +938,7 @@
    /* Overview card — departments without a course-bucket worksheet */
    .gp-ov{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;margin-top:6px}
    .gp-ov h3{margin:0 0 2px;font-size:18px;font-weight:700;color:var(--ink)}
+   .gp-ov h3 .isis{font-family:var(--mono);font-size:12px;font-weight:700;vertical-align:middle;margin-left:8px;padding:2px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent-2);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent)}
    .gp-ov .school{font-size:12.5px;color:var(--muted);margin-bottom:12px}
    .gp-ov .degrees{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 13px}
    .gp-ov .deg{font-size:12px;font-weight:700;font-family:var(--mono);padding:3px 10px;border-radius:20px;background:var(--accent-soft);color:var(--accent-2);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent)}
@@ -997,15 +1011,17 @@
    </div><!-- /dpUG -->
 
    <div id="dpGrad" hidden>
-     <p class="ge-intro">Plan a graduate degree by <b>school → department</b>. Every UCSD graduate department is listed with its degrees and a link to official requirements. <b>Electrical &amp; Computer Engineering</b> (Jacobs School of Engineering) has the full <b>course-level planner</b> — all thirteen ECE research areas from their official 2025–2027 degree planners: pick a research area and plan, add courses to each requirement bucket, tag the quarter, check off what's done, and watch each bucket fill toward its unit quota, with every course linking to its <b>grade ranking</b>. Other departments show a program overview; follow the official-requirements link to plan there.</p>
+     <p class="ge-intro">Plan a graduate degree by <b>school → department → research area</b>. Every UCSD graduate <b>ISIS major code</b> is a selectable option — base degrees, specializations, joint-doctoral and online variants — each with its official title and degrees. The <b>Jacobs School of Engineering</b> programs have the full <b>course-level planner</b> (ECE's thirteen research areas plus the CSE, MAE, Bioengineering, Materials, Nano/Chem, Structural and Bioinformatics worksheets): pick a research area and plan, add courses to each requirement bucket, tag the quarter, check off what's done, and watch each bucket fill toward its unit quota, with every course linking to its <b>grade ranking</b>. Every other ISIS code opens a program overview card; follow its official-requirements link to plan there.</p>
 
      <div class="dp-controls">
        <div class="dp-field"><label>School</label>
          <select id="gpSchool"><option value="">Select…</option></select></div>
        <div class="dp-field"><label>Department / Program</label>
          <select id="gpDept" disabled><option value="">—</option></select></div>
-       <div class="dp-field" style="flex:1;min-width:190px"><label>Research Area / ISIS Code</label>
-         <select id="gpProg" disabled><option value="">—</option></select></div>
+       <div class="dp-field gp-combo" style="flex:1;min-width:210px"><label>Research Area / ISIS Code</label>
+         <input id="gpProgInput" type="text" placeholder="Search title or ISIS code…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="gpProgList" disabled>
+         <select id="gpProg" class="gp-hidden-sel" disabled tabindex="-1" aria-hidden="true"><option value="">—</option></select>
+         <div id="gpProgList" class="gp-combo-list" role="listbox" hidden></div></div>
        <div class="dp-field"><label>Plan</label>
          <select id="gpPlan" disabled><option value="">—</option></select></div>
        <button class="dp-btn" id="gpLoad" disabled>Load Worksheet</button>
@@ -1058,7 +1074,7 @@
         <li><b>Meeting-time filter</b> — the 🕐 filter keeps only courses that can actually fit your week: in at least one section group, every required meeting type (lecture / discussion / lab) must have a section inside your chosen days &amp; hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you're free. Sections with TBA times always count as fitting.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
-        <li><b>Degree Planner</b> — the <b>Undergraduate</b> mode loads UCSD's official college academic plans (2022–2026) as a quarter-by-quarter grid. The <b>Graduate</b> mode is an <b>ECE M.S. / Ph.D.</b> worksheet organised by requirement category, with all <b>thirteen ECE research areas</b> modeled from their official 2025–2027 degree planners (ISRC/EC80, CE/EC79, ECS/EC78, SIP/EC82, MLDS/EC93, CTS, AEM, AOS, AP-EDM, MDS, MI, NDS, PHO). Each area carries its own core, additional and technical-elective rules and unit quotas (which vary by area); the plan choice sets the total (Plan I 52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA). It tracks units per bucket, total units toward the plan, and the 201+ ECE minimum — a reference guide, not official advice.</li>
+        <li><b>Degree Planner</b> — the <b>Undergraduate</b> mode loads UCSD's official college academic plans (2022–2026) as a quarter-by-quarter grid. The <b>Graduate</b> mode lists <b>every UCSD graduate ISIS major code</b> by school → department → research area (base degrees, specializations, joint-doctoral and online variants), and gives the Jacobs engineering programs a full worksheet organised by requirement category — including all <b>thirteen ECE research areas</b> modeled from their official 2025–2027 degree planners (ISRC/EC80, CE/EC79, ECS/EC78, SIP/EC82, MLDS/EC93, CTS, AEM, AOS, AP-EDM, MDS, MI, NDS, PHO). Each area carries its own core, additional and technical-elective rules and unit quotas (which vary by area); the plan choice sets the total (Plan I 52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA). It tracks units per bucket, total units toward the plan, and the 201+ ECE minimum — a reference guide, not official advice.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
       </ul>
       <p class="disclaimer"><b>Disclaimer.</b> This tool is for reference only and is not affiliated with UC San Diego. Grade and rating data may be incomplete or out of date. It does not constitute academic advice — every enrollment decision, including which course and section to take, is the student's own responsibility. Always confirm requirements and offerings with official UCSD sources and your academic advisor.</p>
@@ -2529,7 +2545,7 @@ function init(DATA){
   function gpEnsureData(){
     if(gpDB) return Promise.resolve(gpDB);
     if(gpPromise) return gpPromise;
-    gpPromise=fetch('gradplans.36a1ed5394.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
+    gpPromise=fetch('gradplans.9d3bb9bd1b.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
   function gpProgLabel(p){
@@ -2548,6 +2564,7 @@ function init(DATA){
       ss.onchange=gpOnSchool;
       $('gpDept').onchange=gpOnDept;
       $('gpProg').onchange=gpOnProg;
+      gpComboInit();
       $('gpPlan').onchange=()=>{$('gpLoad').disabled=!$('gpPlan').value;};
       $('gpLoad').onclick=gpLoadWorksheet;
       $('gpReset').onclick=()=>{if(gpOfficial){gpModel=JSON.parse(JSON.stringify(gpOfficial));gpSave();gpRender();}};
@@ -2561,16 +2578,109 @@ function init(DATA){
   }
   function gpDeptAvailable(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.available!==false:false;}
   function gpDeptSchool(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.school:'';}
+  // Every ISIS major code is a Research Area option. Those with course-bucket
+  // worksheets (has .groups) sort first and are tagged; the rest open an overview card.
+  // The <select> stays the value source; a searchable combobox drives it (gpCombo*).
   function gpFillPrograms(deptCode){
     const sel=$('gpProg');
     const list=gpDB.programs.filter(p=>(p.dept||'ECE')===deptCode)
-      .sort((a,b)=>(b.detailed?1:0)-(a.detailed?1:0)||a.name.localeCompare(b.name));
-    sel.innerHTML='<option value="">Select…</option>'+list.map(p=>'<option value="'+dpEsc(p.code)+'">'+dpEsc(gpProgLabel(p))+(p.detailed?'':' · framework')+'</option>').join('');
+      .sort((a,b)=>(b.groups?1:0)-(a.groups?1:0)||a.name.localeCompare(b.name));
+    sel.innerHTML='<option value="">Select…</option>'+list.map(p=>'<option value="'+dpEsc(p.code)+'">'+dpEsc(gpProgLabel(p))+(p.groups?' · full planner':'')+'</option>').join('');
     sel.disabled=list.length===0;
+    const inp=$('gpProgInput');
+    if(inp){ inp.disabled=list.length===0; inp.value=''; gpComboClose(); }
   }
-  // A department is ready if it has a course-bucket worksheet (ECE) or an overview card.
-  function gpDeptReady(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code) || !!(d&&d.overview); }
-  function gpDeptWorksheet(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code); }
+
+  // ---- Searchable Research Area / ISIS combobox (global: type any title or code) ----
+  let gpSearchIdx=null, gpComboMatches=[], gpComboActive=-1;
+  function gpBuildSearchIdx(){
+    if(gpSearchIdx) return gpSearchIdx;
+    const sch={}; (gpDB.schools||[]).forEach(s=>sch[s.code]=s.name);
+    gpSearchIdx=gpDB.programs.map(p=>{
+      const dept=p.dept||'ECE', deptName=gpDeptName(dept);
+      return {code:p.code, name:p.name, dept, deptName, worksheet:!!p.groups,
+        schoolName:sch[p.school||gpDeptSchool(dept)]||'',
+        hay:(p.name+' '+p.code+' '+(p.area||'')+' '+deptName).toLowerCase()};
+    });
+    return gpSearchIdx;
+  }
+  function gpComboClose(){ const l=$('gpProgList'); if(l)l.hidden=true; const i=$('gpProgInput'); if(i)i.setAttribute('aria-expanded','false'); gpComboActive=-1; }
+  function gpComboSyncInput(){ const code=$('gpProg').value, p=code&&gpFindProgram(code); const i=$('gpProgInput'); if(i)i.value=p?gpProgLabel(p):''; }
+  function gpComboRender(q){
+    const list=$('gpProgList'), cur=$('gpDept').value, idx=gpBuildSearchIdx();
+    const query=(q||'').trim().toLowerCase();
+    const byName=(a,b)=>(b.worksheet?1:0)-(a.worksheet?1:0)||a.name.localeCompare(b.name);
+    let inDept, others;
+    if(!query){
+      inDept=idx.filter(x=>x.dept===cur).sort(byName); others=[];
+    }else{
+      const toks=query.split(/\s+/);
+      const hits=idx.filter(x=>toks.every(t=>x.hay.includes(t)));
+      inDept=hits.filter(x=>x.dept===cur).sort(byName);
+      // A bare number (e.g. "75") is ambiguous — keep it scoped to the chosen
+      // department unless that department has no match, then fall back to global.
+      const numericOnly=/^\d+$/.test(query);
+      others=(numericOnly && inDept.length) ? [] :
+        hits.filter(x=>x.dept!==cur).sort((a,b)=>
+          (b.worksheet?1:0)-(a.worksheet?1:0)
+          ||(b.code.toLowerCase().startsWith(query)?1:0)-(a.code.toLowerCase().startsWith(query)?1:0)
+          ||a.name.localeCompare(b.name));
+    }
+    const OLIMIT=40, othersShown=others.slice(0,OLIMIT);
+    gpComboMatches=[...inDept,...othersShown];
+    if(!gpComboMatches.length){ list.innerHTML='<div class="gp-combo-empty">No matching program.</div>'; list.hidden=false; $('gpProgInput').setAttribute('aria-expanded','true'); gpComboActive=-1; return; }
+    let n=-1;
+    const itemHtml=x=>{ n++; const other=x.dept!==cur;
+      return '<div class="gp-combo-item" role="option" data-code="'+dpEsc(x.code)+'" data-i="'+n+'">'
+        +'<div class="top"><span class="cd">'+dpEsc(x.code)+'</span>'
+        +'<span class="nm">'+dpEsc(x.name)+'</span>'
+        +(x.worksheet?'<span class="ws">planner</span>':'')+'</div>'
+        +(other?'<div class="dp">'+dpEsc(x.deptName)+'</div>':'')
+        +'</div>'; };
+    let html=inDept.map(itemHtml).join('');
+    if(othersShown.length){
+      html+='<div class="gp-combo-group">Other departments</div>'+othersShown.map(itemHtml).join('');
+      if(others.length>OLIMIT) html+='<div class="gp-combo-empty">+'+(others.length-OLIMIT)+' more — keep typing to narrow…</div>';
+    }
+    list.innerHTML=html;
+    gpComboActive=gpComboMatches.length?0:-1;   // highlight top match so Enter picks it
+    list.hidden=false; $('gpProgInput').setAttribute('aria-expanded','true');
+    [...list.querySelectorAll('.gp-combo-item')].forEach(el=>{ el.onmousedown=e=>{e.preventDefault(); gpComboPick(el.dataset.code);}; });
+    gpComboHighlight();
+  }
+  function gpComboHighlight(){
+    const els=[...$('gpProgList').querySelectorAll('.gp-combo-item')];
+    els.forEach((el,i)=>el.classList.toggle('active',i===gpComboActive));
+    if(gpComboActive>=0&&els[gpComboActive]) els[gpComboActive].scrollIntoView({block:'nearest'});
+  }
+  function gpComboPick(code){
+    const p=gpFindProgram(code); if(!p) return;
+    if((p.dept||'ECE')!==$('gpDept').value){        // global pick — switch school + department first
+      const ssel=$('gpSchool'), sc=p.school||gpDeptSchool(p.dept||'ECE');
+      if([...ssel.options].some(o=>o.value===sc)){ ssel.value=sc; gpOnSchool(); }
+      const dsel=$('gpDept');
+      if([...dsel.options].some(o=>o.value===p.dept)){ dsel.value=p.dept; gpOnDept(); }
+    }
+    $('gpProg').value=code; gpComboClose(); gpComboSyncInput();
+    $('gpProg').dispatchEvent(new Event('change'));  // -> gpOnProg
+  }
+  function gpComboInit(){
+    const inp=$('gpProgInput'); if(!inp||inp._wired) return; inp._wired=true;
+    inp.addEventListener('focus',()=>{ if(inp.disabled)return; inp.select(); gpComboRender(''); });
+    inp.addEventListener('input',()=>gpComboRender(inp.value));
+    inp.addEventListener('blur',()=>setTimeout(()=>{ gpComboClose(); gpComboSyncInput(); },140));
+    inp.addEventListener('keydown',e=>{
+      const l=$('gpProgList');
+      if(l.hidden&&(e.key==='ArrowDown'||e.key==='Enter')){ gpComboRender(''); return; }
+      if(e.key==='ArrowDown'){ e.preventDefault(); gpComboActive=Math.min(gpComboActive+1,gpComboMatches.length-1); gpComboHighlight(); }
+      else if(e.key==='ArrowUp'){ e.preventDefault(); gpComboActive=Math.max(gpComboActive-1,0); gpComboHighlight(); }
+      else if(e.key==='Enter'){ if(gpComboActive>=0&&gpComboMatches[gpComboActive]){ e.preventDefault(); gpComboPick(gpComboMatches[gpComboActive].code); } }
+      else if(e.key==='Escape'){ gpComboClose(); gpComboSyncInput(); }
+    });
+  }
+  // A department is ready if it has at least one program (worksheet or overview).
+  function gpDeptReady(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code); }
+  function gpDeptWorksheet(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code && p.groups); }
   // Step 1 handler: school -> populate its departments.
   function gpOnSchool(){
     const sc=$('gpSchool').value, ds=$('gpDept');
@@ -2585,39 +2695,34 @@ function init(DATA){
     }).join('');
     ds.disabled=list.length===0;
   }
-  // Step 2 handler: department -> worksheet flow (ECE), overview card, or coming-soon note.
+  // Step 2 handler: department -> list every ISIS-coded program in Research Area.
   function gpOnDept(){
     const code=$('gpDept').value, note=$('gpDeptNote');
     gpResetProg(); gpHideOverview();
     if(!code){note.hidden=true;return;}
     const d=(gpDB.departments||[]).find(x=>x.code===code);
     const progs=gpDB.programs.filter(p=>(p.dept||'ECE')===code);
-    if(progs.length){ note.hidden=true; gpFillPrograms(code); return; }        // worksheet programs
-    if(d&&d.overview){                                                          // overview: put the major (with ISIS code) in Research Area
-      note.hidden=true;
-      const label=d.name+(d.majorCode?' ('+d.majorCode+')':'');
-      $('gpProg').innerHTML='<option value="">Select…</option><option value="__ov__">'+dpEsc(label)+'</option>';
-      $('gpProg').disabled=false;
-      return;
-    }
+    if(progs.length){ note.hidden=true; gpFillPrograms(code); return; }        // list all research areas / ISIS codes
     note.hidden=false;                                                          // not yet available
     note.innerHTML='<b>'+dpEsc(d?d.name:code)+'</b> isn’t modeled yet — check back later.';
     $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
   }
-  function gpShowOverview(d){
-    const ov=$('gpOverview'), o=d.overview||{};
-    const school=(gpDB.schools||[]).find(s=>s.code===d.school);
-    const degs=(o.degrees||[]).map(x=>'<span class="deg">'+dpEsc(x)+'</span>').join('');
+  // Overview card for a single ISIS-coded program (no course-level worksheet modeled).
+  function gpShowOverview(p){
+    const ov=$('gpOverview');
+    const dept=(gpDB.departments||[]).find(x=>x.code===p.dept)||{};
+    const school=(gpDB.schools||[]).find(s=>s.code===(p.school||dept.school));
+    const degs=(p.degrees||[]).map(x=>'<span class="deg">'+dpEsc(x)+'</span>').join('');
     ov.innerHTML='<div class="gp-ov">'
-      +'<h3>'+dpEsc(d.name)+(d.majorCode?' <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent-2)">'+dpEsc(d.majorCode)+'</span>':'')+'</h3>'
-      +'<div class="school">'+dpEsc(school?school.name:d.school)+(d.majorCode?' · ISIS '+dpEsc(d.majorCode):'')+'</div>'
+      +'<h3>'+dpEsc(p.name)+' <span class="isis">'+dpEsc(p.code)+'</span></h3>'
+      +'<div class="school">'+dpEsc(dept.name||'')+(school&&school.name!==dept.name?' · '+dpEsc(school.name):'')+'</div>'
       +(degs?'<div class="degrees">'+degs+'</div>':'')
-      +(o.notes?'<div class="note">'+dpEsc(o.notes)+'</div>':'')
+      +(p.deptNotes?'<div class="note">'+dpEsc(p.deptNotes)+'</div>':'')
       +'<div class="actions">'
-      +(o.reqUrl?'<a class="req" href="'+dpEsc(o.reqUrl)+'" target="_blank" rel="noopener">Official degree requirements ↗</a>':'')
+      +(p.reqUrl?'<a class="req" href="'+dpEsc(p.reqUrl)+'" target="_blank" rel="noopener">Official degree requirements ↗</a>':'')
       +'<a class="req ghost" href="https://grad.ucsd.edu/admissions/programs.html" target="_blank" rel="noopener">All UCSD programs ↗</a>'
       +'</div>'
-      +'<div class="disc">Course-level planning (requirement buckets, unit tracking) is modeled for ECE so far. For '+dpEsc(d.name)+', follow the official requirements link above — reference only, confirm with the department.</div>'
+      +'<div class="disc">Course-level worksheets (requirement buckets, unit tracking) are modeled for the engineering programs so far. For <b>'+dpEsc(p.name)+' ('+dpEsc(p.code)+')</b>, follow the official requirements link above — reference only, confirm with the department.</div>'
       +'</div>';
     ov.hidden=false; $('gpEmpty').hidden=true; $('gpApp').hidden=true;
   }
@@ -2629,19 +2734,20 @@ function init(DATA){
   function gpResetProg(){
     const ps=$('gpPlan');
     $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
+    const inp=$('gpProgInput'); if(inp){inp.value='';inp.disabled=true;} gpComboClose();
     ps.disabled=true; ps.innerHTML='<option>—</option>'; $('gpLoad').disabled=true;
   }
   function gpOnProg(){
     const code=$('gpProg').value, ps=$('gpPlan');
     gpHideOverview();
     if(!code){ps.disabled=true;ps.innerHTML='<option>—</option>';$('gpLoad').disabled=true;return;}
-    if(code==='__ov__'){ // overview major selected — show the program overview card
+    const prog=gpFindProgram(code);
+    if(!prog||!prog.groups){ // overview-only program — show its card, no plan/worksheet
       ps.disabled=true; ps.innerHTML='<option>—</option>'; $('gpLoad').disabled=true;
-      const d=(gpDB.departments||[]).find(x=>x.code===$('gpDept').value);
-      if(d) gpShowOverview(d);
+      if(prog) gpShowOverview(prog);
       return;
     }
-    const plans=gpPlansFor(gpFindProgram(code));
+    const plans=gpPlansFor(prog);
     ps.disabled=false;
     ps.innerHTML='<option value="">Select…</option>'+plans.map(p=>'<option value="'+dpEsc(p.id)+'">'+dpEsc(p.name)+' · '+p.totalUnits+'u</option>').join('');
     ps.value=plans.some(p=>p.id==='II')?'II':plans[0].id; $('gpLoad').disabled=false;
@@ -2834,7 +2940,7 @@ function init(DATA){
         dsel.value=dept; gpOnDept();
         const ps=$('gpProg');
         if([...ps.options].some(o=>o.value===gpModel.meta.code)){
-          ps.value=gpModel.meta.code; gpOnProg();
+          ps.value=gpModel.meta.code; gpComboSyncInput(); gpOnProg();
           $('gpPlan').value=gpModel.meta.plan; $('gpLoad').disabled=false;
         }
       }
