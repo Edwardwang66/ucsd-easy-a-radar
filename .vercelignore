@@ -1,3 +1,10 @@
 # Not part of the deployed site.
 README.md
 .gitignore
+build.js
+
+# Un-hashed source data files — only their content-hashed copies
+# (data.<hash>.json, produced by build.js) are served. See build.js.
+data.json
+hist.json
+schedule.json
