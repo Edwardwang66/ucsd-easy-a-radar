@@ -432,6 +432,30 @@
   .ge-src li{font-size:11.5px;line-height:1.4}
   .ge-src .disc{margin:10px 0 0;padding-top:9px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.55}
 
+  /* ---- multi-select subject chips (Rankings) ---- */
+  .subj-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:-2px}
+  .subj-chips .sc{display:inline-flex;align-items:center;gap:5px;background:var(--accent-soft);color:var(--accent);
+    border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:999px;padding:3px 5px 3px 11px;
+    font-size:12.5px;font-weight:600;font-family:var(--mono)}
+  .subj-chips .sc button{border:0;background:transparent;color:var(--accent);cursor:pointer;font-size:15px;line-height:1;padding:0 2px;border-radius:50%}
+  .subj-chips .sc button:hover{color:var(--gF)}
+  .subj-chips .sc-lead{font-size:11.5px;color:var(--muted);font-weight:600}
+  .subj-chips .sc-clear{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+    border-radius:999px;padding:3px 11px;font-size:12px;cursor:pointer;font-family:var(--sans)}
+  .subj-chips .sc-clear:hover{color:var(--ink);border-color:var(--accent)}
+  .combo-list li.on{background:color-mix(in srgb,var(--gA) 12%,transparent)}
+  .combo-list li .ck{color:var(--gA);font-weight:700;margin-left:auto}
+  .combo-list li.on.active .ck,.combo-list li.active .ck{color:#fff}
+
+  /* ---- GE → course-selection bridge ---- */
+  .ge-browse{display:inline-flex;align-items:center;gap:4px;margin-top:6px;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);
+    background:var(--accent-soft);color:var(--accent);border-radius:7px;padding:3px 9px;font-size:11.5px;font-weight:600;
+    cursor:pointer;font-family:var(--sans);white-space:nowrap;line-height:1.3}
+  .ge-browse:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .ge-tbl td .subj-hint{display:block;margin-top:3px;font-size:11px;color:var(--faint);font-family:var(--mono)}
+  .ge-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:2px 18px 16px}
+  .ge-cta .lab{font-size:11.5px;color:var(--muted)}
+
   @media (max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}}
   @media (max-width:720px){
     .thead{display:none}
@@ -555,6 +579,7 @@
         </select>
       </div>
     </div>
+    <div class="subj-chips" id="subjChips" hidden></div>
     <div class="row2">
       <div class="chips" id="levels" role="group" aria-label="Course level">
         <button class="chip" data-lv="ug" aria-pressed="true">Undergrad</button>
@@ -866,6 +891,30 @@ window.GE_REQS={
     ['UCSD Guardian · college GPA compare','https://ucsdguardian.org/2018/01/21/ucsd-writing-requirements-who-has-it-the-hardest-2/','secondary']
   ]
 };
+/* Subjects that commonly satisfy each GE area → used by the "Find courses" bridge to pre-filter
+   the rankings (multi-select) sorted by easy-A. Codes are intersected with the dataset at click
+   time, so unknown/unoffered subjects drop out. Writing sequences map to their exact subject code
+   (precise); breadth areas map to the common qualifying subjects (approximate — confirm the
+   approved list). Areas that span many subjects (open breadth, regional, PofC) intentionally omit. */
+(function(){
+  var NS=['BILD','BICD','BIPN','BIBC','BIMM','BIEB','CHEM','PHYS','SIO','ESYS'];   // natural science
+  var MA=['MATH','DSC'];                                                            // math / quant
+  var AR=['MUS','VIS','TDGE','TDHT','TDMV','TDPR','TDAC','TDDE','TDDR','TDPW','DANC']; // fine arts
+  var SS=['ANTH','ANBI','ANSC','ANAR','ECON','POLI','PSYC','SOCI','SOCG','COMM','USP','LATI','LIGN','COGS','ETHN','GLBH','EDS']; // social science
+  var HU=['LTEN','LTWL','LTCS','LTWR','LTEA','LTKO','LTSP','LTFR','PHIL','HILD','HIEU','HIUS','HITO','RELI','CLAS','AAS']; // humanities
+  var STAT=['MATH','DSC','COGS','PSYC','ECON'];                                     // statistics-flavored
+  var QUANT=['MATH','DSC','PHIL','CSE'];                                            // calc/stats/logic/programming
+  window.GE_SUBJECTS={
+    revelle:{'Humanities':['HUM'],'Mathematics':MA,'Natural Science':NS,'Social Science':SS,'Fine Arts':AR},
+    muir:{'Writing':['MCWP'],'Social Sciences':SS,'Math or Nat. Science':MA.concat(NS),'Humanities / Arts / Language':HU.concat(AR)},
+    marshall:{'Core writing':['DOC'],'Natural Science':NS,'Math / Stats / Logic':MA,'Humanities & Cultural':['AAS','ETHN','HILD','LATI','LTEN','RELI','LTWL','LTCS'],'Fine Arts':AR},
+    warren:{'Writing':['WCWP'],'Ethics & Society':['PHIL','POLI'],'Formal Skills':QUANT},
+    erc:{'MMW core':['MMW'],'Natural Science':NS,'Quantitative Methods':QUANT,'Fine Arts':AR},
+    sixth:{'CAT core':['CAT'],'CAT upper-div writing':['CAT'],'Exploring Data':STAT,'Art Making':AR.concat(['LTEN','LTWL'])},
+    seventh:{'Synthesis core':['SYN']},
+    eighth:{'CCE core':['CCE']}
+  };
+})();
 </script>
 <script>
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -890,13 +939,14 @@ function init(DATA){
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
-  const state={q:'',subject:'',prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60,time:null};
+  const state={q:'',subjects:new Set(),prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60,time:null};
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
   const set=new Set(); const subjCount={};
   for(const r of R){ set.add(r[C.s]); subjCount[r[C.s]]=(subjCount[r[C.s]]||0)+1; }
   const subs=[...set].sort();
+  const subjSet=set;   // fast membership test for the GE→rankings bridge
   $('schedcount').textContent=(DATA.meta&&(DATA.meta.catalogCourses||DATA.meta.schedCodes)||1778).toLocaleString();
   {const cc=$('curcount'); if(cc) cc.textContent=(DATA.meta&&DATA.meta.fa26CurrentRows||0).toLocaleString();}
 
@@ -936,7 +986,7 @@ function init(DATA){
         if(!courseFits(CK(r[C.s],r[C.c]))) continue;
       }
       if(state.curonly && r[C.cur]!==1) continue;
-      if(state.subject && r[C.s]!==state.subject) continue;
+      if(state.subjects.size && !state.subjects.has(r[C.s])) continue;
       if(state.prof && r[C.i]!==state.prof) continue;
       if(!levelOk(r[C.lv])) continue;
       if(r[C.src]===0 && r[C.n]<state.minoff) continue;   // min-times filter only gates real grade rows
@@ -961,7 +1011,7 @@ function init(DATA){
     const seen=new Map();
     for(const r of R){
       if(state.offered && !r[C.off]) continue;
-      if(state.subject && r[C.s]!==state.subject) continue;
+      if(state.subjects.size && !state.subjects.has(r[C.s])) continue;
       if(!levelOk(r[C.lv])) continue;
       if(!matchQ(r,q)) continue;
       const raw=r[C.i]; if(!raw) continue;
@@ -1154,20 +1204,29 @@ function init(DATA){
   // ---- generic typeahead combobox (used by Subject & Professor) ----
   function setupCombo(o){
     let active=-1, selLabel='';
-    const lbl=el=>el.childNodes[0]?el.childNodes[0].textContent:'';
+    const lbl=el=>{for(const n of el.childNodes){if(n.nodeType===3&&n.textContent.trim())return n.textContent.trim();}return el.textContent.trim();};
     function open(filter){
       const items=o.getItems(filter);
       const showAll=!(filter&&filter.trim());
-      const allRow=showAll?`<li data-v="" role="option" class="alli">${o.allLabel}</li>`:'';
-      const rows=items.map(it=>`<li data-v="${esc(it.v)}" role="option">${esc(it.label)}${it.cnt!=null?`<span class="cnt">${it.cnt.toLocaleString()}</span>`:''}</li>`).join('');
+      const allRow=showAll?`<li data-v="" role="option" class="alli">${o.multi&&o.selectedCount&&o.selectedCount()?'Clear all subjects':o.allLabel}</li>`:'';
+      const rows=items.map(it=>{const on=o.multi&&o.isSelected&&o.isSelected(it.v);
+        return `<li data-v="${esc(it.v)}" role="option" class="${on?'on':''}">${esc(it.label)}${it.cnt!=null?`<span class="cnt">${it.cnt.toLocaleString()}</span>`:''}${on?'<span class="ck">✓</span>':''}</li>`;}).join('');
       o.list.innerHTML=allRow+(rows||`<li class="none">No match</li>`);
       o.list.hidden=false; o.input.setAttribute('aria-expanded','true'); active=-1;
     }
-    function close(){o.list.hidden=true;o.input.setAttribute('aria-expanded','false');active=-1;o.input.value=selLabel;}
-    function pick(v,label){selLabel=label||'';o.onSelect(v);o.input.value=selLabel;o.combo.classList.toggle('has-value',!!v);o.list.hidden=true;o.input.setAttribute('aria-expanded','false');active=-1;}
+    function close(){o.list.hidden=true;o.input.setAttribute('aria-expanded','false');active=-1;if(!o.multi)o.input.value=selLabel;else o.input.value='';}
+    function pick(v,label){
+      if(o.multi){
+        if(!v) o.onClearAll(); else o.onToggle(v);
+        o.input.value=''; active=-1; open('');            // keep open, refresh checkmarks
+        o.input.focus();
+        return;
+      }
+      selLabel=label||'';o.onSelect(v);o.input.value=selLabel;o.combo.classList.toggle('has-value',!!v);o.list.hidden=true;o.input.setAttribute('aria-expanded','false');active=-1;
+    }
     function move(d){const els=[...o.list.querySelectorAll('li[data-v]')];if(!els.length)return;active=(active+d+els.length)%els.length;els.forEach((el,i)=>el.classList.toggle('active',i===active));els[active].scrollIntoView({block:'nearest'});}
     o.input.addEventListener('focus',()=>open(''));
-    o.input.addEventListener('input',e=>{o.combo.classList.remove('has-value');open(e.target.value);});
+    o.input.addEventListener('input',e=>{if(!o.multi)o.combo.classList.remove('has-value');open(e.target.value);});
     o.input.addEventListener('keydown',e=>{
       if(o.list.hidden&&e.key==='ArrowDown'){open(o.input.value);return;}
       if(e.key==='ArrowDown'){e.preventDefault();move(1);}
@@ -1176,16 +1235,51 @@ function init(DATA){
       else if(e.key==='Escape'){close();o.input.blur();}
     });
     o.list.addEventListener('mousedown',e=>{const li=e.target.closest('li[data-v]');if(!li)return;e.preventDefault();pick(li.dataset.v, li.dataset.v?lbl(li):'');});
-    o.clear.addEventListener('mousedown',e=>{e.preventDefault();pick('','');o.input.focus();open('');});
+    o.clear.addEventListener('mousedown',e=>{e.preventDefault();pick('','');o.input.focus();if(o.multi)open('');});
     document.addEventListener('click',e=>{if(!e.target.closest('#'+o.combo.id)&&!o.list.hidden)close();});
+    o.refresh=()=>{if(!o.list.hidden)open(o.input.value);};
+    return o;
   }
-  setupCombo({
+  // ---- multi-select subjects ----
+  function renderSubjChips(){
+    const el=$('subjChips'); if(!el)return;
+    if(!state.subjects.size){el.hidden=true;el.innerHTML='';$('subjectCombo').classList.remove('has-value');return;}
+    el.hidden=false;
+    const chips=[...state.subjects].sort().map(s=>`<span class="sc">${esc(s)}<button data-rmsubj="${esc(s)}" aria-label="Remove ${esc(s)}">×</button></span>`).join('');
+    el.innerHTML=`<span class="sc-lead">Subjects:</span>${chips}<button class="sc-clear" id="subjClearAll">Clear all</button>`;
+    $('subjectCombo').classList.add('has-value');
+  }
+  function applySubjects(){renderSubjChips();if(subjectCombo&&subjectCombo.refresh)subjectCombo.refresh();state.limit=PAGE;render();}
+  const subjectCombo=setupCombo({
     combo:$('subjectCombo'), input:$('subjectInput'), list:$('subjectList'), clear:$('subjectClear'),
-    allLabel:'All subjects',
+    allLabel:'All subjects', multi:true,
+    isSelected(v){return state.subjects.has(v);},
+    selectedCount(){return state.subjects.size;},
     getItems(f){const q=(f||'').trim().toLowerCase();let list=subs;if(q){const s1=[],s2=[];for(const s of subs){const sl=s.toLowerCase();if(sl.startsWith(q))s1.push(s);else if(sl.includes(q))s2.push(s);}list=s1.concat(s2);}return list.slice(0,120).map(s=>({v:s,label:s,cnt:subjCount[s]||0}));},
-    onSelect(v){state.subject=v;render();}
+    onToggle(v){if(state.subjects.has(v))state.subjects.delete(v);else state.subjects.add(v);applySubjects();},
+    onClearAll(){state.subjects.clear();applySubjects();}
   });
-  $('subjectInput').placeholder='All subjects ('+subs.length+')';
+  $('subjectInput').placeholder='Add subjects ('+subs.length+')';
+  $('subjChips').addEventListener('click',e=>{
+    const rm=e.target.closest('[data-rmsubj]'); if(rm){state.subjects.delete(rm.dataset.rmsubj);applySubjects();return;}
+    if(e.target.closest('#subjClearAll')){state.subjects.clear();applySubjects();}
+  });
+  // jump from a GE requirement into the rankings, pre-filtered to the subjects that satisfy it
+  function goToCourses(codes){
+    codes=(codes||[]).map(c=>c.trim()).filter(Boolean);
+    const set=new Set(codes.filter(c=>subjSet.has(c)));
+    state.q=''; $('q').value='';
+    if(set.size){ state.subjects=set; }
+    else { state.subjects=new Set(); if(codes.length){state.q=codes[0].toLowerCase(); $('q').value=codes[0];} } // subject absent from data → fall back to a code search
+    state.offered=true; state.sort='g'; state.level='ug'; state.limit=PAGE;
+    $('sort').value='g';
+    document.querySelectorAll('#levels .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.lv==='ug'?'true':'false'));
+    $('offered').setAttribute('aria-pressed','true');
+    setView('rank'); renderSubjChips();
+    document.querySelector('.toolbar').scrollIntoView({block:'start'});
+    render();
+    return set.size;
+  }
   setupCombo({
     combo:$('profCombo'), input:$('profInput'), list:$('profList'), clear:$('profClear'),
     allLabel:'Any professor',
@@ -1754,8 +1848,13 @@ function init(DATA){
   }
   function renderGeBody(){
     const el=$('geBody'), c=GE.colleges&&GE.colleges[geCollege]; if(!el||!c)return;
+    const SUBJMAP=(window.GE_SUBJECTS||{})[geCollege]||{};
     const tags=c.tags.map(t=>`<span class="ge-tag ${t[0]}">${esc(t[1])}</span>`).join('');
-    const rows=c.areas.map(a=>`<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}</td><td>${geGradeBadge(a[3])}</td></tr>`).join('');
+    const rows=c.areas.map(a=>{
+      const codes=SUBJMAP[a[0]];
+      const browse=codes&&codes.length?`<button class="ge-browse" data-subs="${esc(codes.join(','))}" title="Jump to the offered courses for this requirement, ranked by GPA">🔍 Find courses ↗</button>`:'';
+      return `<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}${browse}</td><td>${geGradeBadge(a[3])}</td></tr>`;
+    }).join('');
     el.innerHTML=`<div class="ge-card">
       <div class="ge-hd"><span class="cen">${esc(c.en)}</span><h3>${esc(c.name)} — ${esc(c.tagline)}</h3><p class="char">${esc(c.char)}</p></div>
       <div class="ge-tags">${tags}</div>
@@ -1763,6 +1862,7 @@ function init(DATA){
         <thead><tr><th>Area</th><th>Requirement &amp; notes</th><th>Grading</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
+      <div class="ge-cta"><span class="lab">💡 Tap <b>Find courses</b> on a requirement to jump to the Fall-2026 courses that satisfy it, ranked easy-A first — then multi-select subjects to compare.</span></div>
       <div class="ge-note"><span class="lab">Transfer</span>${esc(c.transfer)}</div>
     </div>`;
   }
@@ -1795,6 +1895,7 @@ function init(DATA){
     renderGePicker(); renderGeBody(); renderGeUni(); renderGeSrc();
   }
   $('gePicker').addEventListener('click',e=>{const b=e.target.closest('.cbtn');if(b)setCollege(b.dataset.col);});
+  $('geBody').addEventListener('click',e=>{const b=e.target.closest('.ge-browse');if(b)goToCourses(b.dataset.subs.split(','));});
 
   let curView='rank';
   function setView(v){
