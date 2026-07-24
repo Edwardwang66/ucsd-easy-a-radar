@@ -954,17 +954,21 @@
    </div><!-- /dpUG -->
 
    <div id="dpGrad" hidden>
-     <p class="ge-intro">Plan an <b>ECE M.S. / Ph.D.</b> degree by requirement category. Pick your <b>research area</b> and <b>plan</b> to load its official worksheet — all <b>thirteen ECE research areas</b> are modeled from their official 2025–2027 degree planners, each with its own core, additional and technical-elective rules. Add courses to each requirement bucket, tag the quarter you'll take them, check off what's done, and watch each bucket fill toward its unit quota. Every course links to its <b>grade ranking</b> so you can pick GPA-friendly options.</p>
+     <p class="ge-intro">Plan a graduate degree by requirement category. First pick your <b>department</b>, then your <b>research area</b> and <b>plan</b> to load its official worksheet. <b>Electrical &amp; Computer Engineering (ECE)</b> is fully modeled — all <b>thirteen ECE research areas</b>, from their official 2025–2027 degree planners, each with its own core, additional and technical-elective rules (other departments are coming). Add courses to each requirement bucket, tag the quarter you'll take them, check off what's done, and watch each bucket fill toward its unit quota. Every course links to its <b>grade ranking</b> so you can pick GPA-friendly options.</p>
 
      <div class="dp-controls">
-       <div class="dp-field" style="flex:1;min-width:220px"><label>Research Area (ECE)</label>
-         <select id="gpProg"><option value="">Select…</option></select></div>
+       <div class="dp-field"><label>Department</label>
+         <select id="gpDept"><option value="">Select…</option></select></div>
+       <div class="dp-field" style="flex:1;min-width:200px"><label>Research Area</label>
+         <select id="gpProg" disabled><option value="">—</option></select></div>
        <div class="dp-field"><label>Plan</label>
          <select id="gpPlan" disabled><option value="">—</option></select></div>
        <button class="dp-btn" id="gpLoad" disabled>Load Worksheet</button>
      </div>
 
-     <div id="gpEmpty" class="dp-empty">Loading ECE graduate programs…</div>
+     <div id="gpDeptNote" class="gp-stub" hidden></div>
+
+     <div id="gpEmpty" class="dp-empty">Pick your department and research area above to start.</div>
 
      <div id="gpApp" hidden>
        <div class="dp-toolbar">
@@ -2478,17 +2482,22 @@ function init(DATA){
   function gpEnsureData(){
     if(gpDB) return Promise.resolve(gpDB);
     if(gpPromise) return gpPromise;
-    gpPromise=fetch('gradplans.dff3a6e6a8.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
+    gpPromise=fetch('gradplans.6aa924c420.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
   function gpProgLabel(p){return p.area+' — '+p.name+' ('+p.code+')';}
   function initGradPlanner(){
     if(gpInited) return; gpInited=true;
     gpEnsureData().then(db=>{
-      const sel=$('gpProg');
-      const ordered=db.programs.slice().sort((a,b)=>(b.detailed?1:0)-(a.detailed?1:0)||a.name.localeCompare(b.name));
-      ordered.forEach(p=>{const o=document.createElement('option');o.value=p.code;o.textContent=gpProgLabel(p)+(p.detailed?'':' · framework');sel.appendChild(o);});
-      sel.onchange=gpOnProg;
+      // Step 1: department. Only ECE is modeled so far; the rest are listed as coming soon.
+      const ds=$('gpDept');
+      (db.departments||[{code:'ECE',name:'Electrical & Computer Engineering',available:true}]).forEach(d=>{
+        const o=document.createElement('option');o.value=d.code;
+        o.textContent=d.name+' ('+d.code+')'+(d.available?'':' · coming soon');
+        ds.appendChild(o);
+      });
+      ds.onchange=gpOnDept;
+      $('gpProg').onchange=gpOnProg;
       $('gpPlan').onchange=()=>{$('gpLoad').disabled=!$('gpPlan').value;};
       $('gpLoad').onclick=gpLoadWorksheet;
       $('gpReset').onclick=()=>{if(gpOfficial){gpModel=JSON.parse(JSON.stringify(gpOfficial));gpSave();gpRender();}};
@@ -2497,9 +2506,36 @@ function init(DATA){
       $('gpFile').onchange=gpImport;
       $('gpPrint').onclick=()=>window.print();
       $('gpNotes').oninput=()=>{if(gpModel){gpModel.notes=$('gpNotes').value;gpSave();}};
-      $('gpEmpty').textContent='Choose a research area and plan above to start.';
       gpRestore();
     }).catch(err=>{$('gpEmpty').textContent='Could not load graduate program data (gradplans.json). '+((err&&err.message)||'');});
+  }
+  function gpDeptAvailable(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.available!==false:false;}
+  function gpFillPrograms(deptCode){
+    const sel=$('gpProg');
+    const list=gpDB.programs.filter(p=>(p.dept||'ECE')===deptCode)
+      .sort((a,b)=>(b.detailed?1:0)-(a.detailed?1:0)||a.name.localeCompare(b.name));
+    sel.innerHTML='<option value="">Select…</option>'+list.map(p=>'<option value="'+dpEsc(p.code)+'">'+dpEsc(gpProgLabel(p))+(p.detailed?'':' · framework')+'</option>').join('');
+    sel.disabled=list.length===0;
+  }
+  // Step 1 handler: department -> populate research areas (or show a coming-soon note).
+  function gpOnDept(){
+    const code=$('gpDept').value, note=$('gpDeptNote');
+    gpResetProg();
+    if(!code){note.hidden=true;return;}
+    if(!gpDeptAvailable(code)){
+      const d=(gpDB.departments||[]).find(x=>x.code===code);
+      note.hidden=false;
+      note.innerHTML='<b>'+dpEsc(d?d.name:code)+'</b> isn’t modeled yet — only <b>Electrical & Computer Engineering (ECE)</b> is available so far, with all 13 of its research areas. Pick <b>ECE</b> above to start, or check back later.';
+      $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
+      return;
+    }
+    note.hidden=true;
+    gpFillPrograms(code);
+  }
+  function gpResetProg(){
+    const ps=$('gpPlan');
+    $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
+    ps.disabled=true; ps.innerHTML='<option>—</option>'; $('gpLoad').disabled=true;
   }
   function gpOnProg(){
     const code=$('gpProg').value, ps=$('gpPlan');
@@ -2525,7 +2561,7 @@ function init(DATA){
     // Pre-populate required buckets (e.g. the four ECE core courses) so the worksheet
     // starts as a checklist; pick/free buckets start empty for the student to fill.
     groups.forEach(g=>{if(g.kind==='required')(g.courses||[]).forEach(c=>courses.push({key:gpKey(),group:g.id,code:c.code,title:c.title,units:+c.units||4,note:c.note||'',quarter:'',done:false}));});
-    gpModel={meta:{code:prog.code,area:prog.area,name:prog.name,plan:plan.id,detailed:!!prog.detailed,pdf:prog.pdf||'',groups},courses,notes:''};
+    gpModel={meta:{code:prog.code,dept:prog.dept||'ECE',area:prog.area,name:prog.name,plan:plan.id,detailed:!!prog.detailed,pdf:prog.pdf||'',groups},courses,notes:''};
     gpOfficial=JSON.parse(JSON.stringify(gpModel));
     $('gpNotes').value=''; gpSave(); gpRender();
   }
@@ -2664,10 +2700,16 @@ function init(DATA){
     let s; try{s=JSON.parse(localStorage.getItem(GP_KEY));}catch(e){}
     if(!s||!s.model||!s.model.meta||!s.model.meta.groups)return;
     gpModel=s.model; gpOfficial=s.official||JSON.parse(JSON.stringify(s.model));
-    const ps=$('gpProg');
-    if([...ps.options].some(o=>o.value===gpModel.meta.code)){
-      ps.value=gpModel.meta.code; gpOnProg();
-      $('gpPlan').value=gpModel.meta.plan; $('gpLoad').disabled=false;
+    // Restore department -> research area -> plan so the selectors reflect the saved plan.
+    const dept=gpModel.meta.dept||(gpFindProgram(gpModel.meta.code)||{}).dept||'ECE';
+    const dsel=$('gpDept');
+    if([...dsel.options].some(o=>o.value===dept)){
+      dsel.value=dept; gpOnDept();
+      const ps=$('gpProg');
+      if([...ps.options].some(o=>o.value===gpModel.meta.code)){
+        ps.value=gpModel.meta.code; gpOnProg();
+        $('gpPlan').value=gpModel.meta.plan; $('gpLoad').disabled=false;
+      }
     }
     $('gpNotes').value=gpModel.notes||''; gpRender();
   }
