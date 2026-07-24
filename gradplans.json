@@ -4,47 +4,359 @@
     "dept": "Electrical & Computer Engineering (ECE)",
     "source": "UCSD ECE M.S. / Ph.D. Degree Planners (research-areas), 2025-2026 & 2026-2027",
     "sourceUrl": "https://ece.ucsd.edu/graduate/research-areas",
-    "note": "All thirteen ECE research areas are modeled from their own official fillable worksheets (2025-2026 or 2026-2027) — core, additional and technical-elective rules and unit quotas differ by area. Reference only — confirm with your ECE graduate advisor and the current worksheet."
+    "note": "Organised by UCSD graduate school → department → program. Only Electrical & Computer Engineering (ECE) is modeled so far — all 13 of its research areas from their official 2025-2027 degree planners. Reference only — confirm with your graduate advisor and the official worksheet."
   },
+  "schools": [
+    {
+      "code": "AH",
+      "name": "School of Arts & Humanities"
+    },
+    {
+      "code": "BIO",
+      "name": "School of Biological Sciences"
+    },
+    {
+      "code": "HDSI",
+      "name": "School of Computing, Information and Data Sciences"
+    },
+    {
+      "code": "GPS",
+      "name": "School of Global Policy & Strategy"
+    },
+    {
+      "code": "HS",
+      "name": "Health Sciences"
+    },
+    {
+      "code": "HWSPH",
+      "name": "Herbert Wertheim School of Public Health"
+    },
+    {
+      "code": "JSOE",
+      "name": "Jacobs School of Engineering"
+    },
+    {
+      "code": "PS",
+      "name": "School of Physical Sciences"
+    },
+    {
+      "code": "RADY",
+      "name": "Rady School of Management"
+    },
+    {
+      "code": "SIO",
+      "name": "Scripps Institution of Oceanography"
+    },
+    {
+      "code": "SS",
+      "name": "School of Social Sciences"
+    }
+  ],
   "departments": [
     {
-      "code": "ECE",
-      "name": "Electrical & Computer Engineering",
-      "available": true
-    },
-    {
-      "code": "CSE",
-      "name": "Computer Science & Engineering",
+      "school": "AH",
+      "code": "HISTORY",
+      "name": "History",
       "available": false
     },
     {
-      "code": "MAE",
-      "name": "Mechanical & Aerospace Engineering",
+      "school": "AH",
+      "code": "LITERATURE",
+      "name": "Literature",
       "available": false
     },
     {
-      "code": "BENG",
+      "school": "AH",
+      "code": "MUSIC",
+      "name": "Music",
+      "available": false
+    },
+    {
+      "school": "AH",
+      "code": "PHILOSOPHY",
+      "name": "Philosophy",
+      "available": false
+    },
+    {
+      "school": "AH",
+      "code": "THEATRE-AND-DANCE",
+      "name": "Theatre and Dance",
+      "available": false
+    },
+    {
+      "school": "AH",
+      "code": "VISUAL-ARTS",
+      "name": "Visual Arts",
+      "available": false
+    },
+    {
+      "school": "BIO",
+      "code": "BIOLOGY",
+      "name": "Biology",
+      "available": false
+    },
+    {
+      "school": "HDSI",
+      "code": "DATA-SCIENCE",
+      "name": "Data Science",
+      "available": false
+    },
+    {
+      "school": "HDSI",
+      "code": "DATA-SCIENCE-ONLINE",
+      "name": "Data Science Online",
+      "available": false
+    },
+    {
+      "school": "HDSI",
+      "code": "DATA-SCIENCE-AND-ENGINEE",
+      "name": "Data Science and Engineering",
+      "available": false
+    },
+    {
+      "school": "GPS",
+      "code": "GLOBAL-POLICY-STRATEGY",
+      "name": "Global Policy & Strategy",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "AUDIOLOGY-JDP-WITH-SDSU",
+      "name": "Audiology (JDP with SDSU)",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "BIOMEDICAL-SCIENCES",
+      "name": "Biomedical Sciences",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "CLINICAL-PSYCHOLOGY-JDP-",
+      "name": "Clinical Psychology (JDP with SDSU)",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "CLINICAL-RESEARCH",
+      "name": "Clinical Research",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "DRUG-DEVELOPMENT-AND-PRO",
+      "name": "Drug Development and Product Management",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "INTERDISCIPLINARY-RESEAR",
+      "name": "Interdisciplinary Research on Substance Use (JDP with SDSU)",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "LANGUAGE-AND-COMMUNICATI",
+      "name": "Language and Communicative Disorders (JDP with SDSU)",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "NEUROSCIENCES",
+      "name": "Neurosciences",
+      "available": false
+    },
+    {
+      "school": "HS",
+      "code": "PRECISION-MEDICINE-THERA",
+      "name": "Precision Medicine Therapeutics in Oncology",
+      "available": false
+    },
+    {
+      "school": "HWSPH",
+      "code": "BIOSTATISTICS",
+      "name": "Biostatistics",
+      "available": false
+    },
+    {
+      "school": "HWSPH",
+      "code": "PUBLIC-HEALTH",
+      "name": "Public Health",
+      "available": false
+    },
+    {
+      "school": "JSOE",
+      "code": "BIOENGINEERING",
       "name": "Bioengineering",
       "available": false
     },
     {
-      "code": "NANO",
-      "name": "NanoEngineering / Chemical Engineering",
+      "school": "JSOE",
+      "code": "BIOINFORMATICS-SYSTEMS-B",
+      "name": "Bioinformatics & Systems Biology",
       "available": false
     },
     {
-      "code": "MATS",
-      "name": "Materials Science & Engineering",
+      "school": "JSOE",
+      "code": "COMPUTER-SCIENCE-AND-ENG",
+      "name": "Computer Science and Engineering",
       "available": false
     },
     {
-      "code": "SE",
+      "school": "JSOE",
+      "code": "ECE",
+      "name": "Electrical and Computer Engineering",
+      "available": true
+    },
+    {
+      "school": "JSOE",
+      "code": "MATERIALS-SCIENCE-AND-EN",
+      "name": "Materials Science and Engineering",
+      "available": false
+    },
+    {
+      "school": "JSOE",
+      "code": "MECHANICAL-AND-AEROSPACE",
+      "name": "Mechanical and Aerospace Engineering",
+      "available": false
+    },
+    {
+      "school": "JSOE",
+      "code": "NANOENGINEERING-CHEMICAL",
+      "name": "Nanoengineering / Chemical Engineering",
+      "available": false
+    },
+    {
+      "school": "JSOE",
+      "code": "STRUCTURAL-ENGINEERING",
       "name": "Structural Engineering",
       "available": false
     },
     {
-      "code": "BISB",
-      "name": "Bioinformatics & Systems Biology",
+      "school": "PS",
+      "code": "ASTRONOMY",
+      "name": "Astronomy",
+      "available": false
+    },
+    {
+      "school": "PS",
+      "code": "CHEMISTRY-BIOCHEMISTRY",
+      "name": "Chemistry & Biochemistry",
+      "available": false
+    },
+    {
+      "school": "PS",
+      "code": "MATHEMATICS",
+      "name": "Mathematics",
+      "available": false
+    },
+    {
+      "school": "PS",
+      "code": "PHYSICS",
+      "name": "Physics",
+      "available": false
+    },
+    {
+      "school": "RADY",
+      "code": "RADY-SCHOOL-OF-MANAGEMEN",
+      "name": "Rady School of Management",
+      "available": false
+    },
+    {
+      "school": "SIO",
+      "code": "SCRIPPS-INSTITUTION-OF-O",
+      "name": "Scripps Institution of Oceanography",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "ANTHROPOLOGY",
+      "name": "Anthropology",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "COGNITIVE-SCIENCES",
+      "name": "Cognitive Sciences",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "COMMUNICATION",
+      "name": "Communication",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "COMPUTATIONAL-SOCIAL-SCI",
+      "name": "Computational Social Science",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "ECONOMICS",
+      "name": "Economics",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "EDUCATION-STUDIES",
+      "name": "Education Studies",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "ETHNIC-STUDIES",
+      "name": "Ethnic Studies",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "GLOBAL-HEALTH",
+      "name": "Global Health",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "LATIN-AMERICAN-STUDIES",
+      "name": "Latin American Studies",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "LINGUISTICS",
+      "name": "Linguistics",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "MATHEMATICS-SCIENCE-EDUC",
+      "name": "Mathematics & Science Education",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "POLITICAL-SCIENCE",
+      "name": "Political Science",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "PSYCHOLOGY",
+      "name": "Psychology",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "SOCIOLOGY",
+      "name": "Sociology",
+      "available": false
+    },
+    {
+      "school": "SS",
+      "code": "URBAN-STUDIES-PLANNING",
+      "name": "Urban Studies & Planning",
       "available": false
     }
   ],
