@@ -2583,7 +2583,7 @@ function init(DATA){
     mine.forEach(c=>body.appendChild(gpCourseEl(c)));
     // Suggested-course catalog for this group (courses not yet added).
     const have=new Set(mine.map(c=>c.code));
-    const opts=(g.courses||[]).filter(o=>!have.has(o.code)||o.note);
+    const opts=(g.courses||[]).filter(o=>!have.has(o.code));
     if(opts.length){
       const ow=document.createElement('div'); ow.className='gp-optwrap';
       ow.innerHTML='<div class="gp-optlabel">Add from the list</div>';
