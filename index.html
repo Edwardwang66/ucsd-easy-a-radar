@@ -550,6 +550,7 @@
       <span>My Schedule</span><span class="cnt" id="schedTabCnt" hidden>0</span>
     </button>
     <button class="viewtab" id="tab-ge" role="tab" aria-selected="false">Grad &amp; GE Requirements</button>
+    <button class="viewtab" id="tab-planner" role="tab" aria-selected="false">Degree Planner</button>
   </div>
 
  <div id="rankView">
@@ -736,6 +737,131 @@
    </details>
    <div class="ge-src" id="geSrc"></div>
  </div><!-- /geView -->
+
+ <div id="plannerView" role="tabpanel" aria-label="Degree planner">
+   <style>
+   #plannerView{display:none}
+   #plannerView.active{display:block}
+   .dp-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);margin:4px 0 6px}
+   .dp-field{display:flex;flex-direction:column;gap:5px;position:relative}
+   .dp-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+   .dp-field select,.dp-field input{padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--ink);font-size:13.5px;font-family:var(--sans);min-width:160px}
+   .dp-field select:disabled,.dp-field input:disabled{opacity:.5;cursor:not-allowed}
+   .dp-field input:focus,.dp-field select:focus{outline:2px solid var(--accent);border-color:transparent}
+   .dp-drop{position:absolute;top:100%;left:0;right:0;z-index:40;margin-top:4px;max-height:300px;overflow:auto;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;box-shadow:var(--shadow);display:none}
+   .dp-drop.show{display:block}
+   .dp-drop .opt{padding:8px 11px;cursor:pointer;font-size:13px;color:var(--ink)}
+   .dp-drop .opt:hover,.dp-drop .opt.active{background:var(--accent-soft)}
+   .dp-drop .none{padding:9px 11px;color:var(--muted);font-size:12.5px}
+   .dp-btn{padding:9px 15px;border:1px solid transparent;border-radius:9px;background:var(--accent);color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;font-family:var(--sans)}
+   .dp-btn:hover{background:var(--accent-2)}
+   .dp-btn:disabled{opacity:.45;cursor:not-allowed}
+   .dp-btn.ghost{background:var(--surface);color:var(--accent-2);border-color:var(--line-strong)}
+   .dp-btn.ghost:hover{background:var(--surface-2)}
+   .dp-btn.sm{padding:6px 11px;font-size:12.5px}
+   .dp-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px;align-items:center}
+   .dp-toolbar .sp{flex:1}
+   .dp-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin:12px 0}
+   .dp-stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow)}
+   .dp-stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+   .dp-stat .v{font-size:23px;font-weight:700;margin-top:3px;font-family:var(--mono)}
+   .dp-stat .v small{font-size:12px;color:var(--muted);font-family:var(--sans);font-weight:500}
+   .dp-bar{height:7px;border-radius:5px;background:var(--surface-2);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+   .dp-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#1F9D6B)}
+   .dp-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 2px 2px}
+   .dp-legend .lg{display:flex;align-items:center;gap:5px}
+   .dp-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+   .dp-years{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+   .dp-year{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+   .dp-yhead{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+   .dp-yhead .yl{font-weight:700;color:var(--ink)}
+   .dp-yhead .yu{font-size:12px;color:var(--muted);font-family:var(--mono)}
+   .dp-quarters{display:grid;grid-template-columns:repeat(var(--dpqc,3),1fr)}
+   .dp-q{border-right:1px dashed var(--line);min-height:118px;display:flex;flex-direction:column}
+   .dp-q:last-child{border-right:none}
+   .dp-qhead{display:flex;justify-content:space-between;align-items:center;padding:7px 11px;font-size:12px;font-weight:700;color:var(--ink)}
+   .dp-qu{font-family:var(--mono);font-weight:700;padding:1px 7px;border-radius:20px;font-size:11px}
+   .dp-qu.ok{background:color-mix(in srgb,#1F9D6B 16%,transparent);color:#1F9D6B}
+   .dp-qu.lo{background:color-mix(in srgb,var(--gold) 20%,transparent);color:var(--gold)}
+   .dp-qu.hi{background:color-mix(in srgb,#C0392B 16%,transparent);color:#C0392B}
+   .dp-qbody{padding:5px 9px 9px;flex:1;display:flex;flex-direction:column;gap:6px}
+   .dp-qbody.drag{background:var(--accent-soft);outline:2px dashed var(--accent);outline-offset:-4px}
+   .dp-course{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent-2);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;cursor:grab}
+   .dp-course.tGE{border-left-color:#7A4FC0}
+   .dp-course.tELECTIVE{border-left-color:#0E8F8F}
+   .dp-course.tOTHER{border-left-color:var(--faint)}
+   .dp-course.done{opacity:.5}
+   .dp-course.done .cn{text-decoration:line-through}
+   .dp-course .cn{font-weight:600;flex:1;font-size:13px;line-height:1.25}
+   .dp-course .cu{font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+   .dp-course .ov{color:var(--gold);font-size:11px;cursor:help}
+   .dp-course .gr{border:none;background:none;color:var(--accent-2);cursor:pointer;font-size:11px;font-family:var(--mono);padding:0 1px;white-space:nowrap}
+   .dp-course .gr:hover{text-decoration:underline}
+   .dp-course .del{border:none;background:none;color:var(--faint);cursor:pointer;font-size:14px;line-height:1;padding:0 2px}
+   .dp-course .del:hover{color:#C0392B}
+   .dp-add{display:flex;gap:4px;margin-top:2px}
+   .dp-add input.nm{flex:1;min-width:0;padding:5px 7px;border:1px solid var(--line);border-radius:6px;font-size:12px;background:var(--surface);color:var(--ink)}
+   .dp-add input.un{width:44px;padding:5px 4px;border:1px solid var(--line);border-radius:6px;font-size:12px;text-align:center;background:var(--surface);color:var(--ink)}
+   .dp-add button{padding:4px 9px;font-size:13px;border:1px solid var(--line-strong);background:var(--surface-2);border-radius:6px;cursor:pointer;color:var(--accent-2);font-weight:700}
+   .dp-add button:hover{background:var(--accent-soft)}
+   .dp-empty{padding:48px 20px;text-align:center;color:var(--muted)}
+   .dp-notes{margin-top:16px}
+   .dp-notes label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
+   .dp-notes textarea{width:100%;min-height:70px;border:1px solid var(--line-strong);border-radius:9px;padding:10px;resize:vertical;background:var(--surface);color:var(--ink);font-family:var(--sans);font-size:13px}
+   .dp-src{color:var(--faint);font-size:11.5px;margin-top:16px}
+   @media print{.dp-controls,.dp-toolbar,.dp-add,.dp-legend,.dp-course .del,.dp-course .gr,.dp-course input[type=checkbox],.dp-notes textarea{display:none!important}}
+   </style>
+
+   <p class="ge-intro">Build your quarter-by-quarter plan. Pick your <b>college, entering year and major</b> to load UCSD's <b>official academic plan</b> (2022–2026) as a starting point — then make it yours: drag courses between quarters, add or drop them, check off what you've finished, and watch your unit totals stay in the full-time zone. Each course links straight to its <b>grade ranking</b> so you can swap in GPA-friendly options.</p>
+
+   <div class="dp-controls">
+     <div class="dp-field"><label>College</label>
+       <select id="dpCollege"><option value="">Select…</option></select></div>
+     <div class="dp-field"><label>Entering Year</label>
+       <select id="dpYear" disabled><option value="">—</option></select></div>
+     <div class="dp-field" style="flex:1;min-width:200px"><label>Major</label>
+       <input id="dpMajorInput" placeholder="Select college &amp; year first" autocomplete="off" disabled>
+       <div class="dp-drop" id="dpMajorDrop"></div></div>
+     <div class="dp-field"><label>Plan Type</label>
+       <select id="dpType" disabled><option value="">—</option></select></div>
+     <button class="dp-btn" id="dpLoad" disabled>Load Official Plan</button>
+   </div>
+
+   <div id="dpEmpty" class="dp-empty">Loading plan data…</div>
+
+   <div id="dpApp" hidden>
+     <div class="dp-toolbar">
+       <button class="dp-btn ghost sm" id="dpReset">↺ Reset to official</button>
+       <span class="sp"></span>
+       <button class="dp-btn ghost sm" id="dpImport">⭱ Import</button>
+       <button class="dp-btn ghost sm" id="dpExport">⭳ Save to file</button>
+       <button class="dp-btn ghost sm" id="dpPrint">⎙ Print</button>
+       <input type="file" id="dpFile" accept="application/json" hidden>
+     </div>
+     <div id="dpTitle" style="font-size:16px;font-weight:700;margin:6px 0 1px"></div>
+     <div id="dpSub" style="color:var(--muted);font-size:12.5px;margin-bottom:8px"></div>
+     <div class="dp-summary">
+       <div class="dp-stat"><div class="k">Total Planned</div><div class="v"><span id="dpTotal">0</span> <small>units</small></div></div>
+       <div class="dp-stat"><div class="k">Completed</div><div class="v"><span id="dpDone">0</span> <small>units</small></div>
+         <div class="dp-bar"><span id="dpBar" style="width:0%"></span></div></div>
+       <div class="dp-stat"><div class="k">Remaining to 180</div><div class="v"><span id="dpRemain">180</span> <small>units</small></div></div>
+       <div class="dp-stat"><div class="k">Quarter Flags</div><div class="v" id="dpFlags">0</div>
+         <div style="font-size:11px;color:var(--muted);margin-top:3px">under 12 / over 18 units</div></div>
+     </div>
+     <div class="dp-legend">
+       <span class="lg"><span class="dp-dot" style="background:var(--accent-2)"></span>Department / Major</span>
+       <span class="lg"><span class="dp-dot" style="background:#7A4FC0"></span>College GE</span>
+       <span class="lg"><span class="dp-dot" style="background:#0E8F8F"></span>Elective</span>
+       <span class="lg"><span class="dp-dot" style="background:var(--faint)"></span>Other</span>
+       <span class="lg"><span class="ov" style="color:var(--gold)">★</span> counts for GE &amp; major</span>
+       <span class="lg">drag courses between quarters · ☑ mark done · <span style="font-family:var(--mono)">grades↗</span> jumps to its ranking</span>
+     </div>
+     <div class="dp-years" id="dpYears"></div>
+     <div class="dp-notes"><label>My notes</label>
+       <textarea id="dpNotes" placeholder="Prerequisites to watch, alternative courses, advising reminders…"></textarea></div>
+     <p class="dp-src">Official plans from plans.ucsd.edu (entering years 2022–2026). A starting guide, not official advice — confirm requirements with your college advisor.</p>
+   </div>
+ </div><!-- /plannerView -->
 
   <footer>
     <div class="meth">
@@ -1973,12 +2099,208 @@ function init(DATA){
     $('rankView').classList.toggle('hidden',v!=='rank');
     $('scheduleView').classList.toggle('active',v==='sched');
     $('geView').classList.toggle('active',v==='ge');
+    $('tab-planner').setAttribute('aria-selected',v==='planner'?'true':'false');
+    $('plannerView').classList.toggle('active',v==='planner');
     if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The Fall 2026 catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
     if(v==='ge') renderGE();
+    if(v==='planner') initPlanner();
   }
   $('tab-rank').addEventListener('click',()=>setView('rank'));
   $('tab-sched').addEventListener('click',()=>setView('sched'));
   $('tab-ge').addEventListener('click',()=>setView('ge'));
+  $('tab-planner').addEventListener('click',()=>setView('planner'));
+
+  /* ===================== Degree Planner ===================== */
+  const DP_KEY='earPlanner_v1';
+  const DP_QLABEL=['Fall','Winter','Spring','Summer'];
+  let dpDB=null, dpPromise=null, dpInited=false;
+  let dpModel=null, dpOfficial=null, dpMajors=[], dpMajorCode='';
+  function dpEsc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function dpSum(a){return a.reduce((s,c)=>s+(+c.units||0),0);}
+  function dpFmt(n){return (Math.round(n*10)/10).toString();}
+  function dpSubject(name){const m=String(name||'').match(/[A-Za-z]{2,}/);return m?m[0].toUpperCase():'';}
+  function dpEnsureData(){
+    if(dpDB) return Promise.resolve(dpDB);
+    if(dpPromise) return dpPromise;
+    dpPromise=fetch('plans.c31c4d6d87.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(async j=>{
+      let obj=j;
+      if(j && j.gz){
+        const bytes=Uint8Array.from(atob(j.gz),c=>c.charCodeAt(0));
+        obj=JSON.parse(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
+      }
+      dpDB=obj; return obj;
+    });
+    return dpPromise;
+  }
+  function initPlanner(){
+    if(dpInited) return; dpInited=true;
+    dpEnsureData().then(db=>{
+      const cs=$('dpCollege');
+      db.collegeOrder.forEach(code=>{const o=document.createElement('option');o.value=code;o.textContent=db.colleges[code];cs.appendChild(o);});
+      cs.onchange=dpOnCollegeYear;
+      $('dpYear').onchange=dpOnYearReady;
+      $('dpType').onchange=()=>{$('dpLoad').disabled=!$('dpType').value;};
+      $('dpLoad').onclick=dpLoadOfficial;
+      $('dpReset').onclick=()=>{if(dpOfficial){dpModel=JSON.parse(JSON.stringify(dpOfficial));dpSave();dpRender();}};
+      $('dpExport').onclick=dpExport;
+      $('dpImport').onclick=()=>$('dpFile').click();
+      $('dpFile').onchange=dpImport;
+      $('dpPrint').onclick=()=>window.print();
+      $('dpNotes').oninput=()=>{if(dpModel){dpModel.notes=$('dpNotes').value;dpSave();}};
+      const mi=$('dpMajorInput');
+      mi.oninput=()=>{dpMajorCode='';dpResetType();dpFilterMajors(mi.value);dpOpenDrop();};
+      mi.onfocus=()=>{if(!mi.disabled){dpFilterMajors(mi.value);dpOpenDrop();}};
+      mi.onkeydown=dpMajorKey;
+      document.addEventListener('click',e=>{const c=$('dpMajorInput');if(c&&!c.parentNode.contains(e.target))dpCloseDrop();});
+      $('dpEmpty').textContent='Choose a major above to start planning.';
+      dpRestore();
+    }).catch(err=>{$('dpEmpty').textContent='Could not load plan data (plans.json). '+((err&&err.message)||'');});
+  }
+  function dpOnCollegeYear(){
+    const c=$('dpCollege').value, ys=$('dpYear');
+    if(!c){ys.disabled=true;ys.innerHTML='<option>—</option>';dpResetMajor();return;}
+    const years=[...new Set(dpDB.plans.filter(p=>p.c===c).map(p=>p.y))].sort((a,b)=>b-a);
+    const prev=ys.value; ys.disabled=false;
+    ys.innerHTML='<option value="">Select…</option>'+years.map(y=>'<option value="'+y+'">'+y+'–'+(y+1)+'</option>').join('');
+    if(years.includes(+prev))ys.value=prev;
+    dpOnYearReady();
+  }
+  function dpOnYearReady(){
+    const c=$('dpCollege').value, y=+$('dpYear').value, mi=$('dpMajorInput');
+    dpResetMajor();
+    if(!c||!y)return;
+    dpMajors=[...new Map(dpDB.plans.filter(p=>p.c===c&&p.y===y).map(p=>[p.m,p.t])).entries()].map(([m,t])=>({m,t})).sort((a,b)=>a.t.localeCompare(b.t));
+    mi.disabled=false; mi.placeholder='Search '+dpMajors.length+' majors…';
+  }
+  function dpResetMajor(){const mi=$('dpMajorInput');mi.value='';mi.disabled=true;mi.placeholder='Select college & year first';dpMajorCode='';dpMajors=[];dpCloseDrop();dpResetType();}
+  function dpResetType(){const t=$('dpType');t.disabled=true;t.innerHTML='<option>—</option>';$('dpLoad').disabled=true;}
+  function dpFilterMajors(q){
+    q=(q||'').trim().toLowerCase();
+    const list=q?dpMajors.filter(m=>m.t.toLowerCase().includes(q)||m.m.toLowerCase().includes(q)):dpMajors;
+    const drop=$('dpMajorDrop');
+    if(!list.length){drop.innerHTML='<div class="none">No matching major</div>';return;}
+    drop.innerHTML=list.slice(0,80).map(m=>'<div class="opt" data-code="'+dpEsc(m.m)+'">'+dpEsc(m.t)+'</div>').join('');
+    [...drop.querySelectorAll('.opt')].forEach(el=>el.onclick=()=>dpChooseMajor(el.dataset.code));
+  }
+  function dpOpenDrop(){$('dpMajorDrop').classList.add('show');}
+  function dpCloseDrop(){const d=$('dpMajorDrop');if(d)d.classList.remove('show');}
+  function dpMajorKey(e){
+    const drop=$('dpMajorDrop'),opts=[...drop.querySelectorAll('.opt')];
+    let ai=opts.findIndex(o=>o.classList.contains('active'));
+    if(e.key==='ArrowDown'){e.preventDefault();ai=Math.min(opts.length-1,ai+1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();ai=Math.max(0,ai-1);}
+    else if(e.key==='Enter'){e.preventDefault();if(opts[ai])dpChooseMajor(opts[ai].dataset.code);return;}
+    else if(e.key==='Escape'){dpCloseDrop();return;}
+    else return;
+    opts.forEach(o=>o.classList.remove('active'));if(opts[ai]){opts[ai].classList.add('active');opts[ai].scrollIntoView({block:'nearest'});}
+  }
+  function dpChooseMajor(code){dpMajorCode=code;const m=dpMajors.find(x=>x.m===code);$('dpMajorInput').value=m?m.t:code;dpCloseDrop();dpOnMajor();}
+  function dpOnMajor(){
+    const c=$('dpCollege').value,y=+$('dpYear').value,m=dpMajorCode,t=$('dpType');
+    if(!m){dpResetType();return;}
+    const variants=dpDB.plans.filter(p=>p.c===c&&p.y===y&&p.m===m).sort((a,b)=>b.L-a.L);
+    const lbl=L=>L==4?'Four-Year Plan':L==3?'Three-Year Plan':L==2?'Two-Year (Transfer) Plan':L+'-Year Plan';
+    t.disabled=false;
+    t.innerHTML='<option value="">Select…</option>'+variants.map(p=>'<option value="'+p.id+'">'+lbl(p.L)+'</option>').join('');
+    if(variants.length===1)t.value=variants[0].id;
+    $('dpLoad').disabled=!t.value;
+  }
+  function dpPlanById(id){return dpDB.plans.find(p=>String(p.id)===String(id));}
+  function dpLoadOfficial(){
+    const p=dpPlanById($('dpType').value); if(!p)return;
+    const tmpl=dpDB.templates[p.tid];
+    const courses=tmpl.map((r,i)=>({key:'c'+i+'_'+Math.random().toString(36).slice(2,7),name:dpDB.names[r[0]],units:+r[1],type:dpDB.types[r[2]]||'OTHER',year:r[3],quarter:r[4],overlap:!!r[5],done:false}));
+    dpModel={meta:{id:p.id,college:p.c,collegeName:dpDB.colleges[p.c],year:p.y,major:p.m,title:p.t,L:p.L},courses,notes:''};
+    dpOfficial=JSON.parse(JSON.stringify(dpModel));
+    $('dpNotes').value=''; dpSave(); dpRender();
+  }
+  function dpMaxQuarter(){return Math.max(3,...dpModel.courses.map(c=>c.quarter));}
+  function dpRender(){
+    if(!dpModel)return;
+    $('dpEmpty').hidden=true; $('dpApp').hidden=false;
+    $('dpTitle').textContent=dpModel.meta.title;
+    $('dpSub').textContent=dpModel.meta.collegeName+' · Entering '+dpModel.meta.year+'–'+(dpModel.meta.year+1)+' · '+dpModel.meta.L+'-year plan';
+    const qc=dpMaxQuarter(), host=$('dpYears'); host.innerHTML=''; host.style.setProperty('--dpqc',qc);
+    for(let y=1;y<=dpModel.meta.L;y++){
+      const yc=dpModel.courses.filter(c=>c.year===y);
+      const row=document.createElement('div'); row.className='dp-year';
+      row.innerHTML='<div class="dp-yhead"><span class="yl">Year '+y+'</span><span class="yu">'+dpFmt(dpSum(yc))+' units</span></div>';
+      const qs=document.createElement('div'); qs.className='dp-quarters';
+      for(let q=1;q<=qc;q++){
+        const qcs=yc.filter(c=>c.quarter===q), qu=dpSum(qcs);
+        const flag=qu===0?'':qu<12?'lo':qu>18?'hi':'ok';
+        const cell=document.createElement('div'); cell.className='dp-q';
+        cell.innerHTML='<div class="dp-qhead"><span>'+(DP_QLABEL[q-1]||('Q'+q))+'</span><span class="dp-qu '+flag+'">'+dpFmt(qu)+'</span></div>';
+        const body=document.createElement('div'); body.className='dp-qbody'; body.dataset.year=y; body.dataset.q=q;
+        qcs.forEach(c=>body.appendChild(dpCourseEl(c)));
+        const add=document.createElement('div'); add.className='dp-add';
+        add.innerHTML='<input class="nm" placeholder="Add course (e.g. MATH 20A)"><input class="un" type="number" min="0" step="0.5" placeholder="u">';
+        const b=document.createElement('button'); b.textContent='+';
+        b.onclick=()=>{const nm=add.querySelector('.nm').value.trim();const u=parseFloat(add.querySelector('.un').value);if(!nm)return;dpModel.courses.push({key:'c'+Math.random().toString(36).slice(2,8),name:nm,units:isNaN(u)?4:u,type:'OTHER',year:y,quarter:q,overlap:false,done:false});dpSave();dpRender();};
+        add.appendChild(b); body.appendChild(add);
+        body.addEventListener('dragover',e=>{e.preventDefault();body.classList.add('drag');});
+        body.addEventListener('dragleave',()=>body.classList.remove('drag'));
+        body.addEventListener('drop',e=>{e.preventDefault();body.classList.remove('drag');const k=e.dataTransfer.getData('text/plain');const c=dpModel.courses.find(x=>x.key===k);if(c){c.year=+body.dataset.year;c.quarter=+body.dataset.q;dpSave();dpRender();}});
+        cell.appendChild(body); qs.appendChild(cell);
+      }
+      row.appendChild(qs); host.appendChild(row);
+    }
+    dpUpdateSummary();
+  }
+  function dpCourseEl(c){
+    const el=document.createElement('div');
+    el.className='dp-course t'+(c.type||'OTHER')+(c.done?' done':''); el.draggable=true;
+    const subj=dpSubject(c.name);
+    el.innerHTML='<input type="checkbox" '+(c.done?'checked':'')+' title="Mark completed">'
+      +'<span class="cn">'+dpEsc(c.name)+'</span>'
+      +(c.overlap?'<span class="ov" title="Counts for GE and major">★</span>':'')
+      +'<span class="cu">'+dpFmt(c.units)+'u</span>'
+      +(subj?'<button class="gr" title="See this course\'s grade ranking">grades↗</button>':'')
+      +'<button class="del" title="Remove">✕</button>';
+    el.querySelector('input').onchange=e=>{c.done=e.target.checked;el.classList.toggle('done',c.done);dpSave();dpUpdateSummary();};
+    el.querySelector('.del').onclick=()=>{dpModel.courses=dpModel.courses.filter(x=>x.key!==c.key);dpSave();dpRender();};
+    const gr=el.querySelector('.gr'); if(gr)gr.onclick=()=>{try{goToCourses([subj],c.name);}catch(e){setView('rank');}};
+    el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',c.key);e.dataTransfer.effectAllowed='move';});
+    return el;
+  }
+  function dpUpdateSummary(){
+    const total=dpSum(dpModel.courses), done=dpSum(dpModel.courses.filter(c=>c.done));
+    let flags=0;
+    for(let y=1;y<=dpModel.meta.L;y++)for(let q=1;q<=dpMaxQuarter();q++){const u=dpSum(dpModel.courses.filter(c=>c.year===y&&c.quarter===q));if(u>0&&(u<12||u>18))flags++;}
+    $('dpTotal').textContent=dpFmt(total);
+    $('dpDone').textContent=dpFmt(done);
+    $('dpRemain').textContent=dpFmt(Math.max(0,180-done));
+    $('dpBar').style.width=Math.min(100,done/180*100)+'%';
+    $('dpFlags').textContent=flags;
+  }
+  function dpExport(){
+    if(!dpModel)return; dpModel.notes=$('dpNotes').value;
+    const blob=new Blob([JSON.stringify(dpModel,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); const safe=(dpModel.meta.title||'plan').replace(/[^\w]+/g,'_').slice(0,40);
+    a.href=URL.createObjectURL(blob); a.download='degree_plan_'+safe+'_'+dpModel.meta.year+'.json'; a.click(); URL.revokeObjectURL(a.href);
+  }
+  function dpImport(e){
+    const f=e.target.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{try{const m=JSON.parse(r.result);if(!m.meta||!Array.isArray(m.courses))throw 0;m.courses.forEach((c,i)=>{if(!c.key)c.key='c'+i+'_'+Math.random().toString(36).slice(2,6);});dpModel=m;dpOfficial=dpOfficial||JSON.parse(JSON.stringify(m));$('dpNotes').value=m.notes||'';dpSave();dpRender();}catch(err){$('dpEmpty').textContent='Could not read that plan file.';}};
+    r.readAsText(f); e.target.value='';
+  }
+  function dpSave(){try{localStorage.setItem(DP_KEY,JSON.stringify({model:dpModel,official:dpOfficial}));}catch(e){}}
+  function dpRestore(){
+    let s; try{s=JSON.parse(localStorage.getItem(DP_KEY));}catch(e){}
+    if(!s||!s.model)return;
+    dpModel=s.model; dpOfficial=s.official||JSON.parse(JSON.stringify(s.model));
+    const m=dpModel.meta, cs=$('dpCollege');
+    if([...cs.options].some(o=>o.value===m.college)){
+      cs.value=m.college; dpOnCollegeYear();
+      $('dpYear').value=String(m.year); dpOnYearReady();
+      dpMajorCode=m.major; $('dpMajorInput').value=m.title; dpOnMajor();
+      $('dpType').value=String(m.id); $('dpLoad').disabled=false;
+    }
+    $('dpNotes').value=dpModel.notes||''; dpRender();
+  }
+  /* =================== end Degree Planner =================== */
+
   tabCount();
 
   render();
