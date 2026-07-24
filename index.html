@@ -258,6 +258,13 @@
   .viewtab .cnt{font-size:11px;font-family:var(--mono);background:color-mix(in srgb,var(--gA) 22%,transparent);
     color:var(--gA);border-radius:999px;padding:1px 7px;font-weight:700}
   .viewtab[aria-selected="true"] .cnt{background:rgba(255,255,255,.22);color:#fff}
+  /* Mobile: the four view tabs don't fit one row, so they used to push the
+     page wider than the viewport and trap it in horizontal scrolling. Let them
+     wrap full-width into two rows instead. */
+  @media(max-width:640px){
+    .viewtabs{display:flex;flex-wrap:wrap;width:100%;box-sizing:border-box}
+    .viewtab{flex:1 1 44%;justify-content:center;text-align:center;padding:9px 8px;font-size:12.5px;white-space:nowrap}
+  }
 
   /* ---- add-to-schedule button on rows ---- */
   .addbtn{margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--accent-2);
