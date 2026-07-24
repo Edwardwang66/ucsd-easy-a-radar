@@ -700,7 +700,7 @@
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
            Open all course pages <span id="openAllCnt"></span>
          </button>
-         <span class="exp-hint">Opens each course on <b>WebReg / TSS</b> in its own tab to enroll (UCSD login required). If your browser blocks the pop-ups, allow them for this site and click again.</span>
+         <span class="exp-hint"><b>Sign into <a href="https://tss.ucsd.edu/fiori" target="_blank" rel="noopener">TSS</a> first</b>, then this opens each course's TSS page in its own tab to enroll — otherwise the login redirect drops the link and you land on the TSS home. Courses without a direct link open the TSS launchpad to search. If pop-ups are blocked, allow them for this site and click again.</span>
          <button class="exp-btn" id="exportIcs" title="Download an .ics calendar file of your Fall 2026 classes">
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
            Export to Calendar (.ics)
@@ -984,11 +984,18 @@ function init(DATA){
     const p=PRE[r[C.s]+' '+r[C.c]]; if(!p) return '';
     return `<div class="prereq"><span class="prereq-lab">Prerequisites</span> ${esc(p)}</div>`;
   }
-  const SEATS=(DATA&&DATA.seats)||{};  // "SUBJ NUM" -> { u: WebReg/TSS course-page URL }
-  function seatOf(r){ return r[C.off] ? SEATS[CK(r[C.s],r[C.c])] : null; }   // only Fall-2026 rows carry a course-page link
+  const SEATS=(DATA&&DATA.seats)||{};  // "SUBJ NUM" -> { u: TSS course-page deep-link } (only ~1223 courses have one)
+  const TSS_HOME='https://tss.ucsd.edu/fiori';   // launchpad — fallback for courses without a direct deep-link
+  // Direct deep-link if we have one, else the TSS launchpad. The deep-link only lands on the
+  // course when the user is already signed into TSS (SSO drops the URL #fragment otherwise).
+  function courseLinkInfo(key){ const s=SEATS[key]; return s&&s.u ? {href:s.u,direct:true} : {href:TSS_HOME,direct:false}; }
   function seatLink(r){
-    const s=seatOf(r); if(!s||!s.u) return '';
-    return `<a class="seatlink" href="${esc(s.u)}" target="_blank" rel="noopener" title="Open this course on WebReg / TSS (UCSD login required)">Course page ↗</a>`;
+    if(!r[C.off]) return '';
+    const {href,direct}=courseLinkInfo(CK(r[C.s],r[C.c]));
+    const label=direct?'Course page ↗':'Find on TSS ↗';
+    const title=direct?'Open this course on TSS — sign into TSS first so the link lands on the course page'
+                      :'No direct TSS link for this course yet — opens the TSS launchpad to search (sign in first)';
+    return `<a class="seatlink" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${label}</a>`;
   }
   function matchQ(r,q){
     if(!q) return true;
@@ -1541,8 +1548,8 @@ function init(DATA){
       return `<div class="m fin"><span class="mt">FI</span><span>${wd}${esc(s[S_DAYS]||'')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>Final exam</span></div>`;
     }).join('');
     const profs=[...new Set(secs.map(s=>s[S_INSTR]).filter(Boolean))];
-    const si=SEATS[it.k]||null;
-    const bookLink=si&&si.u?`<a class="seatlink" href="${esc(si.u)}" target="_blank" rel="noopener" title="Open ${esc(it.k)} on WebReg">Course page ↗</a>`:'';
+    const cli=courseLinkInfo(it.k);
+    const bookLink=`<a class="seatlink" href="${esc(cli.href)}" target="_blank" rel="noopener" title="${cli.direct?`Open ${esc(it.k)} on TSS (sign into TSS first)`:`No direct TSS link — opens the TSS launchpad to search (sign in first)`}">${cli.direct?'Course page ↗':'Find on TSS ↗'}</a>`;
     return `<div class="sci ${(it._conf||it._finConf)?'conf':''}" style="border-left-color:${color}">
       <div class="h"><div><div class="code">${esc(it.k)}</div><div class="ttl">${esc(course.t)}</div></div><button class="rm" data-rm="${esc(it.k)}" title="Remove">×</button></div>
       <div class="ctrls">${grpSel}${optSel}</div>
@@ -1581,7 +1588,7 @@ function init(DATA){
       <div class="st"><div class="v">${units%1?units.toFixed(1):units}</div><div class="l">Units</div></div>
       <div class="st"><div class="v ${(confSet.size||finConf.size)?'warn':''}">${new Set([...confSet,...finConf]).size}</div><div class="l">Conflicts</div></div>`;
     $('schedItems').innerHTML=schItems.map((it,ci)=>schItemHTML(it,ci)).join('');
-    {const btn=$('openAllPages');if(btn){const nb=scheduledBookingUrls().length;btn.disabled=!nb;const c=$('openAllCnt');if(c)c.textContent=nb?`· ${nb}`:'';}}
+    {const btn=$('openAllPages');if(btn){btn.disabled=schItems.length===0;const c=$('openAllCnt');if(c)c.textContent=schItems.length?`· ${schItems.length}`:'';}}
     if(calMode==='finals') renderCal(finalsEvents(),FINALS_LABELS); else renderCal(evs);
     renderMap();
   }
@@ -1672,19 +1679,30 @@ function init(DATA){
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
   $('exportIcs').addEventListener('click',exportICS);
-  function scheduledBookingUrls(){
-    // preserve My Schedule order, one URL per course, only those with a live WebReg link
-    const seen=new Set(),out=[];
-    schItems.forEach(it=>{const s=SEATS[it.k];if(s&&s.u&&!seen.has(it.k)){seen.add(it.k);out.push({k:it.k,u:s.u});}});
-    return out;
+  function scheduledCoursePages(){
+    // preserve My Schedule order; split into courses with a direct TSS deep-link vs those without
+    const seen=new Set(),direct=[],fallback=[];
+    schItems.forEach(it=>{
+      if(seen.has(it.k))return; seen.add(it.k);
+      const s=SEATS[it.k];
+      if(s&&s.u) direct.push({k:it.k,u:s.u}); else fallback.push(it.k);
+    });
+    return {direct,fallback};
   }
   function openAllCoursePages(){
-    const urls=scheduledBookingUrls();
-    if(!urls.length){alert('None of your scheduled courses has a WebReg course page yet.');return;}
-    if(urls.length>6 && !confirm(`Open ${urls.length} course pages, each in a new tab?\n\n${urls.map(x=>x.k).join(', ')}`)) return;
+    if(!schItems.length){alert('Add courses to your schedule first.');return;}
+    const {direct,fallback}=scheduledCoursePages();
+    // one tab per direct course, plus a single TSS launchpad tab to search the courses with no direct link
+    const tabs=direct.map(x=>x.u);
+    if(fallback.length) tabs.push(TSS_HOME);
+    if((tabs.length>6 || fallback.length) &&
+       !confirm(`Open ${tabs.length} tab${tabs.length>1?'s':''}?\n\n`
+         +(direct.length?`Course pages: ${direct.map(x=>x.k).join(', ')}\n`:'')
+         +(fallback.length?`No direct TSS link (open the TSS tab and search): ${fallback.join(', ')}\n`:'')
+         +`\nTip: sign into TSS first so each link lands on the course.`)) return;
     let blocked=0;
-    urls.forEach(x=>{const w=window.open(x.u,'_blank','noopener');if(!w)blocked++;});
-    if(blocked) alert(`Your browser blocked ${blocked} of ${urls.length} pop-up tab${blocked>1?'s':''}. Allow pop-ups for this site, then click again.`);
+    tabs.forEach(u=>{const w=window.open(u,'_blank','noopener');if(!w)blocked++;});
+    if(blocked) alert(`Your browser blocked ${blocked} of ${tabs.length} pop-up tab${blocked>1?'s':''}. Allow pop-ups for this site, then click again.`);
   }
   $('openAllPages').addEventListener('click',openAllCoursePages);
 
