@@ -443,6 +443,10 @@
   .subj-chips .sc-clear{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
     border-radius:999px;padding:3px 11px;font-size:12px;cursor:pointer;font-family:var(--sans)}
   .subj-chips .sc-clear:hover{color:var(--ink);border-color:var(--accent)}
+  .subj-chips .sc-group{font-family:var(--sans);font-weight:600;padding-left:12px;gap:7px}
+  .subj-chips .sc-group .sc-n{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent-2);
+    background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:6px;padding:1px 6px}
+  .subj-chips .sc-hint{font-size:11px;color:var(--faint);font-style:italic}
   .combo-list li.on{background:color-mix(in srgb,var(--gA) 12%,transparent)}
   .combo-list li .ck{color:var(--gA);font-weight:700;margin-left:auto}
   .combo-list li.on.active .ck,.combo-list li.active .ck{color:#fff}
@@ -939,7 +943,7 @@ function init(DATA){
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
-  const state={q:'',subjects:new Set(),prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60,time:null};
+  const state={q:'',subjects:new Set(),subjLabel:'',prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60,time:null};
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
@@ -1243,10 +1247,17 @@ function init(DATA){
   // ---- multi-select subjects ----
   function renderSubjChips(){
     const el=$('subjChips'); if(!el)return;
-    if(!state.subjects.size){el.hidden=true;el.innerHTML='';$('subjectCombo').classList.remove('has-value');return;}
+    const n=state.subjects.size;
+    if(!n){el.hidden=true;el.innerHTML='';$('subjectCombo').classList.remove('has-value');return;}
     el.hidden=false;
-    const chips=[...state.subjects].sort().map(s=>`<span class="sc">${esc(s)}<button data-rmsubj="${esc(s)}" aria-label="Remove ${esc(s)}">×</button></span>`).join('');
-    el.innerHTML=`<span class="sc-lead">Subjects:</span>${chips}<button class="sc-clear" id="subjClearAll">Clear all</button>`;
+    if(state.subjLabel){
+      // came from a GE requirement — one clean summary pill instead of a wall of chips
+      el.innerHTML=`<span class="sc sc-group" title="${esc([...state.subjects].sort().join(', '))}">🎓 ${esc(state.subjLabel)}<span class="sc-n">${n} subj</span><button data-rmsubj="*" aria-label="Clear requirement filter">×</button></span>`
+        +`<span class="sc-hint">Open the Subject box to fine-tune ↑</span>`;
+    } else {
+      const chips=[...state.subjects].sort().map(s=>`<span class="sc">${esc(s)}<button data-rmsubj="${esc(s)}" aria-label="Remove ${esc(s)}">×</button></span>`).join('');
+      el.innerHTML=`<span class="sc-lead">Subjects:</span>${chips}<button class="sc-clear" id="subjClearAll">Clear all</button>`;
+    }
     $('subjectCombo').classList.add('has-value');
   }
   function applySubjects(){renderSubjChips();if(subjectCombo&&subjectCombo.refresh)subjectCombo.refresh();state.limit=PAGE;render();}
@@ -1256,21 +1267,22 @@ function init(DATA){
     isSelected(v){return state.subjects.has(v);},
     selectedCount(){return state.subjects.size;},
     getItems(f){const q=(f||'').trim().toLowerCase();let list=subs;if(q){const s1=[],s2=[];for(const s of subs){const sl=s.toLowerCase();if(sl.startsWith(q))s1.push(s);else if(sl.includes(q))s2.push(s);}list=s1.concat(s2);}return list.slice(0,120).map(s=>({v:s,label:s,cnt:subjCount[s]||0}));},
-    onToggle(v){if(state.subjects.has(v))state.subjects.delete(v);else state.subjects.add(v);applySubjects();},
-    onClearAll(){state.subjects.clear();applySubjects();}
+    onToggle(v){if(state.subjects.has(v))state.subjects.delete(v);else state.subjects.add(v);state.subjLabel='';applySubjects();},
+    onClearAll(){state.subjects.clear();state.subjLabel='';applySubjects();}
   });
   $('subjectInput').placeholder='Add subjects ('+subs.length+')';
   $('subjChips').addEventListener('click',e=>{
-    const rm=e.target.closest('[data-rmsubj]'); if(rm){state.subjects.delete(rm.dataset.rmsubj);applySubjects();return;}
-    if(e.target.closest('#subjClearAll')){state.subjects.clear();applySubjects();}
+    const rm=e.target.closest('[data-rmsubj]');
+    if(rm){ if(rm.dataset.rmsubj==='*') state.subjects.clear(); else state.subjects.delete(rm.dataset.rmsubj); state.subjLabel=''; applySubjects(); return; }
+    if(e.target.closest('#subjClearAll')){state.subjects.clear();state.subjLabel='';applySubjects();}
   });
   // jump from a GE requirement into the rankings, pre-filtered to the subjects that satisfy it
-  function goToCourses(codes){
+  function goToCourses(codes,label){
     codes=(codes||[]).map(c=>c.trim()).filter(Boolean);
     const set=new Set(codes.filter(c=>subjSet.has(c)));
     state.q=''; $('q').value='';
-    if(set.size){ state.subjects=set; }
-    else { state.subjects=new Set(); if(codes.length){state.q=codes[0].toLowerCase(); $('q').value=codes[0];} } // subject absent from data → fall back to a code search
+    if(set.size){ state.subjects=set; state.subjLabel=(label&&set.size>1)?label:''; }  // >1 subject → show one summary pill
+    else { state.subjects=new Set(); state.subjLabel=''; if(codes.length){state.q=codes[0].toLowerCase(); $('q').value=codes[0];} } // subject absent from data → fall back to a code search
     state.offered=true; state.sort='g'; state.level='ug'; state.limit=PAGE;
     $('sort').value='g';
     document.querySelectorAll('#levels .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.lv==='ug'?'true':'false'));
@@ -1852,7 +1864,7 @@ function init(DATA){
     const tags=c.tags.map(t=>`<span class="ge-tag ${t[0]}">${esc(t[1])}</span>`).join('');
     const rows=c.areas.map(a=>{
       const codes=SUBJMAP[a[0]];
-      const browse=codes&&codes.length?`<button class="ge-browse" data-subs="${esc(codes.join(','))}" title="Jump to the offered courses for this requirement, ranked by GPA">🔍 Find courses ↗</button>`:'';
+      const browse=codes&&codes.length?`<button class="ge-browse" data-subs="${esc(codes.join(','))}" data-label="${esc(c.name+' · '+a[0])}" title="Jump to the offered courses for this requirement, ranked by GPA">🔍 Find courses ↗</button>`:'';
       return `<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}${browse}</td><td>${geGradeBadge(a[3])}</td></tr>`;
     }).join('');
     el.innerHTML=`<div class="ge-card">
@@ -1895,7 +1907,7 @@ function init(DATA){
     renderGePicker(); renderGeBody(); renderGeUni(); renderGeSrc();
   }
   $('gePicker').addEventListener('click',e=>{const b=e.target.closest('.cbtn');if(b)setCollege(b.dataset.col);});
-  $('geBody').addEventListener('click',e=>{const b=e.target.closest('.ge-browse');if(b)goToCourses(b.dataset.subs.split(','));});
+  $('geBody').addEventListener('click',e=>{const b=e.target.closest('.ge-browse');if(b)goToCourses(b.dataset.subs.split(','),b.dataset.label||'');});
 
   let curView='rank';
   function setView(v){
