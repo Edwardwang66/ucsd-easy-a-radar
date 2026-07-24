@@ -709,7 +709,152 @@
     "MEng",
     "MS",
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://be.ucsd.edu/grad/programs",
+   "groups": [
+    {
+     "id": "core-ep",
+     "name": "Core Courses — Engineering Physics",
+     "units": 12,
+     "kind": "pick",
+     "rule": "Choose 3 courses (12 units) from the Engineering Physics core list, taken for a letter grade.",
+     "courses": [
+      {
+       "code": "BENG 202/CSE 282",
+       "title": "Bioinformatics II: Introduction to Bioinformatics Algorithms",
+       "units": 4
+      },
+      {
+       "code": "BENG 203/CSE 283",
+       "title": "Genomics/Proteomics/Network Biology",
+       "units": 4
+      },
+      {
+       "code": "BENG 216",
+       "title": "Neuromorphic Integrated Bioelectronics",
+       "units": 4
+      },
+      {
+       "code": "BENG 226",
+       "title": "Foundations of Bioengineering I: Tissue and Cell Properties",
+       "units": 4
+      },
+      {
+       "code": "BENG 227",
+       "title": "Transport Phenomena in Living Systems",
+       "units": 4
+      },
+      {
+       "code": "BENG 211",
+       "title": "Systems Biology and Bioengineering I: Biological Components",
+       "units": 4
+      },
+      {
+       "code": "BENG 221",
+       "title": "Mathematical Methods for Bioengineering",
+       "units": 4
+      },
+      {
+       "code": "BENG 223",
+       "title": "Thermodynamics, Statistical Mechanics, and Interfacial Phenomena in Living Systems",
+       "units": 4
+      },
+      {
+       "code": "BENG 280A",
+       "title": "Principles of Biomedical Imaging",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "core-ls",
+     "name": "Core Courses — Life Sciences",
+     "units": 12,
+     "kind": "pick",
+     "rule": "Choose 3 courses (12 units) from the Life Sciences core list, taken for a letter grade.",
+     "courses": [
+      {
+       "code": "BENG 204",
+       "title": "Systems Medicine: Data Analytics and Mechanisms",
+       "units": 4
+      },
+      {
+       "code": "BENG 230A",
+       "title": "Biochemistry",
+       "units": 4
+      },
+      {
+       "code": "BENG 230B",
+       "title": "Cell and Molecular Biology",
+       "units": 4
+      },
+      {
+       "code": "BENG 230C",
+       "title": "Cardiovascular Physiology",
+       "units": 4
+      },
+      {
+       "code": "BENG 230D",
+       "title": "Respiratory and Renal Physiology",
+       "units": 4
+      },
+      {
+       "code": "BENG 232",
+       "title": "Musculoskeletal Health, Injury, and Disease",
+       "units": 4
+      },
+      {
+       "code": "BENG 234",
+       "title": "Introduction to Neurophysiology: Molecules to Systems",
+       "units": 4
+      },
+      {
+       "code": "BENG 241A",
+       "title": "Tissue Engineering and Regenerative Medicine: Foundations",
+       "units": 4
+      },
+      {
+       "code": "BENG 260/BGGN 260",
+       "title": "Neurodynamics",
+       "units": 4
+      },
+      {
+       "code": "BENG 285",
+       "title": "Statistical Learning in Bioinformatics",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "tech",
+     "name": "Electives",
+     "units": 24,
+     "kind": "free",
+     "rule": "Plan II: 6 elective courses (24 units); Plan I: 3 elective courses (12 units). Graduate-level BENG courses, plus graduate engineering/science courses in other departments with faculty approval; letter grade. Up to two undergraduate prerequisite courses (≤8 units) may count with adviser permission. BENG 281/282/299/501 units may not apply.",
+     "courses": []
+    }
+   ],
+   "plans": [
+    {
+     "id": "II",
+     "name": "Plan II — Comprehensive",
+     "totalUnits": 48,
+     "researchMax": null,
+     "note": "12 courses (6 core + 6 electives), all for letter grade; pass comprehensive exam; no research."
+    },
+    {
+     "id": "I",
+     "name": "Plan I — Thesis",
+     "totalUnits": 48,
+     "researchMax": 12,
+     "note": "36 units coursework (6 core + 3 electives) + 12 units research (BENG 299, S/U); thesis."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://be.ucsd.edu/grad/programs",
+   "reuseOf": "BE75",
+   "deptNotes": "Standard 'Bioengineering' graduate degree (MEng / MS / PhD) — same program as base code BE75, administered under the Shu Chien-Gene Lay Department of Bioengineering. Coursework is the department's standard Bioengineering curriculum: MS = 48 units (six core courses across three Engineering + three Life Science areas, plus electives and 12 units BE 299 research; Plan I thesis or Plan II comprehensive exam); MEng = 12 courses + BENG 291 seminar (six core, three technical electives incl. BENG 295, three general electives); PhD = six core courses (three engineering, three life science) plus electives, qualifying exams and dissertation. Reuses BE75 because the required coursework is identical."
   },
   {
    "code": "BE77",
@@ -719,7 +864,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+   "deptNotes": "Bioengineering PhD PLUS the interdisciplinary Bioinformatics & Systems Biology specialization (spanning Biological Sciences, Physical Sciences, Jacobs School of Engineering, and Health Sciences). Students complete all standard Bioengineering PhD requirements (six core courses, electives, qualifying exams, dissertation) in their home department and add the bioinformatics specialization coursework; the catalog specifies no separate fixed core-course/unit count beyond the standard PhD. Intended for students working across computers, biology, medicine, and engineering. Base coursework = Bioengineering PhD (BE75)."
   },
   {
    "code": "BE78",
@@ -729,7 +876,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+   "deptNotes": "Bioengineering PhD PLUS the Multi-Scale Biology specialization, spanning four schools (Biological Sciences, Physical Sciences, Jacobs School of Engineering, Health Sciences). Provides training in integrative and quantitative analysis across multiple scales of biological organization (molecule to organism, in health and disease). Students fulfill all standard Bioengineering PhD requirements plus specialization coursework; the catalog lists no separate fixed core/unit count beyond the standard PhD. Base coursework = Bioengineering PhD (BE75)."
   },
   {
    "code": "BE79",
@@ -739,7 +888,152 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+   "groups": [
+    {
+     "id": "core-ep",
+     "name": "Core Courses — Engineering Physics",
+     "units": 12,
+     "kind": "pick",
+     "rule": "Choose 3 courses (12 units) from the Engineering Physics core list, taken for a letter grade.",
+     "courses": [
+      {
+       "code": "BENG 202/CSE 282",
+       "title": "Bioinformatics II: Introduction to Bioinformatics Algorithms",
+       "units": 4
+      },
+      {
+       "code": "BENG 203/CSE 283",
+       "title": "Genomics/Proteomics/Network Biology",
+       "units": 4
+      },
+      {
+       "code": "BENG 216",
+       "title": "Neuromorphic Integrated Bioelectronics",
+       "units": 4
+      },
+      {
+       "code": "BENG 226",
+       "title": "Foundations of Bioengineering I: Tissue and Cell Properties",
+       "units": 4
+      },
+      {
+       "code": "BENG 227",
+       "title": "Transport Phenomena in Living Systems",
+       "units": 4
+      },
+      {
+       "code": "BENG 211",
+       "title": "Systems Biology and Bioengineering I: Biological Components",
+       "units": 4
+      },
+      {
+       "code": "BENG 221",
+       "title": "Mathematical Methods for Bioengineering",
+       "units": 4
+      },
+      {
+       "code": "BENG 223",
+       "title": "Thermodynamics, Statistical Mechanics, and Interfacial Phenomena in Living Systems",
+       "units": 4
+      },
+      {
+       "code": "BENG 280A",
+       "title": "Principles of Biomedical Imaging",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "core-ls",
+     "name": "Core Courses — Life Sciences",
+     "units": 12,
+     "kind": "pick",
+     "rule": "Choose 3 courses (12 units) from the Life Sciences core list, taken for a letter grade.",
+     "courses": [
+      {
+       "code": "BENG 204",
+       "title": "Systems Medicine: Data Analytics and Mechanisms",
+       "units": 4
+      },
+      {
+       "code": "BENG 230A",
+       "title": "Biochemistry",
+       "units": 4
+      },
+      {
+       "code": "BENG 230B",
+       "title": "Cell and Molecular Biology",
+       "units": 4
+      },
+      {
+       "code": "BENG 230C",
+       "title": "Cardiovascular Physiology",
+       "units": 4
+      },
+      {
+       "code": "BENG 230D",
+       "title": "Respiratory and Renal Physiology",
+       "units": 4
+      },
+      {
+       "code": "BENG 232",
+       "title": "Musculoskeletal Health, Injury, and Disease",
+       "units": 4
+      },
+      {
+       "code": "BENG 234",
+       "title": "Introduction to Neurophysiology: Molecules to Systems",
+       "units": 4
+      },
+      {
+       "code": "BENG 241A",
+       "title": "Tissue Engineering and Regenerative Medicine: Foundations",
+       "units": 4
+      },
+      {
+       "code": "BENG 260/BGGN 260",
+       "title": "Neurodynamics",
+       "units": 4
+      },
+      {
+       "code": "BENG 285",
+       "title": "Statistical Learning in Bioinformatics",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "tech",
+     "name": "Electives",
+     "units": 24,
+     "kind": "free",
+     "rule": "Plan II: 6 elective courses (24 units); Plan I: 3 elective courses (12 units). Graduate-level BENG courses, plus graduate engineering/science courses in other departments with faculty approval; letter grade. Up to two undergraduate prerequisite courses (≤8 units) may count with adviser permission. BENG 281/282/299/501 units may not apply.",
+     "courses": []
+    }
+   ],
+   "plans": [
+    {
+     "id": "II",
+     "name": "Plan II — Comprehensive",
+     "totalUnits": 48,
+     "researchMax": null,
+     "note": "12 courses (6 core + 6 electives), all for letter grade; pass comprehensive exam; no research."
+    },
+    {
+     "id": "I",
+     "name": "Plan I — Thesis",
+     "totalUnits": 48,
+     "researchMax": 12,
+     "note": "36 units coursework (6 core + 3 electives) + 12 units research (BENG 299, S/U); thesis."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+   "reuseOf": "BE75",
+   "deptNotes": "'Engineering Sciences (Bioengineering)' is the systemwide Jacobs School of Engineering doctoral degree title used for the Bioengineering PhD; the required coursework is identical to the standard Bioengineering PhD. Administrative/title variant — reuses base code BE75."
   },
   {
    "code": "BE80",
@@ -749,7 +1043,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+   "deptNotes": "Bioengineering PhD PLUS the Quantitative Biology specialization, spanning four schools (Biological Sciences, Physical Sciences, Jacobs School of Engineering, Health Sciences). Trains students to develop and apply quantitative theoretical and experimental approaches to living systems. Specialization core = one year of theory courses plus one year of lab courses, most of which can count toward the bioengineering elective requirement. Students complete all standard Bioengineering PhD requirements. Base coursework = Bioengineering PhD (BE75)."
   },
   {
    "code": "BE81",
@@ -759,7 +1055,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+   "deptNotes": "Bioengineering PhD PLUS the Computational Neuroscience specialization, offered jointly by the Neuroscience Graduate Program, Department of Physics, and Department of Bioengineering. Students fulfill all standard Bioengineering PhD academic requirements and must additionally complete a set of three core computational courses plus other coursework as directed by the Computational Neuroscience Committee, and defend a thesis on an approved topic. Base coursework = Bioengineering PhD (BE75)."
   },
   {
    "code": "BE82",
@@ -769,7 +1067,117 @@
    "award": "MS",
    "degrees": [
     "MS"
-   ]
+   ],
+   "reqUrl": "https://be.ucsd.edu/grad/programs/ms-medical/curriculum",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Required Medical Emphasis Core",
+     "units": 12,
+     "kind": "required",
+     "rule": "All three required (12 units)",
+     "courses": [
+      {
+       "code": "BENG 294A",
+       "title": "Patient-Centered Clinical Medicine for Bioengineers",
+       "units": 4
+      },
+      {
+       "code": "BENG 294B",
+       "title": "Engineering in the Patient Healthcare System",
+       "units": 4
+      },
+      {
+       "code": "BENG 294C",
+       "title": "Clinical Experience in Bioengineering",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "life-sci",
+     "name": "Life Sciences Elective",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose 1 (4 units)",
+     "courses": [
+      {
+       "code": "BENG 230A",
+       "title": "Biochemistry",
+       "units": 4
+      },
+      {
+       "code": "BENG 230B",
+       "title": "Cell and Molecular Biology",
+       "units": 4
+      },
+      {
+       "code": "BENG 230C",
+       "title": "Cardiovascular Physiology",
+       "units": 4
+      },
+      {
+       "code": "BENG 230D",
+       "title": "Respiratory and Renal Physiology",
+       "units": 4
+      },
+      {
+       "code": "BENG 232",
+       "title": "Musculoskeletal (Life Sciences elective option)",
+       "units": 4
+      },
+      {
+       "code": "BENG 234",
+       "title": "Neurophysiology",
+       "units": 4
+      },
+      {
+       "code": "BENG 260",
+       "title": "Neurodynamics",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "eng-sci",
+     "name": "Engineering Sciences Elective",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose 1 (4 units), from BENG 202 through BENG 280A range",
+     "courses": [
+      {
+       "code": "BENG 202",
+       "title": "Bioinformatics II: Introduction to Bioinformatics Algorithms",
+       "units": 4
+      },
+      {
+       "code": "BENG 280A",
+       "title": "Biomedical Imaging (Engineering Sciences elective option)",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "grad-electives",
+     "name": "Graduate Electives",
+     "units": 28,
+     "kind": "free",
+     "rule": "28 units of graduate/upper-division electives to reach the 48-unit total; may include Bioengineering, MAE, NanoEngineering, School of Medicine, or Biological Sciences courses, and up to 12 units of approved undergraduate premed coursework",
+     "courses": []
+    }
+   ],
+   "plans": [
+    {
+     "id": "ms-med",
+     "name": "MS Bioengineering — Medical Specialization",
+     "totalUnits": 48,
+     "note": "Comprehensive exam required; up to 12 units of approved undergraduate premed coursework may count."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://be.ucsd.edu/grad/programs/ms-medical/curriculum",
+   "deptNotes": "MS in Bioengineering with a Medical Specialization (MS-MED). Distinct standalone curriculum: minimum 48 units of upper-division and graduate-level coursework plus a comprehensive examination. Emphasizes the intersection of medical science/practice and engineering; prepares students for professional degrees (MD, DO, DDS, DPT, OTD, PharmD). Structure: 12 units required emphasis core (BENG 294A/B/C), 4 units Life Sciences elective (pick 1), 4 units Engineering Sciences elective (pick 1), and 28 units graduate electives. Up to 12 units of specified upper-division undergraduate premed coursework allowed. Total 48 units."
   },
   {
    "code": "BE83",
@@ -779,7 +1187,91 @@
    "award": "MENG",
    "degrees": [
     "MEng"
-   ]
+   ],
+   "reqUrl": "https://be.ucsd.edu/grad/programs/meng/curriculum",
+   "groups": [
+    {
+     "id": "mde-core",
+     "name": "Required Medical Device Core",
+     "units": 24,
+     "kind": "required",
+     "rule": "All six required (medical device design + entrepreneurship)",
+     "courses": [
+      {
+       "code": "BENG 261A",
+       "title": "Clinical Perspectives in Medical Device Design",
+       "units": 4
+      },
+      {
+       "code": "BENG 261B",
+       "title": "Medical Device Experience I",
+       "units": 4
+      },
+      {
+       "code": "BENG 261C",
+       "title": "Medical Device Experience II",
+       "units": 4
+      },
+      {
+       "code": "BENG 262",
+       "title": "Biomaterials for Medical Device Design",
+       "units": 4
+      },
+      {
+       "code": "BENG 224",
+       "title": "Regulatory Affairs",
+       "units": 4
+      },
+      {
+       "code": "BENG 225",
+       "title": "Business of Biotech",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "component-design",
+     "name": "Component Design Electives",
+     "units": 16,
+     "kind": "pick",
+     "rule": "Four component-design elective courses required (~16 units)",
+     "courses": []
+    },
+    {
+     "id": "additional-electives",
+     "name": "Additional Electives",
+     "units": 8,
+     "kind": "free",
+     "rule": "Eight units of additional elective coursework",
+     "courses": []
+    },
+    {
+     "id": "seminar",
+     "name": "Seminar",
+     "units": 2,
+     "kind": "required",
+     "rule": "Required (Fall only, S/U)",
+     "courses": [
+      {
+       "code": "BENG 291",
+       "title": "Professional Issues in Bioengineering",
+       "units": 2
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "meng-mde",
+     "name": "MEng Bioengineering — Medical Device Engineering Specialization",
+     "totalUnits": 50,
+     "note": "One-year professional degree; 6 core + 4 component-design electives + 8 units additional electives + BENG 291 seminar. Total unit count approximate based on 4-unit courses plus 2-unit seminar."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://be.ucsd.edu/grad/programs/meng/curriculum",
+   "deptNotes": "Master of Engineering in Bioengineering with a Specialization in Medical Device Engineering (MEng MDE). Distinct standalone professional curriculum designed for one academic year of full-time study, focused on jobs in the medical device industry. Structure: six required core courses (medical device design + entrepreneurship: BENG 261A/B/C, 262, 224, 225), four component-design electives, and eight units of additional elective coursework, plus the BENG 291 professional-issues seminar. All coursework letter-graded (except seminar/practicum S/U) with a minimum B average."
   },
   {
    "code": "BI77",
@@ -1262,7 +1754,194 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://bioinformatics.ucsd.edu/grad/curriculum/requirements",
+   "groups": [
+    {
+     "id": "core-required",
+     "name": "Required Core Courses",
+     "units": 12,
+     "kind": "required",
+     "rule": "Take all three (12 units). Letter grade, B or better; normally done in Year 1, must finish by end of Year 2.",
+     "courses": [
+      {
+       "code": "BENG 202 / CSE 282",
+       "title": "Introduction to Bioinformatics Algorithms",
+       "units": 4
+      },
+      {
+       "code": "MED 264",
+       "title": "Principles of Biomedical Informatics",
+       "units": 4
+      },
+      {
+       "code": "MATH 283",
+       "title": "Statistical Methods in Bioinformatics",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "fourth-core",
+     "name": "Fourth Core Class",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose one (4 units) from the Fourth Core options list.",
+     "courses": [
+      {
+       "code": "CSE 280A",
+       "title": "Algorithms in Computational Biology",
+       "units": 4
+      },
+      {
+       "code": "CSE 284",
+       "title": "",
+       "units": 4,
+       "note": "Personal Genomics for Bioinformaticians"
+      },
+      {
+       "code": "ECE 208",
+       "title": "Computational Evolutionary Biology",
+       "units": 4
+      },
+      {
+       "code": "ECE 213",
+       "title": "Parallel Computing in Bioinformatics",
+       "units": 4
+      },
+      {
+       "code": "BNFO 285",
+       "title": "Statistical Learning in Bioinformatics",
+       "units": 4
+      },
+      {
+       "code": "BNFO 286",
+       "title": "",
+       "units": 4,
+       "note": "Network Biology and Biomedicine"
+      },
+      {
+       "code": "BENG 203 / CSE 283",
+       "title": "Genomics, Proteomics, and Network Biology",
+       "units": 4,
+       "note": "allowed as fourth core for BMI track"
+      }
+     ]
+    },
+    {
+     "id": "electives",
+     "name": "Electives (16 units, BMI distribution)",
+     "units": 16,
+     "kind": "pick",
+     "rule": "16 elective units total: minimum 4 units from the CS series AND minimum 8 units from the BMI (MED) series; remaining units from any approved elective field. BMI/DBMI trainees should take MED 265 and MED 267.",
+     "courses": [
+      {
+       "code": "MED 263",
+       "title": "",
+       "units": 4,
+       "note": "BMI series"
+      },
+      {
+       "code": "MED 265",
+       "title": "",
+       "units": 4,
+       "note": "BMI series (DBMI trainee req)"
+      },
+      {
+       "code": "MED 267",
+       "title": "",
+       "units": 4,
+       "note": "BMI series (DBMI trainee req)"
+      },
+      {
+       "code": "MED 268",
+       "title": "",
+       "units": 4,
+       "note": "BMI series"
+      },
+      {
+       "code": "MED 276",
+       "title": "Grant Proposal Writing Practicum",
+       "units": 2,
+       "note": "BMI series"
+      },
+      {
+       "code": "MED 277",
+       "title": "Introduction to Biomedical Natural Language Processing",
+       "units": 4,
+       "note": "BMI series"
+      },
+      {
+       "code": "CSE 101",
+       "title": "Design and Analysis of Algorithms",
+       "units": 4,
+       "note": "CS series"
+      },
+      {
+       "code": "CSE 202",
+       "title": "Algorithm Design and Analysis",
+       "units": 4,
+       "note": "CS series"
+      },
+      {
+       "code": "BNFO 285",
+       "title": "Statistical Learning in Bioinformatics",
+       "units": 4,
+       "note": "CS series"
+      },
+      {
+       "code": "ECE 208",
+       "title": "Computational Evolutionary Biology",
+       "units": 4,
+       "note": "CS series"
+      }
+     ]
+    },
+    {
+     "id": "milestones",
+     "name": "Ethics, Research & Teaching Requirements",
+     "units": 0,
+     "kind": "required",
+     "rule": "Non-course-unit degree milestones required in addition to the 32 coursework units.",
+     "courses": [
+      {
+       "code": "BNFO 294",
+       "title": "Ethics in Bioinformatics",
+       "units": 1,
+       "note": "Year 1; ethics refresher every 4 years"
+      },
+      {
+       "code": "BNFO 298",
+       "title": "Research Rotations",
+       "units": 0,
+       "note": "lab rotations, Year 1"
+      },
+      {
+       "code": "BNFO 299",
+       "title": "Graduate Research",
+       "units": 0
+      },
+      {
+       "code": "BNFO 500",
+       "title": "Teaching Assistantship",
+       "units": 0,
+       "note": "minimum 2 quarters as TA"
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "phd-bmi",
+     "name": "Bioinformatics & Systems Biology PhD — Biomedical Informatics track",
+     "totalUnits": 32,
+     "note": "16 core + 16 elective units of graded coursework, plus non-course milestones (ethics, rotations, seminars, TA, exams, dissertation)."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://bioinformatics.ucsd.edu/grad/curriculum/requirements",
+   "deptNotes": "Biomedical Informatics (BMI) track of the UCSD Bioinformatics & Systems Biology PhD (jointly with DBMI). Same 32-unit coursework framework as the base BISB PhD (16 core + 16 elective units) but with a BMI-specific core and elective distribution. Core = BENG 202/CSE 282, MED 264 (replaces the BISB systems-biology core), MATH 283, plus one Fourth Core Class. Electives (16 units): min 4 units CS series + min 8 units BMI (MED) series; BMI/DBMI trainees are directed to take MED 265 and MED 267. All core/elective courses letter-graded, B or better. Also required: BNFO 294 ethics (1u), research rotations (BNFO 298) and research (BNFO 299), track colloquia/research-talk seminars, min 2 quarters TA (BNFO 500), qualifying exam (Yr2), advancement to candidacy (Yr3), dissertation defense."
   },
   {
    "code": "BF78",
@@ -1272,7 +1951,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://qbio.ucsd.edu/phd/index.html",
+   "deptNotes": "Bioinformatics & Systems Biology PhD (base = BF76) combined with the interdisciplinary Quantitative Biology (qBio) specialization. Students complete the base BISB PhD coursework (32 units: 16 core + 16 elective) and, per the UCSD catalog QBIO track, direct the 16 elective units toward quantitative-biology electives. The qBio specialization (offered across Bioengineering, Biological Sciences, Biomedical Sciences, Chemistry & Biochemistry, and Physics) adds: PHYS 254 qBio seminar (~3 units over Year 1), PHYS 259A Critical Reading (~2 units, Year 1), PHYS 255 student research talks (~2 units, Years 4-5), plus 3 electives chosen from an approved qBio list — e.g. BGGN 214 (Introduction to Quantitative Biology), BGGN 212 (Quantitative Evolutionary Biology), BNFO 284 (Nonlinear Dynamics in Quantitative Biology), MAE 263 (Mechanics Inside the Cell), and PHYS 273/275/276/277/282/283 biological-physics courses. Students also attend weekly qBio seminars/events and satisfy home-department qualifying and thesis requirements. Exact unit totals for the qBio electives are not precisely published; treat as base BISB PhD plus this specialization overlay."
   },
   {
    "code": "CH75",
@@ -1642,7 +2323,171 @@
    "award": "MS",
    "degrees": [
     "MS"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/CSME.html",
+   "groups": [
+    {
+     "id": "list-a-core",
+     "name": "List A: Numerical Methods Core",
+     "units": 8,
+     "kind": "pick",
+     "rule": "Choose 2 courses (8 units) from List A. Two of these also serve as qualifying-exam courses.",
+     "courses": [
+      {
+       "code": "MATH 270A",
+       "title": "Numerical Analysis",
+       "units": 4
+      },
+      {
+       "code": "MATH 270B",
+       "title": "Numerical Analysis",
+       "units": 4
+      },
+      {
+       "code": "MATH 270C",
+       "title": "Numerical Analysis",
+       "units": 4
+      },
+      {
+       "code": "MATH 271A",
+       "title": "Numerical Optimization",
+       "units": 4
+      },
+      {
+       "code": "MATH 271B",
+       "title": "Numerical Optimization",
+       "units": 4
+      },
+      {
+       "code": "MATH 271C",
+       "title": "Numerical Optimization",
+       "units": 4
+      },
+      {
+       "code": "MATH 272A",
+       "title": "Numerical Partial Differential Equations",
+       "units": 4
+      },
+      {
+       "code": "MATH 272B",
+       "title": "Numerical Partial Differential Equations",
+       "units": 4
+      },
+      {
+       "code": "MATH 272C",
+       "title": "Numerical Partial Differential Equations",
+       "units": 4
+      },
+      {
+       "code": "MATH 274",
+       "title": "Numerical Methods",
+       "units": 4
+      },
+      {
+       "code": "MATH 275",
+       "title": "Numerical PDE",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "parallel-computing",
+     "name": "Parallel Computing (Required)",
+     "units": 4,
+     "kind": "required",
+     "rule": "PHYS 244 required (4 units); also serves as a qualifying-exam course.",
+     "courses": [
+      {
+       "code": "PHYS 244",
+       "title": "Parallel Computing",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "list-ab-electives",
+     "name": "List A or List B Electives",
+     "units": 16,
+     "kind": "pick",
+     "rule": "Choose 4 additional courses (16 units) from List A or List B (graduate MATH: 202A, 210A-B-C, 212A-B, 214, 231A-B-C, 245A-B-C, 261A-B-C, 273A-B-C, 276, 280A-B-C, 281A-B-C, 282A-B, 283, 284, 285, 286, 287A-B-C-D, 289C, 294).",
+     "courses": [
+      {
+       "code": "MATH 210A",
+       "title": "Mathematical Methods in Physics and Engineering",
+       "units": 4
+      },
+      {
+       "code": "MATH 273A",
+       "title": "Advanced Techniques in Computational Mathematics",
+       "units": 4
+      },
+      {
+       "code": "MATH 280A",
+       "title": "Probability Theory",
+       "units": 4
+      },
+      {
+       "code": "MATH 281A",
+       "title": "Mathematical Statistics",
+       "units": 4
+      },
+      {
+       "code": "MATH 245A",
+       "title": "Convex Analysis and Optimization",
+       "units": 4,
+       "note": "Representative List B courses; see catalog for full List A/B set."
+      }
+     ]
+    },
+    {
+     "id": "list-c-electives",
+     "name": "List C: Discipline-Specific Applied Electives",
+     "units": 8,
+     "kind": "pick",
+     "rule": "Choose 2 courses (8 units) from List C (applied domain courses across biology, cognitive science, chemistry, CSE, ECE, MAE, physics, or structural engineering).",
+     "courses": [
+      {
+       "code": "CSE 250A",
+       "title": "Machine Learning: Probabilistic Models",
+       "units": 4,
+       "note": "Representative List C applied elective; see catalog for full List C set."
+      },
+      {
+       "code": "MAE 210A",
+       "title": "Fluid Mechanics",
+       "units": 4,
+       "note": "Representative List C applied elective."
+      }
+     ]
+    },
+    {
+     "id": "research-seminar",
+     "name": "Research and Seminar",
+     "units": 2,
+     "kind": "pick",
+     "rule": "Complete 2 units total from research courses (MATH 299, CSE 298, ECE 298, MAE 296/298, PHYS 297/298, COGS 298) or seminar courses (MATH 218, 278A-B-C, 288, CSE 259, ECE 294-297, PHYS 250-254). Not required to be letter-graded.",
+     "courses": [
+      {
+       "code": "MATH 299",
+       "title": "Reading and Research",
+       "units": 2,
+       "note": "Or equivalent research/seminar course from the approved list."
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "csme-ms",
+     "name": "Computational Science MS (CSME)",
+     "totalUnits": 38,
+     "note": "Two-year interdisciplinary MS; participating departments include math, CSE, ECE, MAE, physics, chemistry/biochemistry, structural engineering, cognitive science. Program closed to new admits Jan 2022."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/CSME.html",
+   "deptNotes": "MS in Computational Science, administered by the campus-wide interdisciplinary Computational Science, Mathematics and Engineering (CSME) program. Requires 38 units of coursework total, structured as: (List A) 2 numerical-methods courses = 8 units; PHYS 244 Parallel Computing = 4 units; (List A or List B) 4 additional math/methods courses = 16 units; (List C) 2 discipline-specific applied electives = 8 units; and 2 units of research/seminar. All courses except research/seminar must be letter-graded with B- or better. Students must also pass qualifying exams (final exams in three courses: two from List A plus PHYS 244, each B or above) and demonstrate basic proficiency in numerical methods/algorithms. NOTE: as of January 2022 the CSME MS program is no longer accepting new students; requirements shown are the last published curriculum."
   },
   {
    "code": "CT75",
@@ -1844,7 +2689,183 @@
    "degrees": [
     "MS",
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://cse.ucsd.edu/graduate/degree-programs/ms-program",
+   "groups": [
+    {
+     "id": "breadth",
+     "name": "Breadth",
+     "units": 12,
+     "kind": "pick",
+     "rule": "One graduate course (4 units) from EACH of the three breadth areas — Theory, Systems, and Applications; letter grade, B- or higher. Full official code lists: Theory: CSE 200, 201A, 202, 203A, 203B, 205A, 207A. Systems: CSE 220, 221, 222A, 223B, 224, 231, 234, 237A-D, 240A-B, 241A, 243A, 244A. Applications: CSE 210, 216, 218, 230, 232, 250A, 251A, 251U, 252A-B, 256, 260, 280A, 284.",
+     "courses": [
+      {
+       "code": "CSE 200",
+       "title": "Computability and Complexity",
+       "units": 4
+      },
+      {
+       "code": "CSE 201A",
+       "title": "Advanced Complexity",
+       "units": 4
+      },
+      {
+       "code": "CSE 202",
+       "title": "Algorithm Design and Analysis",
+       "units": 4
+      },
+      {
+       "code": "CSE 203A",
+       "title": "Advanced Algorithms",
+       "units": 4
+      },
+      {
+       "code": "CSE 205A",
+       "title": "Logic in Computer Science",
+       "units": 4
+      },
+      {
+       "code": "CSE 221",
+       "title": "Operating Systems",
+       "units": 4
+      },
+      {
+       "code": "CSE 222A",
+       "title": "Computer Communication Networks",
+       "units": 4
+      },
+      {
+       "code": "CSE 223B",
+       "title": "Distributed Computing and Systems",
+       "units": 4
+      },
+      {
+       "code": "CSE 231",
+       "title": "Advanced Compiler Design",
+       "units": 4
+      },
+      {
+       "code": "CSE 237A",
+       "title": "Introduction to Embedded Computing",
+       "units": 4
+      },
+      {
+       "code": "CSE 240A",
+       "title": "Principles in Computer Architecture",
+       "units": 4
+      },
+      {
+       "code": "CSE 241A",
+       "title": "VLSI Integration of Computing Circuitry",
+       "units": 4
+      },
+      {
+       "code": "CSE 243A",
+       "title": "Introduction to Synthesis Methodologies in VLSI CAD",
+       "units": 4
+      },
+      {
+       "code": "CSE 244A",
+       "title": "VLSI Test",
+       "units": 4
+      },
+      {
+       "code": "CSE 210",
+       "title": "Principles of Software Engineering",
+       "units": 4
+      },
+      {
+       "code": "CSE 216",
+       "title": "Interaction Design Research",
+       "units": 4
+      },
+      {
+       "code": "CSE 218",
+       "title": "Advanced Topics in Software Engineering",
+       "units": 4
+      },
+      {
+       "code": "CSE 230",
+       "title": "Principles of Programming Languages",
+       "units": 4
+      },
+      {
+       "code": "CSE 232",
+       "title": "Principles of Database Systems",
+       "units": 4
+      },
+      {
+       "code": "CSE 250A",
+       "title": "Principles of Artificial Intelligence: Probabilistic Reasoning and Learning",
+       "units": 4
+      },
+      {
+       "code": "CSE 252A",
+       "title": "Computer Vision I",
+       "units": 4
+      },
+      {
+       "code": "CSE 256",
+       "title": "Statistical Natural Language Processing",
+       "units": 4
+      },
+      {
+       "code": "CSE 260",
+       "title": "Parallel Computation",
+       "units": 4
+      },
+      {
+       "code": "CSE 280A",
+       "title": "Algorithms in Computational Biology",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "depth",
+     "name": "Depth",
+     "units": 12,
+     "kind": "pick",
+     "rule": "Three graduate courses (12 units) from ONE depth area, letter grade. Depth areas: AI, Bioinformatics, Computer Engineering, Computer Systems (& Security), Database Systems, Graphics & Vision, Human-Computer Interaction, Programming Languages/Compilers/SE, Robotics, Theoretical CS. Computer Engineering majors must use Computer Engineering as depth.",
+     "courses": []
+    },
+    {
+     "id": "tech",
+     "name": "Electives and Research",
+     "units": 16,
+     "kind": "free",
+     "rule": "16 units electives/research (12 for the Interdisciplinary option, plus 12 in the secondary field). Letter grade. Max one CSE upper-division undergrad course. Max 4 units research (CSE 293). Plan I: 8–12 units CSE 298 fulfill this in place of electives.",
+     "courses": []
+    }
+   ],
+   "plans": [
+    {
+     "id": "II",
+     "name": "Plan II — Comprehensive Exam, Standard",
+     "totalUnits": 40,
+     "researchMax": 4,
+     "note": "12 breadth + 12 depth + 16 electives/research; pass comprehensive exams. Max 4 units research (CSE 293) count toward electives."
+    },
+    {
+     "id": "I",
+     "name": "Plan I — Thesis",
+     "totalUnits": 40,
+     "researchMax": 12,
+     "note": "12 breadth + 12 depth + 16 electives/research; requires 8–12 units CSE 298 (Independent Research) plus a thesis."
+    },
+    {
+     "id": "II-ID",
+     "name": "Plan II — Comprehensive Exam, Interdisciplinary",
+     "totalUnits": 48,
+     "researchMax": 4,
+     "note": "48 units: 12 breadth + 12 depth + 12 CSE electives/research + 12 units approved coursework in a secondary field."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://cse.ucsd.edu/graduate/degree-programs/ms-program",
+   "reuseOf": "CS75",
+   "deptNotes": "Computer Engineering degree option within CSE. Coursework framework is identical to the Computer Science degree (CS75): MS = 40 units (breadth 12u across Theory/Systems/Applications, depth 12u, electives+research 16u; Plan I thesis or Plan II comprehensive/interdisciplinary 48u). The PhD is the single combined 'Doctor of Philosophy in Computer Science and Computer Engineering' (37-unit coursework, breadth across 4 areas, 5 electives, CSE 292 seminar, research exam). The only difference from CS75 is that Computer Engineering students must select computer engineering as their depth area; the worksheet is otherwise the same."
   },
   {
    "code": "CS77",
@@ -1854,7 +2875,9 @@
    "award": "MS",
    "degrees": [
     "MS"
-   ]
+   ],
+   "reqUrl": "https://cse.ucsd.edu/graduate/degree-programs/ms-program",
+   "deptNotes": "MS in Computer Science and Engineering with an Advanced Manufacturing emphasis. No separate published Advanced Manufacturing curriculum could be verified on official CSE, Jacobs School MAS, or catalog pages; the Jacobs School MAS lineup lists AESE, DSE, CoSE and WES but no dedicated Advanced Manufacturing degree. Treat as the standard CSE MS structure (breadth 12u / depth 12u / electives+research 16u = 40 units, Plan I thesis or Plan II comprehensive) with a manufacturing-oriented course selection. Concrete required-course list not confirmed."
   },
   {
    "code": "CS78",
@@ -1864,7 +2887,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://bioinformatics.ucsd.edu/grad/curriculum/requirements",
+   "deptNotes": "CSE PhD (base CS75/CS76) with a specialization in Bioinformatics via the campus-wide Bioinformatics and Systems Biology (BISB) program. On top of the CSE doctoral requirements, BISB-track students take four core courses (each 4 units): Bioinformatics II (BENG 202/CSE 282, Introduction to Bioinformatics Algorithms); Bioinformatics III (BENG 203/CSE 283, Genomics, Proteomics, and Network Biology); Bioinformatics IV (MATH 283, Statistical Methods in Bioinformatics); and one Fourth Core Class chosen from CSE 280A, CSE 284, ECE 208, ECE 213, BNFO 285, or BNFO 286 (all 4u). Plus a 16-unit elective requirement (at least 4u CS-series and 4u BIO-series). Doctoral committee: min. 5 members, at least 3 (incl. chair) from BISB."
   },
   {
    "code": "CS80",
@@ -1874,7 +2899,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://cogsci.ucsd.edu/graduates/phd-program/index.html",
+   "deptNotes": "Joint doctoral / interdisciplinary PhD in Computer Science (& Engineering) and Cognitive Science. Students are admitted through the home department (CSE), complete the full CSE PhD requirements, and additionally fulfill the Cognitive Science Interdisciplinary PhD Program (IDP) requirements. Admission to the IDP is typically sought in the 2nd or 3rd year; a CogSci faculty member serves as advisor or co-advisor, with the primary advisor holding a home-department appointment. The dissertation is interdisciplinary across computation and cognition. No fixed added-course worksheet is published for CSE; requirements are arranged with the IDP."
   },
   {
    "code": "CS81",
@@ -1884,7 +2911,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://csme.ucsd.edu/csme-phd/index.html",
+   "deptNotes": "CSE PhD with a specialization in Computational Science via the campus-wide Computational Science, Mathematics and Engineering (CSME) program. Home department is CSE; students complete all CSE PhD requirements plus the CSME specialization. CSME adds: pass final exams in three qualifying courses — MATH 275 or MAE 290B (Numerical PDE), PHYS 244 or CSE 260 (Parallel Computing), and one List A core course; and two List B elective courses, both outside the home department (first for a letter grade, second may be pass/fail). Students must demonstrate advanced-undergraduate proficiency in numerical analysis and in algorithms/data structures by end of first year. Dissertation must be interdisciplinary and involve computational science."
   },
   {
    "code": "CS83",
@@ -1894,7 +2923,85 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://cse.ucsd.edu/graduate/cse-mas-wes-program",
+   "groups": [
+    {
+     "id": "wes-core",
+     "name": "Required Core Courses",
+     "units": 32,
+     "kind": "required",
+     "rule": "All eight courses required (32 units).",
+     "courses": [
+      {
+       "code": "WES 237A",
+       "title": "Introduction to Embedded Systems Design",
+       "units": 4
+      },
+      {
+       "code": "WES 237B",
+       "title": "Software for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 237C",
+       "title": "Hardware for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 265",
+       "title": "Wireless Communications Circuits and Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 267",
+       "title": "Digital Signal Processing for Wireless Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 268A",
+       "title": "Digital Communications Systems I",
+       "units": 4
+      },
+      {
+       "code": "WES 268B",
+       "title": "Digital Communications Systems II",
+       "units": 4
+      },
+      {
+       "code": "WES 269",
+       "title": "Codesign of Hardware and Software",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "wes-capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Required capstone project (4 units).",
+     "courses": [
+      {
+       "code": "WES 207",
+       "title": "Capstone Project: Wireless Embedded Systems",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "wes-mas",
+     "name": "MAS Wireless Embedded Systems",
+     "totalUnits": 36,
+     "note": "Part-time cohort; 8 required courses + capstone."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://cse.ucsd.edu/graduate/cse-mas-wes-program",
+   "deptNotes": "Master of Advanced Studies (MAS) in Wireless Embedded Systems, a part-time cohort program jointly offered by ECE and CSE. 36 units total: eight required 4-unit courses (32u) plus a 4-unit capstone. Completed over 7 academic quarters (incl. a summer); min GPA 3.0. Cross-disciplinary training in systems, software, hardware, and communication theory. No electives — fully prescribed curriculum."
   },
   {
    "code": "CS84",
@@ -1904,7 +3011,85 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://cse.ucsd.edu/graduate/cse-mas-wes-program",
+   "groups": [
+    {
+     "id": "wes-core",
+     "name": "Required Core Courses",
+     "units": 32,
+     "kind": "required",
+     "rule": "All eight courses required (32 units).",
+     "courses": [
+      {
+       "code": "WES 237A",
+       "title": "Introduction to Embedded Systems Design",
+       "units": 4
+      },
+      {
+       "code": "WES 237B",
+       "title": "Software for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 237C",
+       "title": "Hardware for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 265",
+       "title": "Wireless Communications Circuits and Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 267",
+       "title": "Digital Signal Processing for Wireless Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 268A",
+       "title": "Digital Communications Systems I",
+       "units": 4
+      },
+      {
+       "code": "WES 268B",
+       "title": "Digital Communications Systems II",
+       "units": 4
+      },
+      {
+       "code": "WES 269",
+       "title": "Codesign of Hardware and Software",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "wes-capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Required capstone project (4 units).",
+     "courses": [
+      {
+       "code": "WES 207",
+       "title": "Capstone Project: Wireless Embedded Systems",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "wes-mas",
+     "name": "MAS Wireless Embedded Systems",
+     "totalUnits": 36,
+     "note": "Part-time cohort; 8 required courses + capstone."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://cse.ucsd.edu/graduate/cse-mas-wes-program",
+   "deptNotes": "Master of Advanced Studies (MAS) in Wireless Embedded Systems (same program/curriculum as CS83/CS86, different cohort/catalog code). 36 units: eight required 4-unit courses (32u) plus a 4-unit capstone; 7 quarters part-time; min GPA 3.0; no electives."
   },
   {
    "code": "CS85",
@@ -1914,7 +3099,104 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://mas-dse.ucsd.edu/program/curriculum/index.html",
+   "groups": [
+    {
+     "id": "dse-foundational",
+     "name": "Foundational Courses",
+     "units": 12,
+     "kind": "required",
+     "rule": "All three required (12 units).",
+     "courses": [
+      {
+       "code": "DSE 200",
+       "title": "Python for Data Analysis",
+       "units": 4
+      },
+      {
+       "code": "DSE 201",
+       "title": "Database Management Systems",
+       "units": 4
+      },
+      {
+       "code": "DSE 203",
+       "title": "Data Integration and ETL",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "dse-core",
+     "name": "Advanced Core Courses",
+     "units": 22,
+     "kind": "required",
+     "rule": "All six required (22 units).",
+     "courses": [
+      {
+       "code": "DSE 210",
+       "title": "Statistics and Probability Using Python",
+       "units": 4
+      },
+      {
+       "code": "DSE 220",
+       "title": "Machine Learning",
+       "units": 4
+      },
+      {
+       "code": "DSE 230",
+       "title": "Scalable Data Analysis",
+       "units": 4
+      },
+      {
+       "code": "DSE 241",
+       "title": "Data Visualization",
+       "units": 4
+      },
+      {
+       "code": "DSE 250",
+       "title": "Beyond Relational Data Models",
+       "units": 4
+      },
+      {
+       "code": "DSE 290",
+       "title": "Case Studies in Data Science",
+       "units": 2
+      }
+     ]
+    },
+    {
+     "id": "dse-capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Both required (4 units).",
+     "courses": [
+      {
+       "code": "DSE 260A",
+       "title": "Data Science Design Capstone Project",
+       "units": 2
+      },
+      {
+       "code": "DSE 260B",
+       "title": "Data Science Design Capstone Project, Continued",
+       "units": 2
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "dse-mas",
+     "name": "MAS Data Science and Engineering",
+     "totalUnits": 38,
+     "note": "Part-time weekend cohort; Fri/Sat alternating weekends."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://mas-dse.ucsd.edu/program/curriculum/index.html",
+   "deptNotes": "Master of Advanced Studies (MAS) in Data Science and Engineering, a part-time weekend program for working professionals (CSE + Halicioglu Data Science Institute faculty). 38 units total over ~6 quarters: three foundational + six advanced-core courses (34u) plus a two-part capstone (4u). Fully prescribed cohort curriculum (no free electives)."
   },
   {
    "code": "CS86",
@@ -1924,7 +3206,85 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://cse.ucsd.edu/graduate/cse-mas-wes-program",
+   "groups": [
+    {
+     "id": "wes-core",
+     "name": "Required Core Courses",
+     "units": 32,
+     "kind": "required",
+     "rule": "All eight courses required (32 units).",
+     "courses": [
+      {
+       "code": "WES 237A",
+       "title": "Introduction to Embedded Systems Design",
+       "units": 4
+      },
+      {
+       "code": "WES 237B",
+       "title": "Software for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 237C",
+       "title": "Hardware for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 265",
+       "title": "Wireless Communications Circuits and Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 267",
+       "title": "Digital Signal Processing for Wireless Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 268A",
+       "title": "Digital Communications Systems I",
+       "units": 4
+      },
+      {
+       "code": "WES 268B",
+       "title": "Digital Communications Systems II",
+       "units": 4
+      },
+      {
+       "code": "WES 269",
+       "title": "Codesign of Hardware and Software",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "wes-capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Required capstone project (4 units).",
+     "courses": [
+      {
+       "code": "WES 207",
+       "title": "Capstone Project: Wireless Embedded Systems",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "wes-mas",
+     "name": "MAS Wireless Embedded Systems",
+     "totalUnits": 36,
+     "note": "Part-time cohort; 8 required courses + capstone."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://cse.ucsd.edu/graduate/cse-mas-wes-program",
+   "deptNotes": "Master of Advanced Studies (MAS) in Wireless Embedded Systems (same program/curriculum as CS83/CS84, different cohort/catalog code). 36 units: eight required 4-unit courses (32u) plus a 4-unit capstone; 7 quarters part-time; min GPA 3.0; no electives."
   },
   {
    "code": "CS87",
@@ -1934,7 +3294,104 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://mas-dse.ucsd.edu/program/curriculum/index.html",
+   "groups": [
+    {
+     "id": "dse-foundational",
+     "name": "Foundational Courses",
+     "units": 12,
+     "kind": "required",
+     "rule": "All three required (12 units).",
+     "courses": [
+      {
+       "code": "DSE 200",
+       "title": "Python for Data Analysis",
+       "units": 4
+      },
+      {
+       "code": "DSE 201",
+       "title": "Database Management Systems",
+       "units": 4
+      },
+      {
+       "code": "DSE 203",
+       "title": "Data Integration and ETL",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "dse-core",
+     "name": "Advanced Core Courses",
+     "units": 22,
+     "kind": "required",
+     "rule": "All six required (22 units).",
+     "courses": [
+      {
+       "code": "DSE 210",
+       "title": "Statistics and Probability Using Python",
+       "units": 4
+      },
+      {
+       "code": "DSE 220",
+       "title": "Machine Learning",
+       "units": 4
+      },
+      {
+       "code": "DSE 230",
+       "title": "Scalable Data Analysis",
+       "units": 4
+      },
+      {
+       "code": "DSE 241",
+       "title": "Data Visualization",
+       "units": 4
+      },
+      {
+       "code": "DSE 250",
+       "title": "Beyond Relational Data Models",
+       "units": 4
+      },
+      {
+       "code": "DSE 290",
+       "title": "Case Studies in Data Science",
+       "units": 2
+      }
+     ]
+    },
+    {
+     "id": "dse-capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Both required (4 units).",
+     "courses": [
+      {
+       "code": "DSE 260A",
+       "title": "Data Science Design Capstone Project",
+       "units": 2
+      },
+      {
+       "code": "DSE 260B",
+       "title": "Data Science Design Capstone Project, Continued",
+       "units": 2
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "dse-mas",
+     "name": "MAS Data Science and Engineering",
+     "totalUnits": 38,
+     "note": "Part-time weekend cohort; Fri/Sat alternating weekends."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://mas-dse.ucsd.edu/program/curriculum/index.html",
+   "deptNotes": "Master of Advanced Studies (MAS) in Data Science and Engineering (same program/curriculum as CS85, different cohort/catalog code). 38 units: three foundational + six advanced-core courses (34u) plus a two-part capstone (4u); part-time weekend cohort."
   },
   {
    "code": "CS88",
@@ -1944,7 +3401,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/CSE-gr.html",
+   "deptNotes": "CSE PhD (Computer Engineering degree option) with the Graduate Specialization in Human-Centered Design. On top of the combined CS & Computer Engineering doctoral requirements (37-unit coursework, breadth, electives, research exam), the HCD specialization requires DSGN 201 (4 units) and DSGN 219 (1 unit), plus two additional approved CSE courses and one course on ethics/power. No separate full worksheet; specialization is layered on the base PhD."
   },
   {
    "code": "CS89",
@@ -1955,7 +3414,9 @@
    "degrees": [
     "MS",
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/CSE-gr.html",
+   "deptNotes": "CSE Computer Science MS or PhD (base CS75) with the Graduate Specialization in Human-Centered Design. The specialization requires DSGN 201 (4 units) and DSGN 219 (1 unit), plus two additional approved CSE courses and one course on ethics/power, layered on top of the standard MS (40-unit breadth/depth/electives) or PhD (37-unit coursework) requirements. No separate full worksheet."
   },
   {
    "code": "CS90",
@@ -1965,7 +3426,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://cogsci.ucsd.edu/graduates/phd-program/index.html",
+   "deptNotes": "CSE PhD with a specialization in Cognitive Science via the campus-wide Cognitive Science Interdisciplinary PhD Program (IDP). Home department is CSE; students complete all CSE doctoral requirements and additionally fulfill the CogSci IDP requirements, with a Cognitive Science faculty member as advisor or co-advisor (primary advisor holds a CSE appointment). Distinct catalog code from CS80 but the same base relationship (CSE PhD + CogSci IDP). No fixed added-course worksheet published for CSE; arranged with the IDP."
   },
   {
    "code": "DS75",
@@ -3336,7 +4799,9 @@
    "award": "MS",
    "degrees": [
     "MS"
-   ]
+   ],
+   "reqUrl": "https://www.ece.ucsd.edu/graduate/ms-degree-requirements",
+   "deptNotes": "Cataloged as 'Electrical and Computer Engineering (Advanced Manufacturing) MS' — the standard ECE MS pursued through the interdepartmental curriculum in advanced manufacturing (offered alongside the applied-ocean-sciences and materials-science interdepartmental curricula). It follows the ECE MS structure, not a separate professional worksheet: Plan I (thesis) = 52 units total; Plan II (comprehensive exam) = 48 units total; both within a 6-quarter limit. A minimum of 12 units (Plan I) / 16 units (Plan II) must be 201+ level ECE graduate courses counting toward the degree. Plan I ends in a written thesis + oral defense; Plan II requires passing three course-hosted comprehensive exams. No distinct fixed advanced-manufacturing course list is published beyond the standard ECE MS requirements plus advanced-manufacturing-area coursework selected via the ECE degree planner, so no fabricated worksheet is provided."
   },
   {
    "code": "EC85",
@@ -3346,7 +4811,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/COGS-gr.html",
+   "deptNotes": "Joint doctoral title 'Electrical Engineering (Electronic Circuits and Systems) and Cognitive Science' — the ECE PhD in the Electronic Circuits & Systems research area (base worksheet EC78) taken jointly with the Cognitive Science Interdisciplinary PhD Program (IDP). The student completes the full ECE (ECS) doctoral requirements PLUS the added Cognitive Science IDP requirements. Added CogSci coursework per the catalog: two of the three foundation courses — COGS 201 (Neural Dynamics of Cognition), COGS 202 (Cognitive Science Foundations: Computational Modeling of Cognition), COGS 203 (Cognitive Science Foundations: Theories and Methods in the Study of Cognitive Phenomena); plus COGS 200 (Cognitive Science Seminar) for three quarters (one quarter may be satisfied by another similar seminar such as COGS 260); plus an individualized secondary-specialization plan developed with advisers. The main UCSD catalog degrees-offered list does not itemize this specific EE+CogSci joint pairing, so confidence is capped at medium. This is the base ECS doctoral program plus the interdisciplinary CogSci specialization, not a separate worksheet."
   },
   {
    "code": "EC86",
@@ -3570,7 +5037,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://ece.ucsd.edu/graduate/phd-degree-requirements",
+   "deptNotes": "Cataloged as 'Engineering Sciences (Electrical and Computer Engineering) (Joint with San Diego State University) PhD' — this is the SDSU/UCSD Joint Doctoral Program, a doctoral degree in Engineering Science (Electrical and Computer) awarded jointly by the Regents of the University of California and the Trustees of the California State University. Coursework is essentially the same as the standard UCSD ECE doctoral coursework: total course requirements equal the MS degree — forty-eight units (twelve quarter courses), of which at least thirty-six units must be graduate courses, normally completed within two years of full-time study; students holding an MS in EE may substitute prior graduate courses with advisor approval. It is an administrative/joint doctoral title rather than a distinct course-list worksheet, so it mirrors the ECE PhD coursework."
   },
   {
    "code": "EC88",
@@ -3580,7 +5049,85 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Required Core Courses",
+     "units": 32,
+     "kind": "required",
+     "rule": "Complete all eight required courses (32 units): four content areas — systems, software, hardware, and communication theory.",
+     "courses": [
+      {
+       "code": "WES 237A",
+       "title": "Introduction to Embedded Systems Design",
+       "units": 4
+      },
+      {
+       "code": "WES 237B",
+       "title": "Software for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 237C",
+       "title": "Hardware for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 265",
+       "title": "Wireless Communications Circuits and Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 267",
+       "title": "Digital Signal Processing for Wireless Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 268A",
+       "title": "Digital Communications Systems I",
+       "units": 4
+      },
+      {
+       "code": "WES 268B",
+       "title": "Digital Communications Systems II",
+       "units": 4
+      },
+      {
+       "code": "WES 269",
+       "title": "Codesign of Hardware and Software",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Complete the 4-unit capstone project, including a presentation and final report.",
+     "courses": [
+      {
+       "code": "WES 207",
+       "title": "Capstone Project: Wireless Embedded Systems",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "mas",
+     "name": "MAS in Wireless Embedded Systems",
+     "totalUnits": 36,
+     "note": "8 required courses (32 units) + WES 207 capstone (4 units); part-time, ~24 months / up to 7 quarters."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "deptNotes": "Master of Advanced Studies (MAS) in Wireless Embedded Systems (WES), offered jointly by ECE and CSE with the office of engineering executive education. Distinct professional worksheet: 8 required courses (32 units) plus one capstone course (4 units) = 36 units total, completed within seven quarters of part-time study (marketed as a 36-unit, ~24-month, alternating Friday/Saturday in-person program). All nine courses are required; there are no electives."
   },
   {
    "code": "EC89",
@@ -3590,7 +5137,85 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Required Core Courses",
+     "units": 32,
+     "kind": "required",
+     "rule": "Complete all eight required courses (32 units): four content areas — systems, software, hardware, and communication theory.",
+     "courses": [
+      {
+       "code": "WES 237A",
+       "title": "Introduction to Embedded Systems Design",
+       "units": 4
+      },
+      {
+       "code": "WES 237B",
+       "title": "Software for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 237C",
+       "title": "Hardware for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 265",
+       "title": "Wireless Communications Circuits and Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 267",
+       "title": "Digital Signal Processing for Wireless Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 268A",
+       "title": "Digital Communications Systems I",
+       "units": 4
+      },
+      {
+       "code": "WES 268B",
+       "title": "Digital Communications Systems II",
+       "units": 4
+      },
+      {
+       "code": "WES 269",
+       "title": "Codesign of Hardware and Software",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Complete the 4-unit capstone project, including a presentation and final report.",
+     "courses": [
+      {
+       "code": "WES 207",
+       "title": "Capstone Project: Wireless Embedded Systems",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "mas",
+     "name": "MAS in Wireless Embedded Systems",
+     "totalUnits": 36,
+     "note": "8 required courses (32 units) + WES 207 capstone (4 units); part-time, ~24 months / up to 7 quarters."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "deptNotes": "Same program as EC88/EC91 — Master of Advanced Studies (MAS) in Wireless Embedded Systems (WES); this is a separate ISIS cohort/track code for the identical WES MAS curriculum. 8 required courses (32 units) + WES 207 capstone (4 units) = 36 units, ~24 months part-time. All nine courses required; no electives."
   },
   {
    "code": "EC90",
@@ -3680,7 +5305,85 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Required Core Courses",
+     "units": 32,
+     "kind": "required",
+     "rule": "Complete all eight required courses (32 units): four content areas — systems, software, hardware, and communication theory.",
+     "courses": [
+      {
+       "code": "WES 237A",
+       "title": "Introduction to Embedded Systems Design",
+       "units": 4
+      },
+      {
+       "code": "WES 237B",
+       "title": "Software for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 237C",
+       "title": "Hardware for Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 265",
+       "title": "Wireless Communications Circuits and Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 267",
+       "title": "Digital Signal Processing for Wireless Embedded Systems",
+       "units": 4
+      },
+      {
+       "code": "WES 268A",
+       "title": "Digital Communications Systems I",
+       "units": 4
+      },
+      {
+       "code": "WES 268B",
+       "title": "Digital Communications Systems II",
+       "units": 4
+      },
+      {
+       "code": "WES 269",
+       "title": "Codesign of Hardware and Software",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Complete the 4-unit capstone project, including a presentation and final report.",
+     "courses": [
+      {
+       "code": "WES 207",
+       "title": "Capstone Project: Wireless Embedded Systems",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "mas",
+     "name": "MAS in Wireless Embedded Systems",
+     "totalUnits": 36,
+     "note": "8 required courses (32 units) + WES 207 capstone (4 units); part-time, ~24 months / up to 7 quarters."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "deptNotes": "Same program as EC88/EC89 — Master of Advanced Studies (MAS) in Wireless Embedded Systems (WES); separate ISIS cohort/track code for the identical WES MAS curriculum. 8 required courses (32 units) + WES 207 capstone (4 units) = 36 units, ~24 months part-time. All nine courses required; no electives."
   },
   {
    "code": "EC92",
@@ -4039,7 +5742,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/COGS-gr.html",
+   "deptNotes": "Joint doctoral title 'Electrical Engineering (Machine Learning and Data Science) and Cognitive Science' — the ECE PhD in the Machine Learning & Data Science research area (base worksheet EC93) taken jointly with the Cognitive Science Interdisciplinary PhD Program (IDP). The student completes the full ECE (ML&DS) doctoral requirements PLUS the added Cognitive Science IDP requirements. Added CogSci coursework per the catalog: two of the three foundation courses — COGS 201 (Neural Dynamics of Cognition), COGS 202 (Cognitive Science Foundations: Computational Modeling of Cognition), COGS 203 (Cognitive Science Foundations: Theories and Methods in the Study of Cognitive Phenomena); plus COGS 200 (Cognitive Science Seminar) for three quarters (one quarter may be another similar seminar such as COGS 260); plus an individualized secondary-specialization plan with advisers. The main UCSD catalog degrees-offered list does not itemize this specific EE+CogSci joint pairing, so confidence is capped at medium. Base ML&DS doctoral program plus the interdisciplinary CogSci specialization, not a separate worksheet."
   },
   {
    "code": "EC95",
@@ -4996,7 +6701,9 @@
    "degrees": [
     "MS",
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAE-gr.html",
+   "deptNotes": "Engineering Sciences with a specialization in Engineering Physics is one of the MAE graduate specializations (MS and PhD track; CPH = advancement to PhD candidacy). MS = 36 units: Plan I (thesis) is 24 units (6 courses) of coursework + 12 units MAE 299 research; Plan II (comprehensive exam) is 36 units (9 courses) plus passing three comprehensive-exam components within the specialization. PhD has no fixed course list; ~36 units of coursework support the Departmental Qualifying Exam, plus three 1-unit MAE 205 seminars (Fall 2017+), a TA quarter, Senate exam and dissertation. Engineering Physics is not among the specializations with a course table on the current maeweb MS page, so no specialization-specific course list could be verified."
   },
   {
    "code": "MC81",
@@ -5090,7 +6797,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAE-gr.html",
+   "deptNotes": "PhD specialization in Computational Science (introduced Fall 2007) layered on the MAE Engineering Sciences doctorate. It seeks understanding principally through analysis of mathematical models on high-performance computers and is a blend of applications, computation, and mathematics. Base requirements = MAE PhD (no fixed course list; DQE on ~36 units, MAE 205 seminars, TA quarter, Senate exam, dissertation) plus the interdisciplinary Computational Science and Engineering course component. The concrete added-course list is not published on the fetched pages."
   },
   {
    "code": "MC83",
@@ -5100,7 +6809,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://maeweb.ucsd.edu/grad/phd",
+   "deptNotes": "PhD specialization in Multi-Scale Biology (available since Fall 2010), reserved for students who participate in the Interfaces Graduate Training Program, an interdisciplinary program spanning Biological Sciences, Physical Sciences, the Jacobs School of Engineering, and Health Sciences. Base = MAE Engineering Sciences PhD requirements (DQE on ~36 units, MAE 205 seminars, TA quarter, Senate exam, dissertation) plus the Interfaces/Multi-Scale Biology training curriculum. The specific added-course list is not published on the fetched pages."
   },
   {
    "code": "MC84",
@@ -5110,7 +6821,88 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://maeweb.ucsd.edu/grad/phd",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Required + Emphasis Courses",
+     "units": 20,
+     "kind": "pick",
+     "rule": "MAE 208 required; then select 4 from MAE 200/201/202/203/204/206/209.",
+     "courses": [
+      {
+       "code": "MAE 208",
+       "title": "Mathematics for Engineers",
+       "units": 4
+      },
+      {
+       "code": "MAE 200",
+       "title": "Controls",
+       "units": 4
+      },
+      {
+       "code": "MAE 201",
+       "title": "Mechanics of Fluids",
+       "units": 4
+      },
+      {
+       "code": "MAE 202",
+       "title": "Thermal Processes",
+       "units": 4
+      },
+      {
+       "code": "MAE 203",
+       "title": "Solid Mechanics and Materials",
+       "units": 4
+      },
+      {
+       "code": "MAE 204",
+       "title": "Robotics",
+       "units": 4
+      },
+      {
+       "code": "MAE 206",
+       "title": "Energy Systems",
+       "units": 4
+      },
+      {
+       "code": "MAE 209",
+       "title": "Continuum Mechanics Applied to Medicine/Biology",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "tech",
+     "name": "Electives",
+     "units": 16,
+     "kind": "free",
+     "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level; no seminars/research courses.",
+     "courses": []
+    }
+   ],
+   "plans": [
+    {
+     "id": "II",
+     "name": "Plan II — Comprehensive Exam",
+     "totalUnits": 36,
+     "researchMax": null,
+     "note": "36 units = 9 courses, letter grade; pass 3+ comprehensive-exam components; min 3.0 GPA."
+    },
+    {
+     "id": "I",
+     "name": "Plan I — Thesis",
+     "totalUnits": 36,
+     "researchMax": 12,
+     "note": "24 units coursework + 12 units MAE 299 research."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://maeweb.ucsd.edu/grad/phd",
+   "reuseOf": "MC81",
+   "deptNotes": "Doctoral title variant 'Engineering Sciences (Mechanical and Aerospace Engineering)'; coursework-identical to the MAE Mechanical Engineering doctoral track (MC81) — the MAE PhD has no fixed course requirements regardless of specialization. Requirements: pass the Departmental Qualifying Exam (based on ~36 units of coursework) within the first six quarters, complete three 1-unit MAE 205 seminars (Fall 2017+), a TA quarter, the Senate exam, and a dissertation defense. Same as all other MAE Engineering Sciences doctoral specializations."
   },
   {
    "code": "MC88",
@@ -5120,7 +6912,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAE-gr.html",
+   "deptNotes": "Interdisciplinary PhD: Engineering Sciences (Mechanical Engineering) combined with Cognitive Science. Base = MAE Mechanical Engineering doctoral requirements (no fixed course list; DQE on ~36 units, MAE 205 seminars, TA quarter, Senate exam, dissertation) plus a Cognitive Science interdisciplinary training/specialization component. No concrete added-course curriculum for this combined designation could be verified on the fetched official pages."
   },
   {
    "code": "MC89",
@@ -5130,7 +6924,106 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core (Convergent Systems Engineering)",
+     "units": 20,
+     "kind": "required",
+     "rule": "All five core courses required — 20 units.",
+     "courses": [
+      {
+       "code": "COSE 200",
+       "title": "Leadership Skills, Values, and Team Building",
+       "units": 4
+      },
+      {
+       "code": "COSE 210",
+       "title": "Modeling, Simulation, and Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 215",
+       "title": "Decision and Risk Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 220",
+       "title": "Sustainable Innovation",
+       "units": 4
+      },
+      {
+       "code": "COSE 225",
+       "title": "Managing Stakeholder Relationships",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "aese-track",
+     "name": "AESE Specialization Courses",
+     "units": 16,
+     "kind": "required",
+     "rule": "All four AESE specialization courses required — 16 units.",
+     "courses": [
+      {
+       "code": "COSE 260A",
+       "title": "Complexity and Large-Scale Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260B",
+       "title": "Enterprise Architecting",
+       "units": 4
+      },
+      {
+       "code": "COSE 260C",
+       "title": "Engineering Essentials for Open, Distributed Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260D",
+       "title": "Patterns for Enterprise Architecting",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "projects",
+     "name": "Team Projects & Capstone",
+     "units": 6,
+     "kind": "required",
+     "rule": "Three quarterly team projects (COSE 230A, 1 unit each) + capstone (COSE 230B, 3 units) — 6 units. Program total = 42 units.",
+     "courses": [
+      {
+       "code": "COSE 230A",
+       "title": "Convergent Systems Engineering Quarterly Team Project",
+       "units": 1,
+       "note": "Taken three quarters, 1 unit each (3 units total)"
+      },
+      {
+       "code": "COSE 230B",
+       "title": "Convergent Systems Engineering Capstone Team Project",
+       "units": 3,
+       "note": "Summer capstone; catalog course list prints 4 units but AESE brochure and 42-unit total imply 3"
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "aese",
+     "name": "MAS Architecture-Based Enterprise Systems Engineering",
+     "totalUnits": 42,
+     "note": "12-month self-supporting professional program; five core + four AESE courses + quarterly projects + capstone"
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "deptNotes": "Master of Advanced Studies in Architecture-Based Enterprise Systems Engineering (AESE), offered by MAE with the Rady School / Engineering Executive Education. Self-supporting professional program for mid-career engineers: nine 4-unit courses (36 units) + three 1-unit quarterly team projects + a capstone = 42 units total. Now delivered as the AESE specialization of the Convergent Systems Engineering (CoSE) degree; MC89/MC90/MC95/MC98 share this same coursework."
   },
   {
    "code": "MC90",
@@ -5140,7 +7033,105 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core (Convergent Systems Engineering)",
+     "units": 20,
+     "kind": "required",
+     "rule": "All five core courses required — 20 units.",
+     "courses": [
+      {
+       "code": "COSE 200",
+       "title": "Leadership Skills, Values, and Team Building",
+       "units": 4
+      },
+      {
+       "code": "COSE 210",
+       "title": "Modeling, Simulation, and Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 215",
+       "title": "Decision and Risk Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 220",
+       "title": "Sustainable Innovation",
+       "units": 4
+      },
+      {
+       "code": "COSE 225",
+       "title": "Managing Stakeholder Relationships",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "aese-track",
+     "name": "AESE Specialization Courses",
+     "units": 16,
+     "kind": "required",
+     "rule": "All four AESE specialization courses required — 16 units.",
+     "courses": [
+      {
+       "code": "COSE 260A",
+       "title": "Complexity and Large-Scale Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260B",
+       "title": "Enterprise Architecting",
+       "units": 4
+      },
+      {
+       "code": "COSE 260C",
+       "title": "Engineering Essentials for Open, Distributed Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260D",
+       "title": "Patterns for Enterprise Architecting",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "projects",
+     "name": "Team Projects & Capstone",
+     "units": 6,
+     "kind": "required",
+     "rule": "Three quarterly team projects (COSE 230A) + capstone (COSE 230B) — 6 units. Program total = 42 units.",
+     "courses": [
+      {
+       "code": "COSE 230A",
+       "title": "Convergent Systems Engineering Quarterly Team Project",
+       "units": 1,
+       "note": "Taken three quarters, 1 unit each (3 units total)"
+      },
+      {
+       "code": "COSE 230B",
+       "title": "Convergent Systems Engineering Capstone Team Project",
+       "units": 3
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "aese",
+     "name": "MAS Architecture-Based Enterprise Systems Engineering",
+     "totalUnits": 42,
+     "note": "Same AESE curriculum as MC89 (cohort/code variant)"
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/MAS-gr.html",
+   "deptNotes": "Same program as MC89 — Master of Advanced Studies in Architecture-Based Enterprise Systems Engineering (AESE), a second cohort/administrative ISIS code. 42 units: five core + four AESE courses + three quarterly projects + capstone. Coursework identical to MC89/MC95/MC98."
   },
   {
    "code": "MC91",
@@ -5433,7 +7424,105 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://jacobsschool.ucsd.edu/mas/cose",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core (Convergent Systems Engineering)",
+     "units": 20,
+     "kind": "required",
+     "rule": "All five core courses required — 20 units.",
+     "courses": [
+      {
+       "code": "COSE 200",
+       "title": "Leadership Skills, Values, and Team Building",
+       "units": 4
+      },
+      {
+       "code": "COSE 210",
+       "title": "Modeling, Simulation, and Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 215",
+       "title": "Decision and Risk Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 220",
+       "title": "Sustainable Innovation",
+       "units": 4
+      },
+      {
+       "code": "COSE 225",
+       "title": "Managing Stakeholder Relationships",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "aese-track",
+     "name": "AESE Specialization Courses",
+     "units": 16,
+     "kind": "required",
+     "rule": "All four AESE specialization courses required — 16 units.",
+     "courses": [
+      {
+       "code": "COSE 260A",
+       "title": "Complexity and Large-Scale Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260B",
+       "title": "Enterprise Architecting",
+       "units": 4
+      },
+      {
+       "code": "COSE 260C",
+       "title": "Engineering Essentials for Open, Distributed Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260D",
+       "title": "Patterns for Enterprise Architecting",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "projects",
+     "name": "Team Projects & Capstone",
+     "units": 6,
+     "kind": "required",
+     "rule": "Three quarterly team projects (COSE 230A) + capstone (COSE 230B) — 6 units. Program total = 42 units.",
+     "courses": [
+      {
+       "code": "COSE 230A",
+       "title": "Convergent Systems Engineering Quarterly Team Project",
+       "units": 1,
+       "note": "Taken three quarters, 1 unit each (3 units total)"
+      },
+      {
+       "code": "COSE 230B",
+       "title": "Convergent Systems Engineering Capstone Team Project",
+       "units": 3
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "cose-aese",
+     "name": "MAS Convergent Systems Engineering — AESE Specialization",
+     "totalUnits": 42,
+     "note": "AESE track within the CoSE degree"
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://jacobsschool.ucsd.edu/mas/cose",
+   "deptNotes": "Convergent Systems Engineering (CoSE) with a Specialization in Architecture-Based Enterprise Systems. Same 42-unit coursework as the standalone AESE MAS (MC89/MC90): five CoSE core courses + four AESE specialization courses (COSE 260A-D) + three quarterly team projects + capstone."
   },
   {
    "code": "MC96",
@@ -5443,7 +7532,84 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://jacobsschool.ucsd.edu/mas/cose",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core (Convergent Systems Engineering)",
+     "units": 20,
+     "kind": "required",
+     "rule": "All five shared core courses required — 20 units.",
+     "courses": [
+      {
+       "code": "COSE 200",
+       "title": "Leadership Skills, Values, and Team Building",
+       "units": 4
+      },
+      {
+       "code": "COSE 210",
+       "title": "Modeling, Simulation, and Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 215",
+       "title": "Decision and Risk Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 220",
+       "title": "Sustainable Innovation",
+       "units": 4
+      },
+      {
+       "code": "COSE 225",
+       "title": "Managing Stakeholder Relationships",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "vsc-track",
+     "name": "Value Supply Chains Specialization",
+     "units": 16,
+     "kind": "required",
+     "rule": "Four VSC specialization courses required (~16 units): supply-chain fundamentals/architecture, supply-chain economics & finance, analytics-driven implementation, and emerging technological innovations. Individual COSE course numbers for VSC not yet published in fetched catalog.",
+     "courses": []
+    },
+    {
+     "id": "projects",
+     "name": "Team Projects & Capstone",
+     "units": 6,
+     "kind": "required",
+     "rule": "Quarterly team projects (COSE 230A) + capstone (COSE 230B) — 6 units. Program total = 42 units.",
+     "courses": [
+      {
+       "code": "COSE 230A",
+       "title": "Convergent Systems Engineering Quarterly Team Project",
+       "units": 1,
+       "note": "Taken across quarters, 1 unit each"
+      },
+      {
+       "code": "COSE 230B",
+       "title": "Convergent Systems Engineering Capstone Team Project",
+       "units": 3
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "cose-vsc",
+     "name": "MAS Convergent Systems Engineering — Value Supply Chains",
+     "totalUnits": 42,
+     "note": "Part-time, 2-year program for working professionals"
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://jacobsschool.ucsd.edu/mas/cose",
+   "deptNotes": "Convergent Systems Engineering (CoSE) with a Specialization in Value Supply Chains (VSC) — focuses on networks of enterprises / systems-of-systems: supply-chain architecture, economics and finance, should-cost modeling, AIM & DRIVE, cost/price analysis and total cost of ownership, value engineering, and risk assessment. Structure mirrors the CoSE degree: five shared core courses + four VSC specialization courses + capstone = 42 units. Only the shared core and project courses have published COSE course codes; the four VSC specialization courses are described on the program page but their individual COSE course numbers are not yet listed in the fetched catalog."
   },
   {
    "code": "MC97",
@@ -5453,7 +7619,84 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://jacobsschool.ucsd.edu/mas/cose",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core (Convergent Systems Engineering)",
+     "units": 20,
+     "kind": "required",
+     "rule": "All five shared core courses required — 20 units.",
+     "courses": [
+      {
+       "code": "COSE 200",
+       "title": "Leadership Skills, Values, and Team Building",
+       "units": 4
+      },
+      {
+       "code": "COSE 210",
+       "title": "Modeling, Simulation, and Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 215",
+       "title": "Decision and Risk Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 220",
+       "title": "Sustainable Innovation",
+       "units": 4
+      },
+      {
+       "code": "COSE 225",
+       "title": "Managing Stakeholder Relationships",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "cpss-track",
+     "name": "Cyber-Physical Social Systems Specialization",
+     "units": 16,
+     "kind": "required",
+     "rule": "Four CPSS specialization courses required (~16 units) covering the CPSS lifecycle: conception, architecture, implementation, and evolution. Individual COSE course numbers for CPSS not yet published in fetched catalog.",
+     "courses": []
+    },
+    {
+     "id": "projects",
+     "name": "Team Projects & Capstone",
+     "units": 6,
+     "kind": "required",
+     "rule": "Quarterly team projects (COSE 230A) + capstone (COSE 230B) — 6 units. Program total = 42 units.",
+     "courses": [
+      {
+       "code": "COSE 230A",
+       "title": "Convergent Systems Engineering Quarterly Team Project",
+       "units": 1,
+       "note": "Taken across quarters, 1 unit each"
+      },
+      {
+       "code": "COSE 230B",
+       "title": "Convergent Systems Engineering Capstone Team Project",
+       "units": 3
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "cose-cpss",
+     "name": "MAS Convergent Systems Engineering — Cyber-Physical Social Systems",
+     "totalUnits": 42,
+     "note": "Part-time, 2-year program for working professionals"
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://jacobsschool.ucsd.edu/mas/cose",
+   "deptNotes": "Convergent Systems Engineering (CoSE) with a Specialization in Cyber-Physical Social Systems (CPSS) — applies systems engineering to the product/service itself, integrating computing, physical assets, and human networks across the lifecycle from conception through architecture, implementation, and evolution. Structure mirrors the CoSE degree: five shared core courses + four CPSS specialization courses + capstone = 42 units. Only the shared core and project courses have published COSE course codes; the four CPSS specialization courses are described on the program page but their individual COSE course numbers are not yet listed in the fetched catalog."
   },
   {
    "code": "MC98",
@@ -5463,7 +7706,105 @@
    "award": "MAS",
    "degrees": [
     "MAS"
-   ]
+   ],
+   "reqUrl": "https://jacobsschool.ucsd.edu/mas/cose",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core (Convergent Systems Engineering)",
+     "units": 20,
+     "kind": "required",
+     "rule": "All five core courses required — 20 units.",
+     "courses": [
+      {
+       "code": "COSE 200",
+       "title": "Leadership Skills, Values, and Team Building",
+       "units": 4
+      },
+      {
+       "code": "COSE 210",
+       "title": "Modeling, Simulation, and Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 215",
+       "title": "Decision and Risk Analysis",
+       "units": 4
+      },
+      {
+       "code": "COSE 220",
+       "title": "Sustainable Innovation",
+       "units": 4
+      },
+      {
+       "code": "COSE 225",
+       "title": "Managing Stakeholder Relationships",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "aese-track",
+     "name": "AESE Specialization Courses",
+     "units": 16,
+     "kind": "required",
+     "rule": "All four AESE specialization courses required — 16 units.",
+     "courses": [
+      {
+       "code": "COSE 260A",
+       "title": "Complexity and Large-Scale Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260B",
+       "title": "Enterprise Architecting",
+       "units": 4
+      },
+      {
+       "code": "COSE 260C",
+       "title": "Engineering Essentials for Open, Distributed Systems",
+       "units": 4
+      },
+      {
+       "code": "COSE 260D",
+       "title": "Patterns for Enterprise Architecting",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "projects",
+     "name": "Team Projects & Capstone",
+     "units": 6,
+     "kind": "required",
+     "rule": "Three quarterly team projects (COSE 230A) + capstone (COSE 230B) — 6 units. Program total = 42 units.",
+     "courses": [
+      {
+       "code": "COSE 230A",
+       "title": "Convergent Systems Engineering Quarterly Team Project",
+       "units": 1,
+       "note": "Taken three quarters, 1 unit each (3 units total)"
+      },
+      {
+       "code": "COSE 230B",
+       "title": "Convergent Systems Engineering Capstone Team Project",
+       "units": 3
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "cose-aese",
+     "name": "MAS Convergent Systems Engineering — AESE Specialization",
+     "totalUnits": 42,
+     "note": "AESE track within the CoSE degree (code variant of MC95)"
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://jacobsschool.ucsd.edu/mas/cose",
+   "deptNotes": "Convergent Systems Engineering (CoSE) with a Specialization in Architecture-Based Enterprise Systems — same program/coursework as MC95 (and the standalone AESE MC89/MC90), a separate cohort/administrative code. 42 units: five CoSE core + four AESE courses (COSE 260A-D) + quarterly projects + capstone."
   },
   {
    "code": "MC99",
@@ -5780,7 +8121,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://interfaces.ucsd.edu/program",
+   "deptNotes": "Base degree = Materials Science and Engineering PhD (MS76); students complete all MSE doctoral requirements PLUS the interdisciplinary Specialization in Multi-Scale Biology, administered by the UCSD Interfaces Graduate Training Program. Added specialization requirements: complete the core course BENG 219 'Data Science for Multiscale Biology', PLUS at least two of eight hands-on interdisciplinary graduate laboratory courses (minimum three specialization courses total). Students apply in the Spring quarter of their first or second year via a brief research-interest summary. Completing home-department + specialization requirements yields a 'PhD in Materials Science and Engineering with a Specialization in Multi-Scale Biology'. MSE is one of nine participating home departments. Specialization course numbers/titles beyond BENG 219 are not enumerated on the fetched pages, so a full worksheet is not fabricated."
   },
   {
    "code": "MO75",
@@ -5988,7 +8331,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://interfaces.ucsd.edu/program",
+   "deptNotes": "PhD in Chemical Engineering WITH a Specialization in Multi-Scale Biology. Coursework = the standard Chemical Engineering PhD (base code CE75, already worksheeted) PLUS the interdisciplinary Multi-Scale Biology specialization administered by the UCSD Interfaces Graduate Training Program (spanning Jacobs School of Engineering, Health Sciences, Biological Sciences, Physical Sciences). Added specialization coursework: complete a minimum of THREE courses total = required BENG 219 (Data Science for Multiscale Biology) PLUS at least two hands-on graduate laboratory courses chosen from the Interfaces list, e.g. BENG 216 (Neuromorphic Integrated Bioelectronics), BENG 277 (Tissue Engineering), BENG/RAD 278 (Medical Imaging Laboratory), BENG 235 (Molecular Imaging and Quantitation in Living Cells), BENG/CHEM/MATH/PHARM 276 (Numerical Analysis for Multiscale Biology), BENG/CHEM 283 (Supramolecular Structure Determination Laboratory), BENG/BGGN 260/PHYS 279 (Multiscale Neurodynamics). Students must satisfy both their home ChemE PhD requirements and the Interfaces specialization requirements. Per-course unit counts not published on the fetched pages, so no full worksheet fabricated."
   },
   {
    "code": "NA77",
@@ -5998,7 +8343,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://interfaces.ucsd.edu/program",
+   "deptNotes": "PhD in NanoEngineering WITH a Specialization in Multi-Scale Biology. Coursework = the standard NanoEngineering PhD (base code NA75, already worksheeted) PLUS the interdisciplinary Multi-Scale Biology specialization run by the UCSD Interfaces Graduate Training Program (four schools: Jacobs School of Engineering, Health Sciences, Biological Sciences, Physical Sciences). Added specialization coursework: complete a minimum of THREE courses total = required BENG 219 (Data Science for Multiscale Biology) PLUS at least two hands-on graduate laboratory courses from the Interfaces list, e.g. BENG 216 (Neuromorphic Integrated Bioelectronics), BENG 277 (Tissue Engineering), BENG/RAD 278 (Medical Imaging Laboratory), BENG 235 (Molecular Imaging and Quantitation in Living Cells), BENG/CHEM/MATH/PHARM 276 (Numerical Analysis for Multiscale Biology), BENG/CHEM 283 (Supramolecular Structure Determination Laboratory), BENG/BGGN 260/PHYS 279 (Multiscale Neurodynamics). Students satisfy both their home NanoEngineering PhD requirements and the Interfaces specialization requirements. Per-course unit counts not published on the fetched pages, so no full worksheet fabricated."
   },
   {
    "code": "NE75",
@@ -7093,7 +9440,9 @@
    "award": "MS",
    "degrees": [
     "MS"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/SE-gr.html",
+   "deptNotes": "Specialization/focus area within the base MS in Structural Engineering (SE75; 48 quarter units, 12 courses, Thesis or Comprehensive Exam plan). The department does not publish a standalone worksheet for SHM/Prognosis/Validated Simulations as a separate MS code; it is a multi-disciplinary focus integrating structural engineering, ECE, and CSE for data acquisition/sensing, signal processing, and predictive modeling. The catalog advises students in this area to take SHM focus-area courses plus outside-SE electives MAE 283, MAE 261, ECE 251AN, ECE 251BN, ECE 254, and CSE 291 to satisfy the outside-structural-engineering requirement. For the Comprehensive option the 4-unit independent study SE 296 must be completed as a capstone project integrating SHM/prognosis/NDE technology areas. Same base MS structure (2 focus sequences, SE 290 seminar) otherwise."
   },
   {
    "code": "SE77",
@@ -7103,7 +9452,91 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/SE-gr.html",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core Courses",
+     "units": 8,
+     "kind": "pick",
+     "rule": "Complete 2 of these 7 core courses (SE 233 or SE 276A may count, but not both): SE 201A, 202, 203A, 241, 271, 233, 276A.",
+     "courses": [
+      {
+       "code": "SE 201A",
+       "title": "Advanced Structural Analysis",
+       "units": 4
+      },
+      {
+       "code": "SE 202",
+       "title": "Structural Stability",
+       "units": 4
+      },
+      {
+       "code": "SE 203A",
+       "title": "Structural Dynamics I",
+       "units": 4
+      },
+      {
+       "code": "SE 241",
+       "title": "Advanced Soil Mechanics",
+       "units": 4
+      },
+      {
+       "code": "SE 271",
+       "title": "Solid Mechanics for Structural and Aerospace Engineering",
+       "units": 4
+      },
+      {
+       "code": "SE 233",
+       "title": "Computational Techniques in Finite Elements",
+       "units": 4
+      },
+      {
+       "code": "SE 276A",
+       "title": "Finite Element Methods in Solid Mechanics I",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "focus",
+     "name": "Focus-area Courses",
+     "units": 24,
+     "kind": "pick",
+     "rule": "Two focus-area sequences (each = three preapproved courses from one area), i.e. 6 courses / 24 units. Choose 2 of 8 areas: Structural Analysis; Computational Mechanics & Finite Elements; Structural Design; Earthquake Engineering; Advanced Composites; Geotechnical Engineering; Solid Mechanics; Structural Health Monitoring & NDE. (See official page for each area's course list.)",
+     "courses": []
+    },
+    {
+     "id": "tech",
+     "name": "Electives",
+     "units": 16,
+     "kind": "free",
+     "rule": "Technical electives: any science/math/engineering graduate course, or approved upper-division. Plan II = 4 (16 units); Plan I = 3 (12 units). ≤4 units SE 296 may apply.",
+     "courses": []
+    }
+   ],
+   "plans": [
+    {
+     "id": "II",
+     "name": "Plan II — Comprehensive",
+     "totalUnits": 48,
+     "researchMax": null,
+     "note": "12 courses (48 units): 2 core + 6 focus-area (two 3-course sequences) + 4 technical electives. Written comprehensive exam. Also 3 quarters of SE 290 (seminar)."
+    },
+    {
+     "id": "I",
+     "name": "Plan I — Thesis",
+     "totalUnits": 48,
+     "researchMax": 12,
+     "note": "9 courses (36 units): 2 core + 6 focus-area + 3 electives, plus 12 units SE 299 (thesis). Requires research advisor + defense. Also 3 quarters SE 290."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/SE-gr.html",
+   "reuseOf": "SE75",
+   "deptNotes": "Administrative title variant. 'Engineering Sciences (Structural Engineering)' is the formal Jacobs School of Engineering doctoral degree title used for the PhD in Structural Engineering; the departmental requirements are identical to the base Structural Engineering doctoral program. The PhD is exam/research based (no fixed course worksheet): Department Qualifying Exam covering four focus areas (with one minor focus outside SE), Advancement to Candidacy Senate Exam (committee of 4+), 3 quarters of SE 290 before the DQE, a teaching/mentorship requirement, and a dissertation final defense (min. 3 quarters after candidacy). Coursework/requirements are the same as the base Structural Engineering graduate program (SE75)."
   },
   {
    "code": "SE80",
@@ -7113,7 +9546,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/SE-gr.html",
+   "deptNotes": "Base Structural Engineering PhD PLUS the interdisciplinary Specialization in Computational Science (CSME doctoral specialization). All standard SE PhD requirements apply (DQE, Advancement to Candidacy exam, teaching requirement, dissertation defense). ADDED specialization requirements: (1) pass three qualifying exams — MATH 275 or MAE 290B (numerical PDEs); PHYS 244 or CSE 260 (parallel computing); and one course from approved List A (e.g. MATH 270A-C, MATH 271A-C, MATH 272A-C, MAE 223, MAE 232/SE 276A-C, PHYS 221A-B, SE 233) — all passed by end of year 2 (year 3 with petition). (2) Three elective courses (4 units each) from List B (any List A course, PHYS 241-242, MAE 222, MAE 261, SE 277, SE 278A-B, CHEM 215, BGGN 260, ECE 272, CSE 250A-B, MATH 210A-C), with a minimum of two electives taken outside the home department; one may be Pass/Fail, the other letter grade. (3) Computer engineering proficiency demonstrated by end of first year."
   },
   {
    "code": "SE81",
@@ -7123,7 +9558,297 @@
    "award": "MS",
    "degrees": [
     "MS"
-   ]
+   ],
+   "reqUrl": "https://se.ucsd.edu/academics/graduate-program/masters-program/masters-specialization-health-monitoring",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core Courses",
+     "units": 8,
+     "kind": "required",
+     "rule": "Both required (8 units).",
+     "courses": [
+      {
+       "code": "SE 263",
+       "title": "Non-destructive Evaluation",
+       "units": 4
+      },
+      {
+       "code": "SE 265",
+       "title": "Structural Health Monitoring Principles",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "fa-sensing",
+     "name": "Focus Area — Sensing Technology",
+     "kind": "pick",
+     "rule": "One of three chosen focus areas. Across the three focus areas take 5 courses (20 units) distributed 1 + 2 + 2. Each course 4 units.",
+     "courses": [
+      {
+       "code": "SE 252",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 264",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 266",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 268",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "CSE 237A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 257B",
+       "title": "",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "fa-data",
+     "name": "Focus Area — Data Interrogation",
+     "kind": "pick",
+     "rule": "One of three chosen focus areas (1 + 2 + 2 distribution across areas, 20 units total). Each course 4 units.",
+     "courses": [
+      {
+       "code": "SE 282",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 267",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 268",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 251A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 251B",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 251C",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 253",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 254",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "MAE 283A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "CSE 254",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "CSE 255",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "CSE 250A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "CSE 251A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 271A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "ECE 271B",
+       "title": "",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "fa-modeling",
+     "name": "Focus Area — Modeling and Analysis",
+     "kind": "pick",
+     "rule": "One of three chosen focus areas (1 + 2 + 2 distribution across areas, 20 units total). Each course 4 units.",
+     "courses": [
+      {
+       "code": "SE 201A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 202",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 203A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 205",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 206",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 224",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 233",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 276A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 235",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "MAE 238",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 236",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 253A",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 254",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 260",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 262",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 268",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 269",
+       "title": "",
+       "units": 4
+      },
+      {
+       "code": "SE 270",
+       "title": "",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "capstone-research",
+     "name": "Capstone / Research (plan-dependent)",
+     "kind": "required",
+     "rule": "Thesis plan: SE 299 Graduate Research (8 units). Comprehensive plan: SE 296 capstone independent study (4 units) + one 4-unit technical elective.",
+     "courses": [
+      {
+       "code": "SE 299",
+       "title": "Graduate Research (Thesis plan)",
+       "units": 8
+      },
+      {
+       "code": "SE 296",
+       "title": "Independent Study / Capstone (Comprehensive plan)",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "seminar",
+     "name": "Seminar",
+     "kind": "required",
+     "rule": "Register for SE 290 for 2 quarters (does not count toward the 36 units).",
+     "courses": [
+      {
+       "code": "SE 290",
+       "title": "Seminar",
+       "units": 0
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "thesis",
+     "name": "Thesis Plan",
+     "totalUnits": 36,
+     "note": "Core 8u + SE 299 (8u) + Focus Area 1 (4u) + Focus Areas 2 & 3 (8u each). Public thesis defense with 3-member committee."
+    },
+    {
+     "id": "comprehensive",
+     "name": "Comprehensive Examination Plan",
+     "totalUnits": 36,
+     "note": "Core 8u + SE 296 capstone (4u) + Focus Area 1 (4u) + Focus Areas 2 & 3 (8u each) + 1 technical elective (4u)."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://se.ucsd.edu/academics/graduate-program/masters-program/masters-specialization-health-monitoring",
+   "deptNotes": "MS in Structural Engineering with Specialization in Structural Health Monitoring & Non-Destructive Evaluation. 36 quarter units total. Two plans: Thesis (core 8u + SE 299 research 8u + 5 focus-area courses 20u) and Comprehensive Exam (core 8u + SE 296 capstone 4u + 5 focus-area courses 20u + 1 technical elective 4u). Students select three of the department's technology focus areas and take courses distributed 1 + 2 + 2 (Focus Area 1 = one 4-unit course, Focus Areas 2 and 3 = two 4-unit courses each). SE 290 seminar required for 2 quarters. All grad courses 4 units."
   },
   {
    "code": "SE82",
@@ -7133,7 +9858,134 @@
    "award": "MS",
    "degrees": [
     "MS"
-   ]
+   ],
+   "reqUrl": "https://structures.ucsd.edu/academics/graduate-resources/ms-geotechnical-engineering",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core Courses",
+     "units": 16,
+     "kind": "required",
+     "rule": "All four required (16 units).",
+     "courses": [
+      {
+       "code": "SE 241",
+       "title": "Advanced Soil Mechanics",
+       "units": 4
+      },
+      {
+       "code": "SE 242",
+       "title": "Advanced Foundation Engineering",
+       "units": 4
+      },
+      {
+       "code": "SE 248",
+       "title": "Engineering Properties of Soils",
+       "units": 4
+      },
+      {
+       "code": "SE 250",
+       "title": "Stability of Earth Slopes & Retaining Walls (or SE 183)",
+       "units": 4,
+       "note": "SE 250 or SE 183"
+      }
+     ]
+    },
+    {
+     "id": "geo-electives",
+     "name": "Geotechnical Technical Electives",
+     "kind": "pick",
+     "rule": "Comprehensive plan: choose 4 (16 units). Thesis plan: choose 3 (12 units). Each course 4 units.",
+     "courses": [
+      {
+       "code": "SE 207",
+       "title": "Soil Dynamics",
+       "units": 4
+      },
+      {
+       "code": "SE 222",
+       "title": "Geotechnical Earthquake Engineering",
+       "units": 4
+      },
+      {
+       "code": "SE 243",
+       "title": "Soil-Structure Interaction",
+       "units": 4
+      },
+      {
+       "code": "SE 244",
+       "title": "Numerical Methods in Geomechanics",
+       "units": 4
+      },
+      {
+       "code": "SE 246",
+       "title": "Unsaturated Soil Mechanics",
+       "units": 4
+      },
+      {
+       "code": "SE 247",
+       "title": "Ground Improvement",
+       "units": 4
+      },
+      {
+       "code": "SE 249",
+       "title": "Rock Mechanics",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "other-electives",
+     "name": "Other Technical Electives",
+     "kind": "free",
+     "rule": "Comprehensive plan: 4 courses (16 units). Thesis plan: 2 courses (8 units). May be additional geotechnical/structural engineering electives or Scripps Institution geology courses. Each course 4 units.",
+     "courses": []
+    },
+    {
+     "id": "research",
+     "name": "Graduate Research (Thesis plan only)",
+     "kind": "required",
+     "rule": "Thesis plan only: SE 299 for 12 units (counts as two courses).",
+     "courses": [
+      {
+       "code": "SE 299",
+       "title": "Graduate Research",
+       "units": 12
+      }
+     ]
+    },
+    {
+     "id": "seminar",
+     "name": "Seminar",
+     "kind": "required",
+     "rule": "SE 290 for 3 quarters (every quarter of first year); does not count toward the 48 units.",
+     "courses": [
+      {
+       "code": "SE 290",
+       "title": "Seminar",
+       "units": 0
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "comprehensive",
+     "name": "Comprehensive Examination Plan",
+     "totalUnits": 48,
+     "note": "Core 16u + 4 geotechnical electives (16u) + 4 other technical electives (16u). Written comprehensive exam over the four core courses (min 60/100 each)."
+    },
+    {
+     "id": "thesis",
+     "name": "Thesis Plan",
+     "totalUnits": 48,
+     "note": "Core 16u + 3 geotechnical electives (12u) + 2 other technical electives (8u) + SE 299 Graduate Research (12u). Public thesis defense with 3-member committee."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://structures.ucsd.edu/academics/graduate-resources/ms-geotechnical-engineering",
+   "deptNotes": "MS in Geotechnical Engineering. 48 quarter units (12 courses). Prerequisite: undergraduate degree in Structural or Civil Engineering and completion of SE 181 and SE 182 (or equivalents; SE 182 may be taken concurrently). Four required core courses (16 units). Two plans: Comprehensive Exam (48u coursework: 4 geotechnical electives 16u + 4 other technical electives 16u; written comprehensive exam, min passing score 60/100 in all four core courses) and Thesis (36u coursework + SE 299 research 12u: 3 geotechnical electives 12u + 2 other technical electives 8u; public thesis defense). SE 290 seminar required every quarter of first year (3 quarters total). Other technical electives may include additional SE courses and Scripps geology courses. All courses 4 units."
   },
   {
    "code": "SO75",
