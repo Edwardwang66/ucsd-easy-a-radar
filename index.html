@@ -925,6 +925,7 @@
    /* Overview card — departments without a course-bucket worksheet */
    .gp-ov{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;margin-top:6px}
    .gp-ov h3{margin:0 0 2px;font-size:18px;font-weight:700;color:var(--ink)}
+   .gp-ov h3 .isis{font-family:var(--mono);font-size:12px;font-weight:700;vertical-align:middle;margin-left:8px;padding:2px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent-2);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent)}
    .gp-ov .school{font-size:12.5px;color:var(--muted);margin-bottom:12px}
    .gp-ov .degrees{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 13px}
    .gp-ov .deg{font-size:12px;font-weight:700;font-family:var(--mono);padding:3px 10px;border-radius:20px;background:var(--accent-soft);color:var(--accent-2);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent)}
@@ -997,7 +998,7 @@
    </div><!-- /dpUG -->
 
    <div id="dpGrad" hidden>
-     <p class="ge-intro">Plan a graduate degree by <b>school → department</b>. Every UCSD graduate department is listed with its degrees and a link to official requirements. <b>Electrical &amp; Computer Engineering</b> (Jacobs School of Engineering) has the full <b>course-level planner</b> — all thirteen ECE research areas from their official 2025–2027 degree planners: pick a research area and plan, add courses to each requirement bucket, tag the quarter, check off what's done, and watch each bucket fill toward its unit quota, with every course linking to its <b>grade ranking</b>. Other departments show a program overview; follow the official-requirements link to plan there.</p>
+     <p class="ge-intro">Plan a graduate degree by <b>school → department → research area</b>. Every UCSD graduate <b>ISIS major code</b> is a selectable option — base degrees, specializations, joint-doctoral and online variants — each with its official title and degrees. The <b>Jacobs School of Engineering</b> programs have the full <b>course-level planner</b> (ECE's thirteen research areas plus the CSE, MAE, Bioengineering, Materials, Nano/Chem, Structural and Bioinformatics worksheets): pick a research area and plan, add courses to each requirement bucket, tag the quarter, check off what's done, and watch each bucket fill toward its unit quota, with every course linking to its <b>grade ranking</b>. Every other ISIS code opens a program overview card; follow its official-requirements link to plan there.</p>
 
      <div class="dp-controls">
        <div class="dp-field"><label>School</label>
@@ -1058,7 +1059,7 @@
         <li><b>Meeting-time filter</b> — the 🕐 filter keeps only courses that can actually fit your week: in at least one section group, every required meeting type (lecture / discussion / lab) must have a section inside your chosen days &amp; hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you're free. Sections with TBA times always count as fitting.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
-        <li><b>Degree Planner</b> — the <b>Undergraduate</b> mode loads UCSD's official college academic plans (2022–2026) as a quarter-by-quarter grid. The <b>Graduate</b> mode is an <b>ECE M.S. / Ph.D.</b> worksheet organised by requirement category, with all <b>thirteen ECE research areas</b> modeled from their official 2025–2027 degree planners (ISRC/EC80, CE/EC79, ECS/EC78, SIP/EC82, MLDS/EC93, CTS, AEM, AOS, AP-EDM, MDS, MI, NDS, PHO). Each area carries its own core, additional and technical-elective rules and unit quotas (which vary by area); the plan choice sets the total (Plan I 52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA). It tracks units per bucket, total units toward the plan, and the 201+ ECE minimum — a reference guide, not official advice.</li>
+        <li><b>Degree Planner</b> — the <b>Undergraduate</b> mode loads UCSD's official college academic plans (2022–2026) as a quarter-by-quarter grid. The <b>Graduate</b> mode lists <b>every UCSD graduate ISIS major code</b> by school → department → research area (base degrees, specializations, joint-doctoral and online variants), and gives the Jacobs engineering programs a full worksheet organised by requirement category — including all <b>thirteen ECE research areas</b> modeled from their official 2025–2027 degree planners (ISRC/EC80, CE/EC79, ECS/EC78, SIP/EC82, MLDS/EC93, CTS, AEM, AOS, AP-EDM, MDS, MI, NDS, PHO). Each area carries its own core, additional and technical-elective rules and unit quotas (which vary by area); the plan choice sets the total (Plan I 52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA). It tracks units per bucket, total units toward the plan, and the 201+ ECE minimum — a reference guide, not official advice.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
       </ul>
       <p class="disclaimer"><b>Disclaimer.</b> This tool is for reference only and is not affiliated with UC San Diego. Grade and rating data may be incomplete or out of date. It does not constitute academic advice — every enrollment decision, including which course and section to take, is the student's own responsibility. Always confirm requirements and offerings with official UCSD sources and your academic advisor.</p>
@@ -2529,7 +2530,7 @@ function init(DATA){
   function gpEnsureData(){
     if(gpDB) return Promise.resolve(gpDB);
     if(gpPromise) return gpPromise;
-    gpPromise=fetch('gradplans.36a1ed5394.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
+    gpPromise=fetch('gradplans.0f1d8df0fc.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
   function gpProgLabel(p){
@@ -2561,16 +2562,18 @@ function init(DATA){
   }
   function gpDeptAvailable(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.available!==false:false;}
   function gpDeptSchool(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.school:'';}
+  // Every ISIS major code is a Research Area option. Those with course-bucket
+  // worksheets (has .groups) sort first and are tagged; the rest open an overview card.
   function gpFillPrograms(deptCode){
     const sel=$('gpProg');
     const list=gpDB.programs.filter(p=>(p.dept||'ECE')===deptCode)
-      .sort((a,b)=>(b.detailed?1:0)-(a.detailed?1:0)||a.name.localeCompare(b.name));
-    sel.innerHTML='<option value="">Select…</option>'+list.map(p=>'<option value="'+dpEsc(p.code)+'">'+dpEsc(gpProgLabel(p))+(p.detailed?'':' · framework')+'</option>').join('');
+      .sort((a,b)=>(b.groups?1:0)-(a.groups?1:0)||a.name.localeCompare(b.name));
+    sel.innerHTML='<option value="">Select…</option>'+list.map(p=>'<option value="'+dpEsc(p.code)+'">'+dpEsc(gpProgLabel(p))+(p.groups?' · full planner':'')+'</option>').join('');
     sel.disabled=list.length===0;
   }
-  // A department is ready if it has a course-bucket worksheet (ECE) or an overview card.
-  function gpDeptReady(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code) || !!(d&&d.overview); }
-  function gpDeptWorksheet(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code); }
+  // A department is ready if it has at least one program (worksheet or overview).
+  function gpDeptReady(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code); }
+  function gpDeptWorksheet(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code && p.groups); }
   // Step 1 handler: school -> populate its departments.
   function gpOnSchool(){
     const sc=$('gpSchool').value, ds=$('gpDept');
@@ -2585,39 +2588,34 @@ function init(DATA){
     }).join('');
     ds.disabled=list.length===0;
   }
-  // Step 2 handler: department -> worksheet flow (ECE), overview card, or coming-soon note.
+  // Step 2 handler: department -> list every ISIS-coded program in Research Area.
   function gpOnDept(){
     const code=$('gpDept').value, note=$('gpDeptNote');
     gpResetProg(); gpHideOverview();
     if(!code){note.hidden=true;return;}
     const d=(gpDB.departments||[]).find(x=>x.code===code);
     const progs=gpDB.programs.filter(p=>(p.dept||'ECE')===code);
-    if(progs.length){ note.hidden=true; gpFillPrograms(code); return; }        // worksheet programs
-    if(d&&d.overview){                                                          // overview: put the major (with ISIS code) in Research Area
-      note.hidden=true;
-      const label=d.name+(d.majorCode?' ('+d.majorCode+')':'');
-      $('gpProg').innerHTML='<option value="">Select…</option><option value="__ov__">'+dpEsc(label)+'</option>';
-      $('gpProg').disabled=false;
-      return;
-    }
+    if(progs.length){ note.hidden=true; gpFillPrograms(code); return; }        // list all research areas / ISIS codes
     note.hidden=false;                                                          // not yet available
     note.innerHTML='<b>'+dpEsc(d?d.name:code)+'</b> isn’t modeled yet — check back later.';
     $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
   }
-  function gpShowOverview(d){
-    const ov=$('gpOverview'), o=d.overview||{};
-    const school=(gpDB.schools||[]).find(s=>s.code===d.school);
-    const degs=(o.degrees||[]).map(x=>'<span class="deg">'+dpEsc(x)+'</span>').join('');
+  // Overview card for a single ISIS-coded program (no course-level worksheet modeled).
+  function gpShowOverview(p){
+    const ov=$('gpOverview');
+    const dept=(gpDB.departments||[]).find(x=>x.code===p.dept)||{};
+    const school=(gpDB.schools||[]).find(s=>s.code===(p.school||dept.school));
+    const degs=(p.degrees||[]).map(x=>'<span class="deg">'+dpEsc(x)+'</span>').join('');
     ov.innerHTML='<div class="gp-ov">'
-      +'<h3>'+dpEsc(d.name)+(d.majorCode?' <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent-2)">'+dpEsc(d.majorCode)+'</span>':'')+'</h3>'
-      +'<div class="school">'+dpEsc(school?school.name:d.school)+(d.majorCode?' · ISIS '+dpEsc(d.majorCode):'')+'</div>'
+      +'<h3>'+dpEsc(p.name)+' <span class="isis">'+dpEsc(p.code)+'</span></h3>'
+      +'<div class="school">'+dpEsc(dept.name||'')+(school&&school.name!==dept.name?' · '+dpEsc(school.name):'')+'</div>'
       +(degs?'<div class="degrees">'+degs+'</div>':'')
-      +(o.notes?'<div class="note">'+dpEsc(o.notes)+'</div>':'')
+      +(p.deptNotes?'<div class="note">'+dpEsc(p.deptNotes)+'</div>':'')
       +'<div class="actions">'
-      +(o.reqUrl?'<a class="req" href="'+dpEsc(o.reqUrl)+'" target="_blank" rel="noopener">Official degree requirements ↗</a>':'')
+      +(p.reqUrl?'<a class="req" href="'+dpEsc(p.reqUrl)+'" target="_blank" rel="noopener">Official degree requirements ↗</a>':'')
       +'<a class="req ghost" href="https://grad.ucsd.edu/admissions/programs.html" target="_blank" rel="noopener">All UCSD programs ↗</a>'
       +'</div>'
-      +'<div class="disc">Course-level planning (requirement buckets, unit tracking) is modeled for ECE so far. For '+dpEsc(d.name)+', follow the official requirements link above — reference only, confirm with the department.</div>'
+      +'<div class="disc">Course-level worksheets (requirement buckets, unit tracking) are modeled for the engineering programs so far. For <b>'+dpEsc(p.name)+' ('+dpEsc(p.code)+')</b>, follow the official requirements link above — reference only, confirm with the department.</div>'
       +'</div>';
     ov.hidden=false; $('gpEmpty').hidden=true; $('gpApp').hidden=true;
   }
@@ -2635,13 +2633,13 @@ function init(DATA){
     const code=$('gpProg').value, ps=$('gpPlan');
     gpHideOverview();
     if(!code){ps.disabled=true;ps.innerHTML='<option>—</option>';$('gpLoad').disabled=true;return;}
-    if(code==='__ov__'){ // overview major selected — show the program overview card
+    const prog=gpFindProgram(code);
+    if(!prog||!prog.groups){ // overview-only program — show its card, no plan/worksheet
       ps.disabled=true; ps.innerHTML='<option>—</option>'; $('gpLoad').disabled=true;
-      const d=(gpDB.departments||[]).find(x=>x.code===$('gpDept').value);
-      if(d) gpShowOverview(d);
+      if(prog) gpShowOverview(prog);
       return;
     }
-    const plans=gpPlansFor(gpFindProgram(code));
+    const plans=gpPlansFor(prog);
     ps.disabled=false;
     ps.innerHTML='<option value="">Select…</option>'+plans.map(p=>'<option value="'+dpEsc(p.id)+'">'+dpEsc(p.name)+' · '+p.totalUnits+'u</option>').join('');
     ps.value=plans.some(p=>p.id==='II')?'II':plans[0].id; $('gpLoad').disabled=false;
