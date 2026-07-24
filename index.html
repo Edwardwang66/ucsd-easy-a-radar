@@ -2609,31 +2609,44 @@ function init(DATA){
   function gpComboRender(q){
     const list=$('gpProgList'), cur=$('gpDept').value, idx=gpBuildSearchIdx();
     const query=(q||'').trim().toLowerCase();
-    let items;
+    const byName=(a,b)=>(b.worksheet?1:0)-(a.worksheet?1:0)||a.name.localeCompare(b.name);
+    let inDept, others;
     if(!query){
-      items=idx.filter(x=>x.dept===cur).sort((a,b)=>(b.worksheet?1:0)-(a.worksheet?1:0)||a.name.localeCompare(b.name));
+      inDept=idx.filter(x=>x.dept===cur).sort(byName); others=[];
     }else{
       const toks=query.split(/\s+/);
-      items=idx.filter(x=>toks.every(t=>x.hay.includes(t))).sort((a,b)=>
-        (b.dept===cur)-(a.dept===cur)
-        ||(b.worksheet?1:0)-(a.worksheet?1:0)
-        ||(b.code.toLowerCase().startsWith(query)?1:0)-(a.code.toLowerCase().startsWith(query)?1:0)
-        ||a.name.localeCompare(b.name));
+      const hits=idx.filter(x=>toks.every(t=>x.hay.includes(t)));
+      inDept=hits.filter(x=>x.dept===cur).sort(byName);
+      // A bare number (e.g. "75") is ambiguous — keep it scoped to the chosen
+      // department unless that department has no match, then fall back to global.
+      const numericOnly=/^\d+$/.test(query);
+      others=(numericOnly && inDept.length) ? [] :
+        hits.filter(x=>x.dept!==cur).sort((a,b)=>
+          (b.worksheet?1:0)-(a.worksheet?1:0)
+          ||(b.code.toLowerCase().startsWith(query)?1:0)-(a.code.toLowerCase().startsWith(query)?1:0)
+          ||a.name.localeCompare(b.name));
     }
-    const LIMIT=60, shown=items.slice(0,LIMIT);
-    gpComboMatches=shown; gpComboActive=-1;
-    if(!shown.length){ list.innerHTML='<div class="gp-combo-empty">No matching program.</div>'; list.hidden=false; $('gpProgInput').setAttribute('aria-expanded','true'); return; }
-    list.innerHTML=shown.map((x,i)=>{
-      const other=x.dept!==cur;
-      return '<div class="gp-combo-item" role="option" data-code="'+dpEsc(x.code)+'" data-i="'+i+'">'
+    const OLIMIT=40, othersShown=others.slice(0,OLIMIT);
+    gpComboMatches=[...inDept,...othersShown];
+    if(!gpComboMatches.length){ list.innerHTML='<div class="gp-combo-empty">No matching program.</div>'; list.hidden=false; $('gpProgInput').setAttribute('aria-expanded','true'); gpComboActive=-1; return; }
+    let n=-1;
+    const itemHtml=x=>{ n++; const other=x.dept!==cur;
+      return '<div class="gp-combo-item" role="option" data-code="'+dpEsc(x.code)+'" data-i="'+n+'">'
         +'<div class="top"><span class="cd">'+dpEsc(x.code)+'</span>'
         +'<span class="nm">'+dpEsc(x.name)+'</span>'
         +(x.worksheet?'<span class="ws">planner</span>':'')+'</div>'
         +(other?'<div class="dp">'+dpEsc(x.deptName)+'</div>':'')
-        +'</div>';
-    }).join('')+(items.length>LIMIT?'<div class="gp-combo-empty">+'+(items.length-LIMIT)+' more — keep typing to narrow…</div>':'');
+        +'</div>'; };
+    let html=inDept.map(itemHtml).join('');
+    if(othersShown.length){
+      html+='<div class="gp-combo-group">Other departments</div>'+othersShown.map(itemHtml).join('');
+      if(others.length>OLIMIT) html+='<div class="gp-combo-empty">+'+(others.length-OLIMIT)+' more — keep typing to narrow…</div>';
+    }
+    list.innerHTML=html;
+    gpComboActive=gpComboMatches.length?0:-1;   // highlight top match so Enter picks it
     list.hidden=false; $('gpProgInput').setAttribute('aria-expanded','true');
     [...list.querySelectorAll('.gp-combo-item')].forEach(el=>{ el.onmousedown=e=>{e.preventDefault(); gpComboPick(el.dataset.code);}; });
+    gpComboHighlight();
   }
   function gpComboHighlight(){
     const els=[...$('gpProgList').querySelectorAll('.gp-combo-item')];
