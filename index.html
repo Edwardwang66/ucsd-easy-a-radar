@@ -1004,7 +1004,7 @@
            <div class="dp-bar"><span id="gpBar" style="width:0%"></span></div></div>
          <div class="dp-stat"><div class="k">Completed</div><div class="v"><span id="gpDone">0</span> <small>units</small></div></div>
          <div class="dp-stat"><div class="k" id="gpTargetK">Remaining to 48</div><div class="v"><span id="gpRemain">48</span> <small>units</small></div></div>
-         <div class="dp-stat"><div class="k">201+ ECE units</div><div class="v" id="gp201">0</div>
+         <div class="dp-stat"><div class="k" id="gp4k">201+ ECE units</div><div class="v" id="gp201">0</div>
            <div style="font-size:11px;color:var(--muted);margin-top:3px" id="gp201need">need 16</div></div>
        </div>
        <div id="gpStub" class="gp-stub" hidden></div>
@@ -1012,7 +1012,7 @@
        <div class="gp-rules" id="gpRules"></div>
        <div class="dp-notes"><label>My notes</label>
          <textarea id="gpNotes" placeholder="Advisor-approved substitutions, comprehensive-exam courses, prerequisites to watch…"></textarea></div>
-       <p class="dp-src">Requirements from UCSD ECE degree planners (research-areas), 2025–2026 & 2026–2027. A reference tool, not official advice — confirm every course with your ECE graduate advisor and the official worksheet.</p>
+       <p class="dp-src">Requirements summarized from official UCSD department pages (2025–2027). A reference tool, not official advice — confirm every course and unit rule with your graduate advisor and the official requirements page.</p>
      </div>
    </div><!-- /dpGrad -->
  </div><!-- /plannerView -->
@@ -2500,7 +2500,7 @@ function init(DATA){
   function gpEnsureData(){
     if(gpDB) return Promise.resolve(gpDB);
     if(gpPromise) return gpPromise;
-    gpPromise=fetch('gradplans.866d66154c.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
+    gpPromise=fetch('gradplans.dbdae37350.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
   function gpProgLabel(p){return p.area+' — '+p.name+' ('+p.code+')';}
@@ -2595,12 +2595,17 @@ function init(DATA){
   function gpOnProg(){
     const code=$('gpProg').value, ps=$('gpPlan');
     if(!code){ps.disabled=true;ps.innerHTML='<option>—</option>';$('gpLoad').disabled=true;return;}
+    const plans=gpPlansFor(gpFindProgram(code));
     ps.disabled=false;
-    ps.innerHTML='<option value="">Select…</option>'+gpDB.plans.map(p=>'<option value="'+p.id+'">'+dpEsc(p.name)+' · '+p.totalUnits+'u</option>').join('');
-    ps.value='II'; $('gpLoad').disabled=false;
+    ps.innerHTML='<option value="">Select…</option>'+plans.map(p=>'<option value="'+dpEsc(p.id)+'">'+dpEsc(p.name)+' · '+p.totalUnits+'u</option>').join('');
+    ps.value=plans.some(p=>p.id==='II')?'II':plans[0].id; $('gpLoad').disabled=false;
   }
   function gpFindProgram(code){return gpDB.programs.find(p=>p.code===code);}
-  function gpFindPlan(id){return gpDB.plans.find(p=>p.id===id);}
+  // Plans can be defined per program (unit totals differ by department); fall back to the global set.
+  function gpPlansFor(prog){return (prog&&prog.plans&&prog.plans.length)?prog.plans:gpDB.plans;}
+  function gpCurProg(){return gpModel?gpFindProgram(gpModel.meta.code):null;}
+  function gpFindPlan(id){return gpPlansFor(gpCurProg()).find(p=>p.id===id);}
+  function gpDeptName(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.name:code;}
   // Build the requirement groups for a program+plan. Detailed programs carry their
   // own groups; framework-only areas get a single coursework bucket sized to the plan.
   function gpBuildGroups(prog,plan){
@@ -2609,7 +2614,10 @@ function init(DATA){
       rule:'Add the core, depth and technical-elective courses from this area’s official worksheet (linked above) and track total units toward the plan requirement.',courses:[]}];
   }
   function gpLoadWorksheet(){
-    const prog=gpFindProgram($('gpProg').value), plan=gpFindPlan($('gpPlan').value);
+    const prog=gpFindProgram($('gpProg').value);
+    // Resolve the plan from THIS program's plan set — gpFindPlan depends on gpModel,
+    // which isn't set yet at load time (would miss program-specific plan ids like PHD).
+    const plan=prog&&gpPlansFor(prog).find(p=>p.id===$('gpPlan').value);
     if(!prog||!plan)return;
     const groups=gpBuildGroups(prog,plan);
     const courses=[];
@@ -2643,16 +2651,16 @@ function init(DATA){
     if(!gpModel)return;
     $('gpEmpty').hidden=true; $('gpApp').hidden=false;
     const plan=gpFindPlan(gpModel.meta.plan);
-    $('gpTitle').textContent=gpModel.meta.area+' — '+gpModel.meta.name;
-    $('gpSub').innerHTML=dpEsc(gpDB.meta.dept)+' · '+dpEsc(plan.name)+' · '+plan.totalUnits+' units'
-      +(gpModel.meta.pdf?' · <a href="'+dpEsc(gpModel.meta.pdf)+'" target="_blank" rel="noopener" style="color:var(--accent-2)">official worksheet ↗</a>':'');
-    // Framework-only note for non-detailed areas.
+    $('gpTitle').textContent=gpModel.meta.name||(gpModel.meta.area+' — '+gpModel.meta.name);
+    $('gpSub').innerHTML=dpEsc(gpDeptName(gpModel.meta.dept))+' · '+dpEsc(plan.name)+' · '+plan.totalUnits+' units'
+      +(gpModel.meta.pdf?' · <a href="'+dpEsc(gpModel.meta.pdf)+'" target="_blank" rel="noopener" style="color:var(--accent-2)">official requirements ↗</a>':'');
+    // Non-ECE worksheets summarize the official page; nudge users to confirm there.
     const stub=$('gpStub');
-    if(!gpModel.meta.detailed){
+    if(gpModel.meta.dept!=='ECE'){
       stub.hidden=false;
-      stub.innerHTML='This area uses the <b>shared ECE M.S. framework</b>. Only <b>ISRC (EC80)</b> has its full course list modeled here yet — for '+dpEsc(gpModel.meta.area)+', open the '
-        +(gpModel.meta.pdf?'<a href="'+dpEsc(gpModel.meta.pdf)+'" target="_blank" rel="noopener">official '+dpEsc(gpModel.meta.area)+' worksheet ↗</a>':'official worksheet')
-        +' and add its core, depth and technical-elective courses below. Unit totals and the 201+ ECE minimum are still tracked.';
+      stub.innerHTML='This worksheet is <b>summarized from the official requirements</b>'
+        +(gpModel.meta.pdf?' (<a href="'+dpEsc(gpModel.meta.pdf)+'" target="_blank" rel="noopener">'+dpEsc(gpDeptName(gpModel.meta.dept))+' ↗</a>)':'')
+        +'. Course lists and unit rules can change — confirm exact requirements with the department.';
     } else stub.hidden=true;
     const host=$('gpGroups'); host.innerHTML='';
     gpModel.meta.groups.forEach(g=>host.appendChild(gpGroupEl(g)));
@@ -2714,29 +2722,43 @@ function init(DATA){
     return el;
   }
   function gpRenderRules(plan){
+    const isECE=gpModel.meta.dept==='ECE';
     const parts=[];
-    parts.push('<li><b>'+dpEsc(plan.name)+':</b> '+dpEsc(plan.note)+'</li>');
-    // Detailed programs carry their exact technical-elective rule inline under the
-    // Technical Electives bucket; only framework areas need the generic version here.
-    if(!gpModel.meta.detailed){
-      parts.push('<li><b>Technical electives ('+gpDB.techElective.units+' units):</b> '+dpEsc(gpDB.techElective.rule)+'</li>');
-      gpDB.techElective.extras.forEach(x=>parts.push('<li>'+dpEsc(x)+'</li>'));
+    parts.push('<li><b>'+dpEsc(plan.name)+':</b> '+dpEsc(plan.note||'')+'</li>');
+    if(isECE){
+      // ECE framework fallback + shared ECE rules.
+      if(!gpModel.meta.detailed){
+        parts.push('<li><b>Technical electives ('+gpDB.techElective.units+' units):</b> '+dpEsc(gpDB.techElective.rule)+'</li>');
+        gpDB.techElective.extras.forEach(x=>parts.push('<li>'+dpEsc(x)+'</li>'));
+      }
+      gpDB.commonRules.forEach(r=>parts.push('<li>'+dpEsc(r)+'</li>'));
+    } else {
+      parts.push('<li>Each requirement bucket above shows its own rule and unit quota; the totals track toward the plan requirement.</li>');
+      parts.push('<li>Course lists and unit rules are summarized from the official page and can change — <b>confirm exact requirements with the department</b> and the linked requirements page.</li>');
     }
-    gpDB.commonRules.forEach(r=>parts.push('<li>'+dpEsc(r)+'</li>'));
-    $('gpRules').innerHTML='<h4>Program rules — '+dpEsc(gpDB.meta.dept)+'</h4><ul>'+parts.join('')+'</ul>';
+    $('gpRules').innerHTML='<h4>Program rules — '+dpEsc(gpDeptName(gpModel.meta.dept))+'</h4><ul>'+parts.join('')+'</ul>';
   }
   function gpUpdateSummary(){
     const plan=gpFindPlan(gpModel.meta.plan), target=plan.totalUnits;
     const total=dpSum(gpModel.courses), done=dpSum(gpModel.courses.filter(c=>c.done));
-    const u201=dpSum(gpModel.courses.filter(gpIs201ECE));
     $('gpTotal').textContent=dpFmt(total);
     $('gpDone').textContent=dpFmt(done);
     $('gpBar').style.width=Math.min(100,total/target*100)+'%';
     $('gpTargetK').textContent='Remaining to '+target;
     $('gpRemain').textContent=dpFmt(Math.max(0,target-total));
-    const el=$('gp201'); el.textContent=dpFmt(u201);
-    $('gp201need').textContent='need '+plan.min201ECE;
-    el.style.color=u201>=plan.min201ECE?'#1F9D6B':'';
+    // 4th stat: ECE tracks its 201+ ECE minimum; other programs show requirement-bucket progress.
+    const min201=plan.min201ECE!=null?plan.min201ECE:(plan.min201!=null?plan.min201:0);
+    const el=$('gp201'), k=$('gp4k'), need=$('gp201need');
+    if(min201&&gpModel.meta.dept==='ECE'){
+      const u201=dpSum(gpModel.courses.filter(gpIs201ECE));
+      k.textContent='201+ ECE units'; el.textContent=dpFmt(u201); need.textContent='need '+min201;
+      el.style.color=u201>=min201?'#1F9D6B':'';
+    } else {
+      const gs=(gpModel.meta.groups||[]).filter(g=>g.units);
+      const met=gs.filter(g=>dpSum(gpGroupCourses(g.id))>=g.units).length;
+      k.textContent='Buckets met'; el.textContent=met+' / '+gs.length; need.textContent='requirement groups filled';
+      el.style.color=(gs.length&&met===gs.length)?'#1F9D6B':'';
+    }
   }
   function gpExport(){
     if(!gpModel)return; gpModel.notes=$('gpNotes').value;
