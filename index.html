@@ -892,6 +892,20 @@
      .gp-add input.tl{flex-basis:100%}
    }
    @media print{.dp-mode,.gp-opt,.gp-add,.gp-optwrap,.gp-course .del,.gp-course .gr{display:none!important}}
+
+   /* Overview card — departments without a course-bucket worksheet */
+   .gp-ov{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 20px;margin-top:6px}
+   .gp-ov h3{margin:0 0 2px;font-size:18px;font-weight:700;color:var(--ink)}
+   .gp-ov .school{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+   .gp-ov .degrees{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 13px}
+   .gp-ov .deg{font-size:12px;font-weight:700;font-family:var(--mono);padding:3px 10px;border-radius:20px;background:var(--accent-soft);color:var(--accent-2);border:1px solid color-mix(in srgb,var(--accent) 26%,transparent)}
+   .gp-ov .note{font-size:13px;color:var(--ink);line-height:1.5;margin:0 0 14px}
+   .gp-ov .actions{display:flex;flex-wrap:wrap;gap:10px}
+   .gp-ov .req{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:9px;background:var(--accent);color:#fff;font-weight:600;font-size:13.5px;text-decoration:none}
+   .gp-ov .req:hover{background:var(--accent-2)}
+   .gp-ov .req.ghost{background:var(--surface);color:var(--accent-2);border:1px solid var(--line-strong)}
+   .gp-ov .req.ghost:hover{background:var(--surface-2)}
+   .gp-ov .disc{font-size:11.5px;color:var(--faint);margin-top:14px;line-height:1.5}
    </style>
 
    <div class="dp-mode" role="tablist" aria-label="Planner level">
@@ -954,7 +968,7 @@
    </div><!-- /dpUG -->
 
    <div id="dpGrad" hidden>
-     <p class="ge-intro">Plan a graduate degree by requirement category. Pick your <b>school → department → research area → plan</b> to load its official worksheet. <b>Electrical &amp; Computer Engineering</b> (Jacobs School of Engineering) is fully modeled — all <b>thirteen ECE research areas</b>, from their official 2025–2027 degree planners, each with its own core, additional and technical-elective rules (other departments are coming). Add courses to each requirement bucket, tag the quarter you'll take them, check off what's done, and watch each bucket fill toward its unit quota. Every course links to its <b>grade ranking</b> so you can pick GPA-friendly options.</p>
+     <p class="ge-intro">Plan a graduate degree by <b>school → department</b>. Every UCSD graduate department is listed with its degrees and a link to official requirements. <b>Electrical &amp; Computer Engineering</b> (Jacobs School of Engineering) has the full <b>course-level planner</b> — all thirteen ECE research areas from their official 2025–2027 degree planners: pick a research area and plan, add courses to each requirement bucket, tag the quarter, check off what's done, and watch each bucket fill toward its unit quota, with every course linking to its <b>grade ranking</b>. Other departments show a program overview; follow the official-requirements link to plan there.</p>
 
      <div class="dp-controls">
        <div class="dp-field"><label>School</label>
@@ -969,6 +983,8 @@
      </div>
 
      <div id="gpDeptNote" class="gp-stub" hidden></div>
+
+     <div id="gpOverview" hidden></div>
 
      <div id="gpEmpty" class="dp-empty">Pick your department and research area above to start.</div>
 
@@ -2484,7 +2500,7 @@ function init(DATA){
   function gpEnsureData(){
     if(gpDB) return Promise.resolve(gpDB);
     if(gpPromise) return gpPromise;
-    gpPromise=fetch('gradplans.8f5b999188.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
+    gpPromise=fetch('gradplans.866d66154c.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
   function gpProgLabel(p){return p.area+' — '+p.name+' ('+p.code+')';}
@@ -2519,35 +2535,57 @@ function init(DATA){
     sel.innerHTML='<option value="">Select…</option>'+list.map(p=>'<option value="'+dpEsc(p.code)+'">'+dpEsc(gpProgLabel(p))+(p.detailed?'':' · framework')+'</option>').join('');
     sel.disabled=list.length===0;
   }
+  // A department is ready if it has a course-bucket worksheet (ECE) or an overview card.
+  function gpDeptReady(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code) || !!(d&&d.overview); }
+  function gpDeptWorksheet(d){ return gpDB.programs.some(p=>(p.dept||'ECE')===d.code); }
   // Step 1 handler: school -> populate its departments.
   function gpOnSchool(){
     const sc=$('gpSchool').value, ds=$('gpDept');
     gpResetDept();
     if(!sc){return;}
     const list=(gpDB.departments||[]).filter(d=>d.school===sc);
-    // available departments first, then alphabetical
-    list.sort((a,b)=>(b.available?1:0)-(a.available?1:0)||a.name.localeCompare(b.name));
-    ds.innerHTML='<option value="">Select…</option>'+list.map(d=>'<option value="'+dpEsc(d.code)+'">'+dpEsc(d.name)+(d.available?'':' · coming soon')+'</option>').join('');
+    // full worksheets first, then the rest, alphabetical within each
+    list.sort((a,b)=>(gpDeptWorksheet(b)?1:0)-(gpDeptWorksheet(a)?1:0)||a.name.localeCompare(b.name));
+    ds.innerHTML='<option value="">Select…</option>'+list.map(d=>{
+      const tag=gpDeptWorksheet(d)?' · full planner':(gpDeptReady(d)?'':' · coming soon');
+      return '<option value="'+dpEsc(d.code)+'">'+dpEsc(d.name)+tag+'</option>';
+    }).join('');
     ds.disabled=list.length===0;
   }
-  // Step 2 handler: department -> populate research areas (or show a coming-soon note).
+  // Step 2 handler: department -> worksheet flow (ECE), overview card, or coming-soon note.
   function gpOnDept(){
     const code=$('gpDept').value, note=$('gpDeptNote');
-    gpResetProg();
+    gpResetProg(); gpHideOverview();
     if(!code){note.hidden=true;return;}
-    if(!gpDeptAvailable(code)){
-      const d=(gpDB.departments||[]).find(x=>x.code===code);
-      note.hidden=false;
-      note.innerHTML='<b>'+dpEsc(d?d.name:code)+'</b> isn’t modeled yet — only <b>Electrical &amp; Computer Engineering</b> (Jacobs School of Engineering) is available so far, with all 13 of its research areas. Pick it to start, or check back later.';
-      $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
-      return;
-    }
-    note.hidden=true;
-    gpFillPrograms(code);
+    const d=(gpDB.departments||[]).find(x=>x.code===code);
+    const progs=gpDB.programs.filter(p=>(p.dept||'ECE')===code);
+    if(progs.length){ note.hidden=true; gpFillPrograms(code); return; }        // worksheet (ECE)
+    if(d&&d.overview){ note.hidden=true; gpShowOverview(d); return; }           // overview card
+    note.hidden=false;                                                          // not yet available
+    note.innerHTML='<b>'+dpEsc(d?d.name:code)+'</b> isn’t modeled yet — check back later.';
+    $('gpProg').innerHTML='<option value="">—</option>'; $('gpProg').disabled=true;
   }
+  function gpShowOverview(d){
+    const ov=$('gpOverview'), o=d.overview||{};
+    const school=(gpDB.schools||[]).find(s=>s.code===d.school);
+    const degs=(o.degrees||[]).map(x=>'<span class="deg">'+dpEsc(x)+'</span>').join('');
+    ov.innerHTML='<div class="gp-ov">'
+      +'<h3>'+dpEsc(d.name)+'</h3>'
+      +'<div class="school">'+dpEsc(school?school.name:d.school)+'</div>'
+      +(degs?'<div class="degrees">'+degs+'</div>':'')
+      +(o.notes?'<div class="note">'+dpEsc(o.notes)+'</div>':'')
+      +'<div class="actions">'
+      +(o.reqUrl?'<a class="req" href="'+dpEsc(o.reqUrl)+'" target="_blank" rel="noopener">Official degree requirements ↗</a>':'')
+      +'<a class="req ghost" href="https://grad.ucsd.edu/admissions/programs.html" target="_blank" rel="noopener">All UCSD programs ↗</a>'
+      +'</div>'
+      +'<div class="disc">Course-level planning (requirement buckets, unit tracking) is modeled for ECE so far. For '+dpEsc(d.name)+', follow the official requirements link above — reference only, confirm with the department.</div>'
+      +'</div>';
+    ov.hidden=false; $('gpEmpty').hidden=true; $('gpApp').hidden=true;
+  }
+  function gpHideOverview(){ const ov=$('gpOverview'); if(ov){ov.hidden=true;ov.innerHTML='';} if($('gpApp').hidden) $('gpEmpty').hidden=false; }
   function gpResetDept(){
     $('gpDept').innerHTML='<option value="">—</option>'; $('gpDept').disabled=true;
-    gpResetProg(); $('gpDeptNote').hidden=true;
+    gpResetProg(); gpHideOverview(); $('gpDeptNote').hidden=true;
   }
   function gpResetProg(){
     const ps=$('gpPlan');

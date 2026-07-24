@@ -14,7 +14,7 @@ This is a **static site** (no build step). Three files matter:
 - `data.json` — the ranking dataset (grades × professors × RMP, + FA26 current instructors)
 - `schedule.json` — the Fall 2026 section catalog (times, rooms, instructors, building coords) used by the schedule builder
 - `plans.json` — UCSD official undergraduate academic plans (2022–2026), used by the Degree Planner's **Undergraduate** mode
-- `gradplans.json` — ECE graduate degree-planner requirements for all thirteen ECE research areas, used by the Degree Planner's **Graduate** mode
+- `gradplans.json` — graduate catalog for the Degree Planner's **Graduate** mode: all 11 UCSD grad schools and 51 departments, with full course-level worksheets for the 13 ECE research areas and a verified degree-type + official-requirements overview for every other department
 
 **Option A — Vercel CLI**
 ```bash
@@ -140,8 +140,12 @@ returns `index.html` and serves `*.json` as static files works.
   history (`RMP only` rows); those scores are the professor's overall rating, not course-specific.
 - **Degree Planner** — two modes. **Undergraduate** loads UCSD's official college academic plans
   (2022–2026, from `plans.json`) as an editable quarter-by-quarter grid. **Graduate** (from
-  `gradplans.json`) is an ECE M.S./Ph.D. worksheet by requirement category. All **thirteen ECE
-  research areas** are modeled from their own official 2025–2027 degree planners — ISRC (EC80),
+  `gradplans.json`) covers the whole UCSD graduate catalog by **school → department**: 11 schools
+  and 51 departments. Every department shows its verified degree types (MS/MA/PhD/MEng/MAS/MFA/…)
+  and a link to its official requirements page; departments without a course-bucket worksheet render
+  as an **overview card** rather than a fabricated unit table. Only **Electrical & Computer
+  Engineering** has the full course-level worksheet — all **thirteen ECE research areas** modeled
+  from their own official 2025–2027 degree planners — ISRC (EC80),
   CE (EC79), ECS (EC78), SIP (EC82), MLDS (EC93), CTS, AEM, AOS, AP-EDM, MDS, MI, NDS and PHO —
   each with its own core / additional / technical-elective **groups**, course lists and unit quotas
   (which genuinely differ by area: cores of 8–16u, tech electives of 12–24u, and MI even has extra

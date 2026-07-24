@@ -4,7 +4,7 @@
     "dept": "Electrical & Computer Engineering (ECE)",
     "source": "UCSD ECE M.S. / Ph.D. Degree Planners (research-areas), 2025-2026 & 2026-2027",
     "sourceUrl": "https://ece.ucsd.edu/graduate/research-areas",
-    "note": "Organised by UCSD graduate school → department → program. Only Electrical & Computer Engineering (ECE) is modeled so far — all 13 of its research areas from their official 2025-2027 degree planners. Reference only — confirm with your graduate advisor and the official worksheet."
+    "note": "Organised by UCSD graduate school → department → program (grad.ucsd.edu/admissions/programs.html). Electrical & Computer Engineering has full course-level worksheets for all 13 research areas; every other department shows its verified degree types and a link to official requirements. Reference only — confirm with the department and the official requirements."
   },
   "schools": [
     {
@@ -57,151 +57,359 @@
       "school": "AH",
       "code": "HISTORY",
       "name": "History",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA",
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/HIST-gr.html",
+        "msUnits": 36,
+        "notes": "Terminal coursework MA: nine 4-unit courses (36 units) + oral exam; PhD in seven concentrations."
+      }
     },
     {
       "school": "AH",
       "code": "LITERATURE",
       "name": "Literature",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MFA",
+          "MA",
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/LIT-gr.html",
+        "msUnits": 72,
+        "notes": "MFA in Writing = 72 units; MA awarded only en route to the PhD."
+      }
     },
     {
       "school": "AH",
       "code": "MUSIC",
       "name": "Music",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD",
+          "DMA",
+          "MA"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/MUS-gr.html",
+        "notes": "PhD/DMA focused; MA earned only during doctoral progress (no terminal MA)."
+      }
     },
     {
       "school": "AH",
       "code": "PHILOSOPHY",
       "name": "Philosophy",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD",
+          "MA"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/PHIL-gr.html",
+        "notes": "No terminal master's; MA earned only during PhD progress."
+      }
     },
     {
       "school": "AH",
       "code": "THEATRE-AND-DANCE",
       "name": "Theatre and Dance",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MFA",
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/THEA-gr.html",
+        "msUnits": 90,
+        "notes": "MFA (acting, dance, design, directing, playwriting, stage mgmt) ≥90 quarter-units; PhD joint with UC Irvine."
+      }
     },
     {
       "school": "AH",
       "code": "VISUAL-ARTS",
       "name": "Visual Arts",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MFA",
+          "PhD",
+          "MA"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/VIS-gr.html",
+        "msUnits": 72,
+        "notes": "MFA = 72 units; PhD in Art History, Theory & Criticism (en-route non-terminal MA)."
+      }
     },
     {
       "school": "BIO",
       "code": "BIOLOGY",
       "name": "Biology",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/BIOL-gr.html",
+        "msUnits": 36,
+        "notes": "PhD plus contiguous BS/MS; MS ≥36 units of grad coursework + thesis."
+      }
     },
     {
       "school": "HDSI",
       "code": "DATA-SCIENCE",
       "name": "Data Science",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS"
+        ],
+        "reqUrl": "https://datascience.ucsd.edu/graduate/ms-program/",
+        "msUnits": 48,
+        "notes": "MS in Data Science: 48 units (twelve 4-unit courses) + Plan I thesis or Plan II comprehensive."
+      }
     },
     {
       "school": "HDSI",
       "code": "DATA-SCIENCE-ONLINE",
       "name": "Data Science Online",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "Master of Data Science"
+        ],
+        "reqUrl": "https://mds.ucsd.edu/program/index.html",
+        "msUnits": 40,
+        "notes": "Fully online Master of Data Science: 40 units (ten 4-unit courses incl. capstone), no thesis."
+      }
     },
     {
       "school": "HDSI",
       "code": "DATA-SCIENCE-AND-ENGINEE",
       "name": "Data Science and Engineering",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MAS"
+        ],
+        "reqUrl": "https://mas-dse.ucsd.edu/program/index.html",
+        "msUnits": 38,
+        "notes": "MAS in Data Science & Engineering: 38-unit coursework degree (11 courses) with capstone."
+      }
     },
     {
       "school": "GPS",
       "code": "GLOBAL-POLICY-STRATEGY",
       "name": "Global Policy & Strategy",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MIA",
+          "MPP",
+          "MCEPA",
+          "MAS-IA",
+          "PhD"
+        ],
+        "reqUrl": "https://gps.ucsd.edu/admissions/degrees-at-a-glance.html",
+        "notes": "Professional master's (MIA/MPP/MCEPA/MAS-IA) coursework-based; PhD in Political Science & International Affairs."
+      }
     },
     {
       "school": "HS",
       "code": "AUDIOLOGY-JDP-WITH-SDSU",
       "name": "Audiology (JDP with SDSU)",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "AuD"
+        ],
+        "reqUrl": "https://oto.ucsd.edu/education/jdp-audiology/index.html",
+        "notes": "SDSU/UCSD joint 4-year professional Doctor of Audiology; no coursework MS."
+      }
     },
     {
       "school": "HS",
       "code": "BIOMEDICAL-SCIENCES",
       "name": "Biomedical Sciences",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://biomedsci.ucsd.edu/how-to-apply/phd-program1.html",
+        "notes": "Research PhD (plus MD/PhD, PharmD/PhD); no standalone coursework master's."
+      }
     },
     {
       "school": "HS",
       "code": "CLINICAL-PSYCHOLOGY-JDP-",
       "name": "Clinical Psychology (JDP with SDSU)",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://psychiatry.ucsd.edu/education-training/psychology-programs/index.html",
+        "notes": "SDSU/UCSD joint doctoral program (APA-accredited); no coursework MS."
+      }
     },
     {
       "school": "HS",
       "code": "CLINICAL-RESEARCH",
       "name": "Clinical Research",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MAS"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/CLRE.html",
+        "msUnits": 40,
+        "notes": "Master of Advanced Studies, 40 units (34 required course units)."
+      }
     },
     {
       "school": "HS",
       "code": "DRUG-DEVELOPMENT-AND-PRO",
       "name": "Drug Development and Product Management",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/DDPM.html",
+        "msUnits": 36,
+        "notes": "Skaggs MS: self-supporting 36-unit coursework degree + comprehensive exam."
+      }
     },
     {
       "school": "HS",
       "code": "INTERDISCIPLINARY-RESEAR",
       "name": "Interdisciplinary Research on Substance Use (JDP with SDSU)",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://idgph.ucsd.edu/education/joint-doctoral-programs/irsu.html",
+        "notes": "SDSU/UCSD joint research doctoral program; no coursework MS."
+      }
     },
     {
       "school": "HS",
       "code": "LANGUAGE-AND-COMMUNICATI",
       "name": "Language and Communicative Disorders (JDP with SDSU)",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://cogsci.ucsd.edu/graduates/SDSU%20LCD%20Program/index.html",
+        "notes": "SDSU/UCSD joint doctoral program; interdisciplinary 5-year research degree."
+      }
     },
     {
       "school": "HS",
       "code": "NEUROSCIENCES",
       "name": "Neurosciences",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://neurograd.ucsd.edu/handbook/prog-requirement/index.html",
+        "notes": "Research PhD (MD/PhD option, computational neuroscience specialization); no coursework MS."
+      }
     },
     {
       "school": "HS",
       "code": "PRECISION-MEDICINE-THERA",
       "name": "Precision Medicine Therapeutics in Oncology",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MAS"
+        ],
+        "reqUrl": "https://pmto.ucsd.edu/curriculum/index.html",
+        "msUnits": 36,
+        "notes": "New Master of Advanced Studies (36 units), launching Fall 2026."
+      }
     },
     {
       "school": "HWSPH",
       "code": "BIOSTATISTICS",
       "name": "Biostatistics",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://ph.ucsd.edu/masters/biostat/requirements.html",
+        "msUnits": 60,
+        "notes": "MS ≥60 units (36 biostat core + 16 advanced + 8 life sciences + electives); PhD also offered."
+      }
     },
     {
       "school": "HWSPH",
       "code": "PUBLIC-HEALTH",
       "name": "Public Health",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MPH",
+          "PhD"
+        ],
+        "reqUrl": "https://ph.ucsd.edu/masters/mph/curriculum/index.html",
+        "msUnits": 64,
+        "notes": "MPH: 64 units (36 core + 16 concentration + 12 electives); PhD & SDSU/UCSD JDP also offered."
+      }
     },
     {
       "school": "JSOE",
       "code": "BIOENGINEERING",
       "name": "Bioengineering",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "MEng",
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+        "msUnits": 48,
+        "notes": "MS Plan I thesis (36 coursework + 12 research) or Plan II comprehensive (48 units)."
+      }
     },
     {
       "school": "JSOE",
       "code": "BIOINFORMATICS-SYSTEMS-B",
       "name": "Bioinformatics & Systems Biology",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://bioinformatics.ucsd.edu/grad/curriculum/requirements",
+        "notes": "PhD-only program (no standalone MS); 4 core courses + electives across BISB/BMI tracks."
+      }
     },
     {
       "school": "JSOE",
       "code": "COMPUTER-SCIENCE-AND-ENG",
       "name": "Computer Science and Engineering",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://cse.ucsd.edu/graduate/degree-programs/ms-program",
+        "notes": "MS in three plans (Thesis / Comprehensive Standard / Comprehensive Interdisciplinary): Breadth + Depth + electives."
+      }
     },
     {
       "school": "JSOE",
@@ -213,151 +421,359 @@
       "school": "JSOE",
       "code": "MATERIALS-SCIENCE-AND-EN",
       "name": "Materials Science and Engineering",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://matsci.ucsd.edu/graduate-studies/masters-program",
+        "msUnits": 36,
+        "notes": "MS Plan I thesis or Plan II comprehensive; 4 mandatory core + electives; 36 units."
+      }
     },
     {
       "school": "JSOE",
       "code": "MECHANICAL-AND-AEROSPACE",
       "name": "Mechanical and Aerospace Engineering",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+        "msUnits": 36,
+        "notes": "MS Plan I thesis (24 coursework + 12 research) or Plan II comprehensive exam; 36 units."
+      }
     },
     {
       "school": "JSOE",
       "code": "NANOENGINEERING-CHEMICAL",
       "name": "Nanoengineering / Chemical Engineering",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://cne.ucsd.edu/graduate-programs/degree/nanoengineering/masters",
+        "msUnits": 36,
+        "notes": "NanoEngineering & Chemical Engineering MS: Plan I thesis or Plan II comprehensive; 5 core + electives; 36 units."
+      }
     },
     {
       "school": "JSOE",
       "code": "STRUCTURAL-ENGINEERING",
       "name": "Structural Engineering",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://structures.ucsd.edu/academics/graduate-program/masters-program/masters-studies",
+        "msUnits": 48,
+        "notes": "MS Comprehensive (12 courses) or Thesis (9 courses + SE 299); 48 units. Tracks SE75/SE82."
+      }
     },
     {
       "school": "PS",
       "code": "ASTRONOMY",
       "name": "Astronomy",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://astro.ucsd.edu/grad/requirements/index.html",
+        "notes": "PhD only (Astronomy & Astrophysics); ~10 grad courses; no standalone coursework MS."
+      }
     },
     {
       "school": "PS",
       "code": "CHEMISTRY-BIOCHEMISTRY",
       "name": "Chemistry & Biochemistry",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/CHEM-gr.html",
+        "msUnits": 36,
+        "notes": "MS Chemistry: Plan I thesis / Plan II comprehensive, min 36 units; separate BIOC MS/PhD."
+      }
     },
     {
       "school": "PS",
       "code": "MATHEMATICS",
       "name": "Mathematics",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA",
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/MATH-gr.html",
+        "msUnits": 48,
+        "notes": "MA (pure/applied) and MS (statistics) each 48 units of coursework."
+      }
     },
     {
       "school": "PS",
       "code": "PHYSICS",
       "name": "Physics",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://physics.ucsd.edu/students/graduate/degree-requirements",
+        "notes": "PhD (Physics & Biophysics) primary; MS via Plan I/II, mainly en route to PhD."
+      }
     },
     {
       "school": "RADY",
       "code": "RADY-SCHOOL-OF-MANAGEMEN",
       "name": "Rady School of Management",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MBA",
+          "MSBA",
+          "MQF",
+          "MPAc",
+          "PhD"
+        ],
+        "reqUrl": "https://rady.ucsd.edu/programs/",
+        "notes": "MBAs plus specialized master's (Business Analytics, Quantitative Finance, Professional Accountancy) and a PhD in Management."
+      }
     },
     {
       "school": "SIO",
       "code": "SCRIPPS-INSTITUTION-OF-O",
       "name": "Scripps Institution of Oceanography",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "MAS",
+          "PhD"
+        ],
+        "reqUrl": "https://scripps.ucsd.edu/masters",
+        "msUnits": 36,
+        "notes": "MS (Oceanography/Marine Biology/Earth Sciences) min 36 units (24 coursework + 12 research) + thesis; also MAS and PhD tracks."
+      }
     },
     {
       "school": "SS",
       "code": "ANTHROPOLOGY",
       "name": "Anthropology",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA",
+          "PhD"
+        ],
+        "reqUrl": "https://anthropology.ucsd.edu/graduate-studies/program-requirements/index.html",
+        "notes": "PhD program; MA earned en route to the doctorate, not a terminal coursework degree."
+      }
     },
     {
       "school": "SS",
       "code": "COGNITIVE-SCIENCES",
       "name": "Cognitive Sciences",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS",
+          "PhD"
+        ],
+        "reqUrl": "https://cogsci.ucsd.edu/graduates/phd-program/requirements/index.html",
+        "notes": "PhD; MS only as an intermediate credential, not a terminal coursework degree."
+      }
     },
     {
       "school": "SS",
       "code": "COMMUNICATION",
       "name": "Communication",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://communication.ucsd.edu/graduate/grad-program-requirements.html",
+        "notes": "PhD only; no terminal master's."
+      }
     },
     {
       "school": "SS",
       "code": "COMPUTATIONAL-SOCIAL-SCI",
       "name": "Computational Social Science",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MS"
+        ],
+        "reqUrl": "https://css.ucsd.edu/masters/index.html",
+        "notes": "Terminal one-year coursework MS (bootcamp, core, electives, capstone); total units not published."
+      }
     },
     {
       "school": "SS",
       "code": "ECONOMICS",
       "name": "Economics",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://economics.ucsd.edu/graduate-program/index.html",
+        "notes": "PhD only; no terminal coursework master's."
+      }
     },
     {
       "school": "SS",
       "code": "EDUCATION-STUDIES",
       "name": "Education Studies",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MEd",
+          "MA",
+          "EdD",
+          "PhD"
+        ],
+        "reqUrl": "https://eds.ucsd.edu/graduate/doctoral/phd/index.html",
+        "notes": "PhD & EdD plus M.Ed. credential and MA programs (credential/cohort based)."
+      }
     },
     {
       "school": "SS",
       "code": "ETHNIC-STUDIES",
       "name": "Ethnic Studies",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA",
+          "PhD"
+        ],
+        "reqUrl": "https://ethnicstudies.ucsd.edu/graduate-studies/index.html",
+        "notes": "PhD; MA earned en route, not terminal."
+      }
     },
     {
       "school": "SS",
       "code": "GLOBAL-HEALTH",
       "name": "Global Health",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA"
+        ],
+        "reqUrl": "https://globalhealthprogram.ucsd.edu/graduate/overview.html",
+        "msUnits": 36,
+        "notes": "Terminal one-year coursework MA: 36 units / 9 courses (6 core + 3 electives) + comprehensive exam & portfolio."
+      }
     },
     {
       "school": "SS",
       "code": "LATIN-AMERICAN-STUDIES",
       "name": "Latin American Studies",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA"
+        ],
+        "reqUrl": "https://las.ucsd.edu/graduate/graduate-requirements/index.html",
+        "msUnits": 38,
+        "notes": "Terminal coursework MA: 38 units (42 with concentration); core seminar + theory + methods + electives + research."
+      }
     },
     {
       "school": "SS",
       "code": "LINGUISTICS",
       "name": "Linguistics",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA",
+          "PhD"
+        ],
+        "reqUrl": "https://linguistics.ucsd.edu/grad/requirements.html",
+        "notes": "PhD; MA and C.Phil. only as milestones en route, not terminal."
+      }
     },
     {
       "school": "SS",
       "code": "MATHEMATICS-SCIENCE-EDUC",
       "name": "Mathematics & Science Education",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://catalog.ucsd.edu/curric/MSED.html",
+        "notes": "PhD only; joint doctoral program with SDSU."
+      }
     },
     {
       "school": "SS",
       "code": "POLITICAL-SCIENCE",
       "name": "Political Science",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://polisci.ucsd.edu/grad/current-students/rules-and-requirements/index.html",
+        "notes": "PhD only; no MA program listed."
+      }
     },
     {
       "school": "SS",
       "code": "PSYCHOLOGY",
       "name": "Psychology",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MA",
+          "PhD"
+        ],
+        "reqUrl": "https://psychology.ucsd.edu/graduate-program/current-students/program-requirements/index.html",
+        "notes": "PhD; MA optional, earned during PhD study, not terminal."
+      }
     },
     {
       "school": "SS",
       "code": "SOCIOLOGY",
       "name": "Sociology",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "PhD"
+        ],
+        "reqUrl": "https://sociology.ucsd.edu/graduate/phd-requirements.html",
+        "notes": "PhD only; MA incidental en route, no terminal master's."
+      }
     },
     {
       "school": "SS",
       "code": "URBAN-STUDIES-PLANNING",
       "name": "Urban Studies & Planning",
-      "available": false
+      "available": true,
+      "overview": {
+        "degrees": [
+          "MURP",
+          "PhD"
+        ],
+        "reqUrl": "https://usp.ucsd.edu/graduate/murp/curriculum.html",
+        "msUnits": 72,
+        "notes": "Professional Master of Urban & Regional Planning (72 units) + separate Urban Planning PhD."
+      }
     }
   ],
   "plans": [
