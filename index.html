@@ -262,6 +262,8 @@
   .addbtn:hover{border-color:var(--accent);background:var(--accent-soft)}
   .addbtn.added{color:var(--gA);border-color:color-mix(in srgb,var(--gA) 45%,transparent);
     background:color-mix(in srgb,var(--gA) 10%,transparent)}
+  .addbtn.switch{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+    background:var(--accent-soft)}
   .course .top{display:flex;align-items:center;gap:2px}
 
   /* ---- schedule builder ---- */
@@ -369,6 +371,67 @@
   .tp-note{font-size:10.5px;color:var(--faint);margin-right:auto;line-height:1.4}
   .tp-foot #tpOff{color:var(--gF)}
 
+  /* ---- Graduation / GE requirements view ---- */
+  #geView{display:none}
+  #geView.active{display:block}
+  .ge-intro{font-size:13.5px;color:var(--muted);line-height:1.6;margin:0 0 12px;max-width:76ch}
+  .ge-picker{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
+  .ge-picker .cbtn{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);
+    border-radius:9px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);text-align:left;line-height:1.2}
+  .ge-picker .cbtn small{display:block;font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:400;margin-top:2px}
+  .ge-picker .cbtn:hover{border-color:var(--accent);color:var(--ink)}
+  .ge-picker .cbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .ge-picker .cbtn[aria-pressed="true"] small{color:rgba(255,255,255,.72)}
+
+  .ge-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin:0 0 14px}
+  .ge-hd{padding:16px 18px 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--surface-2),transparent)}
+  .ge-hd .cen{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.03em}
+  .ge-hd h3{margin:5px 0 7px;font-size:20px;letter-spacing:-.01em;font-weight:800;color:var(--ink)}
+  .ge-hd .char{margin:0;font-size:13px;color:var(--muted);line-height:1.55;max-width:74ch}
+  .ge-tags{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px 0}
+  .ge-tag{font-size:11.5px;padding:3px 10px;border-radius:999px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+  .ge-tag.heavy{background:color-mix(in srgb,var(--gF) 14%,var(--surface));color:var(--gF);border-color:color-mix(in srgb,var(--gF) 32%,transparent)}
+  .ge-tag.mid{background:color-mix(in srgb,var(--gD) 14%,var(--surface));color:var(--gD);border-color:color-mix(in srgb,var(--gD) 32%,transparent)}
+  .ge-tag.light{background:color-mix(in srgb,var(--gA) 14%,var(--surface));color:var(--gA);border-color:color-mix(in srgb,var(--gA) 34%,transparent)}
+  .ge-tag.plain{background:var(--surface-2);color:var(--muted);border-color:var(--line-strong)}
+  .ge-tag.conf{background:var(--accent-soft);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+  .ge-tbl-wrap{overflow-x:auto;padding:14px 18px 4px}
+  .ge-tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .ge-tbl th,.ge-tbl td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  .ge-tbl thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;border-bottom:1px solid var(--line-strong)}
+  .ge-tbl td:first-child{font-weight:700;white-space:nowrap;color:var(--ink)}
+  .ge-tbl td .u{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;margin-left:4px}
+  .ge-tbl tr:last-child td{border-bottom:0}
+  .ge-tbl .grade{font-family:var(--mono);font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;white-space:nowrap}
+  .ge-tbl .grade.lg{background:color-mix(in srgb,var(--gF) 15%,transparent);color:var(--gF)}
+  .ge-tbl .grade.pnp{background:color-mix(in srgb,var(--gA) 16%,transparent);color:var(--gA)}
+  .ge-note{padding:2px 18px 16px;font-size:12px;color:var(--muted);line-height:1.6}
+  .ge-note b{color:var(--ink)}
+  .ge-note .lab{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);font-weight:700;margin-right:6px}
+
+  .ge-uni{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);margin:0 0 14px}
+  .ge-uni>summary{padding:14px 18px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px}
+  .ge-uni>summary::-webkit-details-marker{display:none}
+  .ge-uni>summary .chev{color:var(--faint);transition:transform .15s}
+  .ge-uni[open]>summary .chev{transform:rotate(90deg)}
+  .ge-uni>summary .sub{font-weight:400;color:var(--muted);font-size:12px}
+  .ge-uni-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 18px 16px}
+  @media(max-width:640px){.ge-uni-grid{grid-template-columns:1fr}}
+  .ge-uni-item{background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+  .ge-uni-item .k{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  .ge-uni-item h5{margin:5px 0 4px;font-size:13.5px;color:var(--ink)}
+  .ge-uni-item p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.55}
+
+  .ge-src{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+  .ge-src h4{margin:0 0 8px;font-size:13px;color:var(--ink)}
+  .ge-src .ckey{display:flex;flex-wrap:wrap;gap:7px 15px;margin:0 0 10px;font-size:11.5px;color:var(--muted)}
+  .ge-src .ckey span{display:inline-flex;align-items:center;gap:5px}
+  .ge-src .cdot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .ge-src ul{margin:8px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:4px 18px}
+  @media(max-width:640px){.ge-src ul{grid-template-columns:1fr}}
+  .ge-src li{font-size:11.5px;line-height:1.4}
+  .ge-src .disc{margin:10px 0 0;padding-top:9px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.55}
+
   @media (max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:26px}}
   @media (max-width:720px){
     .thead{display:none}
@@ -452,6 +515,7 @@
     <button class="viewtab" id="tab-sched" role="tab" aria-selected="false">
       <span>My Schedule</span><span class="cnt" id="schedTabCnt" hidden>0</span>
     </button>
+    <button class="viewtab" id="tab-ge" role="tab" aria-selected="false">Grad &amp; GE Requirements</button>
   </div>
 
  <div id="rankView">
@@ -622,6 +686,17 @@
    </div>
  </div><!-- /scheduleView -->
 
+ <div id="geView" role="tabpanel" aria-label="Graduation and GE requirements">
+   <p class="ge-intro">Pick your <b>undergraduate college</b> — every UCSD student shares the same degree floor (180 units, ELWR, AHI, DEI…), but your college adds its own general-education (GE) curriculum on top. Requirements below are for <b>first-year (frosh) entrants</b>; transfer differences are noted per college. All figures verified against the official UCSD catalog &amp; college sites — see sources at the bottom.</p>
+   <div class="ge-picker" id="gePicker" role="group" aria-label="Choose your college"></div>
+   <div id="geBody"></div>
+   <details class="ge-uni" id="geUni">
+     <summary><span class="chev">›</span><span>University-wide requirements <span class="sub">— apply to all eight colleges</span></span></summary>
+     <div class="ge-uni-grid" id="geUniGrid"></div>
+   </details>
+   <div class="ge-src" id="geSrc"></div>
+ </div><!-- /geView -->
+
   <footer>
     <div class="meth">
       <h3>Data &amp; methodology</h3>
@@ -641,6 +716,157 @@
 </div>
 
 <!--INLINE_DATA-->
+<script src="schedule-instructor.js"></script>
+<script>
+/* Graduation & GE requirements — verified against catalog.ucsd.edu + college sites, 2026-07-24.
+   areas: [name, count, notes, grade]  grade: 'lg' letter required | 'pnp' P/NP allowed | '' n/a
+   tags:  [class, label]  class: heavy|mid|light|plain|conf */
+window.GE_REQS={
+  meta:{date:'2026-07-24'},
+  university:[
+    ['Units','≥ 180 total, ≥ 60 upper-division','Minimum 180 cumulative units; at least 60 must be upper-division (100+). A floor — many STEM majors far exceed it. Identical across all 8 colleges.'],
+    ['GPA · Residency','Cumulative GPA ≥ 2.0; 35 of final 45 units at UCSD','Senior residency: 35 of your last 45 units must be completed at your UCSD college (UCEAP/UCDC/UC Sacramento excepted; Extension concurrent enrollment excluded).'],
+    ['ELWR','Entry Level Writing Requirement','All undergrads (incl. international) must satisfy the UC-wide ELWR before enrolling in any college writing course. Placed into AWP 3 / 4A-B → pass with C or better.'],
+    ['AHI','American History & Institutions','Satisfiable via high-school coursework, courses (HILD 2A-B-C / HIUS / POLI 10), or AP/IB/SAT II scores. F-1/J-1 international students may petition the college provost for an exemption.'],
+    ['DEI','One 4-unit approved course','Frosh entering Fall 2011+ (and transfers/upper-division Fall 2013+) pass one 1-quarter, 4-unit Undergraduate-Council-approved course with C– or P or better. Transfers are NOT exempt.'],
+    ['Colleges','8 colleges = 8 GE curricula','The catalog calls them “eight distinct general-education curricula.” Your college GE — layered on top of your major — is the only source of difference between students.']
+  ],
+  colleges:{
+    revelle:{
+      name:'Revelle', est:'est. 1964', en:'Revelle College · est. 1964',
+      tagline:'the most structured (and heaviest) liberal-arts core',
+      char:'The most demanding and least flexible GE on campus — a “Renaissance” breadth of math, a full science sequence, five humanities courses, a foreign language, social science and art. STEM majors overlap the math/science; the 5-course HUM sequence + language is everyone’s hard part, and the core subjects can’t be hidden with P/NP.',
+      tags:[['heavy','GE load: heaviest (~16 courses + language)'],['plain','Writing: HUM 1–5 (5 courses)'],['heavy','P/NP: most restricted'],['conf','High confidence · triple-verified']],
+      areas:[
+        ['Humanities','5','HUM 1–5. HUM 1 & 2 are 6-unit writing-intensive; 3, 4, 5 are 4 units each (26u total).','lg'],
+        ['Mathematics','3','1 calculus + 2 from an approved list (MATH 10/20 series, MATH 18, DSC 10, PHIL 10, PSYC 60).','lg'],
+        ['Natural Science','5','Biology, chemistry, physics each + 2 more from bio/chem/phys/environmental science.','pnp'],
+        ['Social Science','2','Two social-science courses.','lg'],
+        ['Fine Arts','1','Theatre & dance, music, or visual arts.','pnp'],
+        ['Language','—','4th-quarter proficiency in a modern/classical language, or AP/IB/SAT II 700+.','pnp']
+      ],
+      transfer:'IGETC-certified transfers still must finish Mathematics, Natural Science (reduced to 4 courses since Fall 2024), and HUM 100 (one upper-div humanities course) — the least transfer-friendly college. UC Reciprocity waives all lower-division GE, but HUM 100 is upper-division and stays.'
+    },
+    muir:{
+      name:'John Muir', est:'est. 1967', en:'John Muir College · est. 1967',
+      tagline:'“your choice, your responsibility” — the most flexible',
+      char:'The opposite of Revelle: just two writing courses plus four “three-course sequences” that you pick from approved lists. The highest flexibility on campus — you can choose sequences you’re good at, enjoy, and that overlap your major. A classic pick for keeping GE low-stress and GPA-safe.',
+      tags:[['light','GE load: light (~14 courses, overlappable)'],['plain','Writing: MCWP 40 + 50 (2 courses)'],['plain','Highly flexible · self-chosen sequences'],['conf','Med-high · catalog-sourced']],
+      areas:[
+        ['Writing','2','MCWP 40 + 50 (8u): critical thinking, rhetoric & expository writing. AP/IB cannot exempt (AP English only meets ELWR).','lg'],
+        ['Social Sciences','1 seq','One approved 3-course sequence (Category I).',''],
+        ['Math or Nat. Science','1 seq','One approved 3-course sequence (Category II).',''],
+        ['Humanities / Arts / Language','2 seq','Two 3-course sequences, from two of: Fine Arts, Humanities, Foreign Language (Category III).','']
+      ],
+      transfer:'IGETC-certified transfers may satisfy the writing with MCWP 125 or MCWP 50; sequence requirements are largely cleared by IGETC. The 3-course sequences must be completed as a set, but which sequence is your choice — pick ones that overlap your major or are known easy-A.'
+    },
+    marshall:{
+      name:'Thurgood Marshall', est:'est. 1970', en:'Thurgood Marshall College · est. 1970',
+      tagline:'“scholar & citizen” — the DOC trilogy',
+      char:'Built around DOC (Dimensions of Culture), a three-course linked writing sequence on diversity, justice and imagination. GE is balanced and breadth courses pair well with outside interests. Historically the highest average GPA of the older six colleges — DOC is real work but not a harsh grader.',
+      tags:[['mid','GE load: moderate (~15 courses)'],['plain','Writing: DOC 1·2·3 (3 courses / 16u)'],['heavy','DOC: no exemptions'],['conf','High confidence · triple-verified']],
+      areas:[
+        ['Core writing','3','DOC 1 (4u/fall) → DOC 2 (6u/winter) → DOC 3 (6u/spring), 16u linked. Must be done at UCSD; AP/IB/transfer cannot substitute (no exceptions).','lg'],
+        ['Natural Science','3','Biology, chemistry, physics each (BILD/CHEM/PHYS/SIO; non-majors may fill the physics slot with an SIO earth-science course).',''],
+        ['Math / Stats / Logic','2','Three paths: (A) 2 math/advanced stats; (B) 1 math/adv-stats + 1 intro stats or programming/logic; (C) 1 intro stats + 1 programming/logic.',''],
+        ['Humanities & Cultural','2','From the domestic/global cultures list (AAS, ETHN, HILD, LATI, LTEN, RELI…).',''],
+        ['Fine Arts','1','Music, theatre & dance, or visual arts.',''],
+        ['Disciplinary Breadth','4','Four courses outside the major (4u each); 2 must be upper-division, ≥1 writing-intensive.','']
+      ],
+      transfer:'With IGETC/Cal-GETC or UC Reciprocity, breadth drops to just 2 upper-division courses (≥1 writing-intensive) and DOC is replaced by a transfer track (DOC 100D) — quite transfer-friendly.'
+    },
+    warren:{
+      name:'Earl Warren', est:'est. 1974', en:'Earl Warren College · est. 1974',
+      tagline:'“toward a life in balance” — friendliest to engineers',
+      char:'GE is organized around two out-of-major depth areas. Non-engineering majors do two 6-course Programs of Concentration; but engineering BS majors take the much smaller Area Studies (two blocks of three) — and both can be replaced by a minor and taken P/NP. This is the official basis for “Warren is engineer-friendly.”',
+      tags:[['mid','GE load: heavy (non-eng) / light (eng)'],['plain','Writing: WCWP 10A-B (2 courses)'],['light','PofC / Area Studies: P/NP ok'],['conf','Med-high · catalog-sourced']],
+      areas:[
+        ['Writing','2','WCWP 10A + 10B: academic argumentation & analytical papers.','lg'],
+        ['Ethics & Society','2','PHIL/POLI 27 + PHIL/POLI 28.','lg'],
+        ['Formal Skills','2','Two from an approved list: calculus, computer programming, statistics, symbolic logic.',''],
+        ['Depth · non-eng','2 × 6','Two Programs of Concentration — 6 courses each outside the major discipline, ≥3 upper-division each. May substitute a minor.','pnp'],
+        ['Depth · eng BS','2 × 3','Two Area Studies (one humanities/arts, one social science) — 3 courses each, ≥2 upper-division. May substitute a minor.','pnp']
+      ],
+      transfer:'Engineering bonus: depth shrinks from 12 (2×6) to 6 courses (2×3), can be P/NP, and a single minor can absorb a whole block — among the lowest net GE burdens for engineers. WCWP cannot be exam-exempted (AP only meets ELWR).'
+    },
+    erc:{
+      name:'Eleanor Roosevelt (ERC)', est:'est. 1988', en:'Eleanor Roosevelt College · est. 1988',
+      tagline:'“educating for global citizenship” — longest writing core',
+      char:'MMW (Making of the Modern World) is a five-quarter linked writing/GE core — the longest on campus — and no AP, IB or transfer credit exempts any quarter. Add regional specialization, language and upper-div writing: the most international outlook, but also one of the heaviest writing loads.',
+      tags:[['heavy','GE load: heavy (~13 courses + language)'],['plain','Writing: MMW 11–15 (5 courses)'],['heavy','MMW: zero exemptions'],['conf','High confidence · triple-verified (writing)']],
+      areas:[
+        ['MMW core','5','MMW 11–15 (five quarters); blends lit/history/philosophy + social science + writing (two count as the writing requirement). AP/IB/transfer exempt none.','lg'],
+        ['Regional Specialization','3','Three courses on a single region (humanities/social science/arts); ≥2 upper-division. One may be P/NP.',''],
+        ['Natural Science','2','From biology, chemistry, physics, earth science.','pnp'],
+        ['Quantitative Methods','2','Precalculus, calculus, statistics, symbolic logic, or programming.','pnp'],
+        ['Fine Arts','1','Music, theatre & dance, or visual arts (4u).','pnp'],
+        ['Language','0–4','Up to 4th-quarter proficiency (modern) or advanced reading (classical).','pnp'],
+        ['Upper-Div Writing','—','Submit papers written for upper-division courses, graded C– or higher.','']
+      ],
+      transfer:'MMW collapses to a single course: full-IGETC transfers take only MMW 122 (4u, letter, D or better); others take MMW 12/121 per agreement. Frosh 5 → transfer 1 is among the largest transfer reliefs on campus.'
+    },
+    sixth:{
+      name:'Sixth', est:'est. 2002', en:'Sixth College · est. 2002',
+      tagline:'“culture, art & technology” — the widest breadth',
+      char:'CAT is three core writing courses plus the upper-division CAT 125 (writing for public audiences). Breadth is the broadest on campus — IT fluency, seven “Modes of Inquiry”, data, art-making and experiential learning — many small requirements rather than one deep sequence. Good for cross-disciplinary types who don’t want to be locked into one track.',
+      tags:[['mid','GE load: moderate–high (~16 courses, spread out)'],['plain','Writing: CAT 1·2·3 + 125 (4 courses)'],['mid','Some P/NP (within 25% cap)'],['conf','High (writing) / catalog-sourced']],
+      areas:[
+        ['CAT core','3','CAT 1 → 2 → 3; CAT 2 & 3 are 6-unit writing-intensive quarters.','lg'],
+        ['CAT upper-div writing','1','CAT 125 (or 125R remote / 125GS), 4u — public rhetoric & practical communication; needs CAT 1-2-3 first.','lg'],
+        ['IT Fluency','1','One information-technology-fluency course.',''],
+        ['Modes of Inquiry','7','2 social science + 2 humanities + 2 natural science + 1 math/logic.',''],
+        ['Exploring Data','1','One statistical-methods course.',''],
+        ['Art Making','2','Literature, music, theatre & dance, or visual arts.',''],
+        ['Experiential Learning','1','Upper-division 4-unit experiential course.','']
+      ],
+      transfer:'Some GE may be taken P/NP within the university 25%-of-units cap; the CAT sequence must be letter grade. Breadth is wide but much of it overlaps major/interest, so real added courses are fewer than the count suggests.'
+    },
+    seventh:{
+      name:'Seventh', est:'est. 2020', en:'Seventh College · est. 2020',
+      tagline:'“a changing planet” — max overlap with your major',
+      char:'A modern design: three SYN writing courses plus ten “Alternatives” (two from each of five areas), and Alternatives explicitly may overlap your major, minor and university requirements. For STEM majors with a full plate, GE adds almost nothing — 14 on paper, few net-new.',
+      tags:[['light','GE load: light (14 courses, heavy overlap)'],['plain','Writing: SYN 1·2·100 (3 courses)'],['light','Alternatives overlap major'],['conf','Med-high · catalog-sourced']],
+      areas:[
+        ['Synthesis core','3','SYN 1/1R → 2/2R → 100; SYN 1 & 2 are writing-intensive, SYN 100 is project-based.','lg'],
+        ['Alternatives','10','Two from each of five areas: Arts; Humanities; Natural Sciences & Engineering; Quantitative Reasoning; Social Sciences. May overlap major, minor & university requirements.',''],
+        ['High-Impact','1','One high-impact course (2–4u): internship, research, study abroad, experiential.','']
+      ],
+      transfer:'Transfers need only one writing course, SYN 100 (not SYN 1/2), pre-authorized from Winter of the first year; full IGETC clears the lower-division Alternatives. Overlap bonus: the ten Alternatives are mostly absorbed by major courses.'
+    },
+    eighth:{
+      name:'Eighth', est:'est. 2023', en:'Eighth College · est. 2023',
+      tagline:'“engagement & community” — breadth can be P/NP',
+      char:'The newest college. Four CCE (Critical Community Engagement) core courses — writing + a community project — plus ten breadth courses (two per area). Structure resembles Seventh, but with one GPA-friendly twist: breadth may be taken P/NP within the 25% cap; only CCE must be letter grade.',
+      tags:[['light','GE load: light (14 courses, overlappable)'],['plain','Writing: CCE 1·2·3 + 120 (4 courses)'],['light','Breadth: P/NP allowed'],['conf','Med-high · catalog-sourced']],
+      areas:[
+        ['CCE core','4','CCE 1 (engagement intro) → CCE 2 & 3 (two writing-intensive quarters) → CCE 120 (community project).','lg'],
+        ['Breadth','10','Two from each of five areas: Arts; Humanities; Natural Sciences; Quantitative Methods & Engineering; Social Sciences. May be taken P/NP within the 25% cap.','pnp']
+      ],
+      transfer:'With Cal-GETC/IGETC or a UC reciprocity letter, all lower-division breadth GE is waived (CCE track still required). GPA-friendly point: P/NP-able breadth lets you Pass out of weak-area courses to protect your GPA — rare among the colleges.'
+    }
+  },
+  sources:[
+    ['catalog · Degree Requirements','https://catalog.ucsd.edu/undergraduate/degree-requirements/index.html'],
+    ['catalog · Colleges index','https://catalog.ucsd.edu/undergraduate/colleges/index.html'],
+    ['catalog · Revelle','https://catalog.ucsd.edu/undergraduate/colleges/revelle-college/index.html'],
+    ['catalog · Muir','https://catalog.ucsd.edu/undergraduate/colleges/john-muir-college/index.html'],
+    ['catalog · Marshall','https://catalog.ucsd.edu/undergraduate/colleges/thurgood-marshall-college/index.html'],
+    ['catalog · Warren','https://catalog.ucsd.edu/undergraduate/colleges/earl-warren-college/index.html'],
+    ['catalog · Roosevelt (ERC)','https://catalog.ucsd.edu/undergraduate/colleges/eleanor-roosevelt-college/index.html'],
+    ['catalog · Sixth','https://catalog.ucsd.edu/undergraduate/colleges/sixth-college/index.html'],
+    ['catalog · Seventh','https://catalog.ucsd.edu/undergraduate/colleges/seventh-college/index.html'],
+    ['catalog · Eighth','https://catalog.ucsd.edu/undergraduate/colleges/eighth-college/index.html'],
+    ['revelle.ucsd.edu · GE','https://revelle.ucsd.edu/academics/general-education/index.html'],
+    ['muir.ucsd.edu · MCWP FAQ','https://muir.ucsd.edu/writing/Frequently%20Asked%20Questions1.html'],
+    ['marshall.ucsd.edu · First-Year GE','https://marshall.ucsd.edu/academics/first-year-ge.html'],
+    ['warren.ucsd.edu · GE','https://warren.ucsd.edu/academics/general-education/index.html'],
+    ['roosevelt.ucsd.edu · GE','https://roosevelt.ucsd.edu/academics/gen-ed/index.html'],
+    ['sixth.ucsd.edu · CAT 125','https://sixth.ucsd.edu/cat/courses/cat-125-and-cat-125r.html'],
+    ['awp.ucsd.edu · ELWR','https://awp.ucsd.edu/elwr/'],
+    ['UCSD Guardian · college GPA compare','https://ucsdguardian.org/2018/01/21/ucsd-writing-requirements-who-has-it-the-hardest-2/','secondary']
+  ]
+};
+</script>
 <script>
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 function hex(h){h=h.replace('#','');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
@@ -779,7 +1005,7 @@ function init(DATA){
     const myks=ourKeysJS(r[C.i]||'');
     const who=orderFa(faList).map(n=>{
       const isNew=NEWPROF.has(n);
-      const m=!isNew&&!blocked(n,r[C.i]||'')&&catKeysJS(n).some(ck=>myks.some(mk=>keyEq(mk,ck)));
+      const m=!isNew&&!blocked(n,r[C.i]||'')&&(ScheduleInstructor.sameInstructorName(n,r[C.i]||'')||catKeysJS(n).some(ck=>myks.some(mk=>keyEq(mk,ck))));
       const nx=isNew?' <span class="firstx" title="No prior grade-distribution record in 2015–2026 (may be new to UCSD, or taught in a capacity without recorded grades)">0×</span>':'';
       return `<span class="who${m?' match':''}${isNew?' isnew':''}">${esc(n)}${m?' ✓':''}${nx}</span>`;
     }).join('');
@@ -829,7 +1055,15 @@ function init(DATA){
     const nowBadge=isNew2?'<span class="firstx" title="No grade-distribution data for this course × professor">0×</span>'
                   :isTBA?(umbrella?'<span class="firstx" title="Research / independent study — many possible instructors">research</span>':'<span class="firstx" title="Instructor not assigned yet in the catalog">TBA</span>')
                   :(isCur?'<span class="badge-now" title="This professor is teaching this course in Fall 2026.">Teaching now</span>':'');
-    const addBtn=r[C.off]?`<button class="addbtn ${SCH.has(fakey)?'added':''}" data-add="${esc(fakey)}" title="Add to My Schedule">${SCH.has(fakey)?'✓ Added':'+ Schedule'}</button>`:'';
+    const rowKeys=ourKeysJS(r[C.i]||'');
+    const preferredInstructor=isCur&&faList ? orderFa(faList).find(n=>!blocked(n,r[C.i]||'')&&(ScheduleInstructor.sameInstructorName(n,r[C.i]||'')||catKeysJS(n).some(ck=>rowKeys.some(mk=>keyEq(mk,ck)))))||'' : '';
+    const scheduledItem=schItems.find(it=>it.k===fakey);
+    const addState=!scheduledItem?'add'
+      :(preferredInstructor&&SCHED&&SCHED.courses[fakey]?ScheduleInstructor.instructorChoiceState(true,activeGroups(SCHED.courses[fakey]),scheduledItem.group,preferredInstructor)
+      :(preferredInstructor?'switch':'added'));
+    const addText=addState==='added'?'✓ Added':addState==='switch'?'↔ Switch':'+ Schedule';
+    const addTitle=addState==='switch'?`Switch schedule to ${preferredInstructor}`:addState==='added'?'Remove from My Schedule':preferredInstructor?`Add ${fakey} with ${preferredInstructor}`:'Add to My Schedule';
+    const addBtn=r[C.off]?`<button class="addbtn ${addState}" data-add="${esc(fakey)}"${preferredInstructor?` data-instr="${esc(preferredInstructor)}"`:''} title="${esc(addTitle)}">${addText}</button>`:'';
     let nowLine='';
     if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Teaching this term · no grade data</span>';
     else if(isTBA) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>${umbrella?'Research / independent study':'Instructor to be announced'}</span>`;
@@ -973,7 +1207,17 @@ function init(DATA){
   moreBtn.addEventListener('click',appendMore);
   $('rows').addEventListener('click',e=>{
     if(e.target.closest('a')) return; // let RMP links work
-    const ab=e.target.closest('.addbtn'); if(ab){e.stopPropagation();if(SCH.has(ab.dataset.add))removeFromSched(ab.dataset.add);else addToSched(ab.dataset.add);return;}
+    const ab=e.target.closest('.addbtn'); if(ab){
+      e.stopPropagation();
+      const k=ab.dataset.add,instructor=ab.dataset.instr||'';
+      if(!instructor){if(SCH.has(k))removeFromSched(k);else addToSched(k);return;}
+      ensureSched().then(()=>{
+        const it=schItems.find(x=>x.k===k),groups=SCHED.courses[k]?activeGroups(SCHED.courses[k]):{};
+        const choice=ScheduleInstructor.instructorChoiceState(!!it,groups,it&&it.group,instructor);
+        if(choice==='added')removeFromSched(k);else addToSched(k,instructor);
+      }).catch(()=>{});
+      return;
+    }
     const row=e.target.closest('.trow'); if(!row) return;
     const idx=+row.dataset.i;
     if(expanded.has(idx)) expanded.delete(idx); else expanded.add(idx);
@@ -1163,8 +1407,8 @@ function init(DATA){
   function schItemHTML(it,ci){
     const {course,secs,opts,groups,gl}=itemSections(it),color=CAL_COLORS[ci%CAL_COLORS.length];
     if(!course)return `<div class="sci"><div class="h"><span class="code">${esc(it.k)}</span><button class="rm" data-rm="${esc(it.k)}">×</button></div><div class="ttl">Not offered in Fall 2026.</div></div>`;
-    const grpKeys=Object.keys(groups).sort();
-    const grpSel=grpKeys.length>1?`<label>Sec <select data-grp="${esc(it.k)}">${grpKeys.map(g=>`<option value="${g}"${g===gl?' selected':''}>${g}</option>`).join('')}</select></label>`:'';
+    const groupChoices=ScheduleInstructor.instructorGroupChoices(groups);
+    const grpSel=groupChoices.length>1?`<label>Instructor / section <select data-grp="${esc(it.k)}">${groupChoices.map(choice=>`<option value="${choice.group}"${choice.group===gl?' selected':''}>${esc(choice.label)}</option>`).join('')}</select></label>`:'';
     const optSel=Object.keys(opts).map(ty=>{const list=opts[ty],cur=secs.find(s=>s[S_TYPE]===ty);return `<label>${esc(ty)} <select data-pick="${esc(it.k)}" data-ty="${esc(ty)}">${list.map(s=>`<option value="${esc(s[S_CODE])}"${(cur&&cur[S_CODE]===s[S_CODE])?' selected':''}>${esc(s[S_CODE])} · ${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}</option>`).join('')}</select></label>`;}).join('');
     const meets=secs.map(s=>{const tba=!(s[S_DAYS]&&s[S_START]);return `<div class="m${tba?' tba':''}"><span class="mt">${esc(s[S_TYPE])}</span><span>${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>${esc(s[S_BLD]||'')}${s[S_ROOM]?' '+esc(s[S_ROOM]):''}</span></div>`;}).join('');
     const finRows=finalsFor(course,gl).map(s=>{
@@ -1301,12 +1545,28 @@ function init(DATA){
   }
   $('exportIcs').addEventListener('click',exportICS);
 
-  function updateAddButtons(){document.querySelectorAll('.addbtn[data-add]').forEach(b=>{const on=SCH.has(b.dataset.add);b.classList.toggle('added',on);b.textContent=on?'✓ Added':'+ Schedule';});}
+  function updateAddButtons(){document.querySelectorAll('.addbtn[data-add]').forEach(b=>{
+    const k=b.dataset.add,instructor=b.dataset.instr||'',it=schItems.find(x=>x.k===k);
+    const groups=SCHED&&SCHED.courses[k]?activeGroups(SCHED.courses[k]):{};
+    const choice=ScheduleInstructor.instructorChoiceState(!!it,groups,it&&it.group,instructor);
+    b.classList.toggle('add',choice==='add');b.classList.toggle('added',choice==='added');b.classList.toggle('switch',choice==='switch');
+    b.textContent=choice==='added'?'✓ Added':choice==='switch'?'↔ Switch':'+ Schedule';
+    b.title=choice==='switch'?`Switch schedule to ${instructor}`:choice==='added'?'Remove from My Schedule':instructor?`Add ${k} with ${instructor}`:'Add to My Schedule';
+  });}
   function tabCount(){const cnt=$('schedTabCnt');cnt.hidden=schItems.length===0;cnt.textContent=schItems.length;}
-  function addToSched(k){
+  function addToSched(k,instructor){
     return ensureSched().then(()=>{
-      if(SCH.has(k)||!SCHED.courses[k])return;
-      const groups=activeGroups(SCHED.courses[k]),gl=Object.keys(groups).sort()[0]||'';
+      if(!SCHED.courses[k])return;
+      const groups=activeGroups(SCHED.courses[k]);
+      const preferred=ScheduleInstructor.preferredGroupForInstructor(groups,instructor);
+      const existing=schItems.find(it=>it.k===k);
+      if(existing){
+        if(!preferred||existing.group===preferred)return;
+        existing.group=preferred;existing.picks={};saveSchState();updateAddButtons();
+        if(curView==='sched')renderSchedule();
+        return;
+      }
+      const gl=preferred||Object.keys(groups).sort()[0]||'';
       schItems.push({k,group:gl,picks:{}}); SCH=schSet(); saveSchState();
       updateAddButtons(); tabCount();
       if(curView==='sched') renderSchedule();
@@ -1314,10 +1574,11 @@ function init(DATA){
   }
   function removeFromSched(k){schItems=schItems.filter(it=>it.k!==k);SCH=schSet();saveSchState();updateAddButtons();tabCount();if(curView==='sched')renderSchedule();}
   $('schedItems').addEventListener('change',e=>{
-    const g=e.target.closest('select[data-grp]'); if(g){const it=schItems.find(i=>i.k===g.dataset.grp);if(it){it.group=g.value;it.picks={};saveSchState();renderSchedule();}return;}
+    const g=e.target.closest('select[data-grp]'); if(g){const it=schItems.find(i=>i.k===g.dataset.grp);if(it){it.group=g.value;it.picks={};saveSchState();updateAddButtons();renderSchedule();}return;}
     const p=e.target.closest('select[data-pick]'); if(p){const it=schItems.find(i=>i.k===p.dataset.pick);if(it){it.picks=it.picks||{};it.picks[p.dataset.ty]=p.value;saveSchState();renderSchedule();}}
   });
   $('schedItems').addEventListener('click',e=>{const r=e.target.closest('[data-rm]');if(r)removeFromSched(r.dataset.rm);});
+  if(schItems.length)ensureSched().then(updateAddButtons).catch(()=>{});
 
   // ================= Meeting-time filter =================
   // A course passes when, in at least one section group (A/B/...), every meeting type
@@ -1472,17 +1733,84 @@ function init(DATA){
   $('tpNone').addEventListener('click',()=>{gridCells.clear();paintGrid();applyTime();});
   $('tpOff').addEventListener('click',()=>{clearTime();timePop.hidden=true;timeBtn.setAttribute('aria-expanded','false');});
 
+  // ================= Graduation & GE requirements =================
+  // Verified against the official UCSD catalog + college sites on 2026-07-24.
+  // conf: 'high' = 3-vote adversarially verified; 'catalog' = pulled direct from
+  // the official catalog page (single authoritative source, not triple-verified).
+  const GE=(window.GE_REQS)||{};
+  const GE_KEY='easyA_college_v1';
+  const geOrder=['revelle','muir','marshall','warren','erc','sixth','seventh','eighth'];
+  let geCollege=(()=>{try{const c=localStorage.getItem(GE_KEY);return geOrder.includes(c)?c:'revelle';}catch(e){return 'revelle';}})();
+  let geInit=false;
+  function geGradeBadge(g){
+    if(g==='lg') return '<span class="grade lg" title="Must be taken for a letter grade">letter</span>';
+    if(g==='pnp') return '<span class="grade pnp" title="May be taken Pass/No Pass">P/NP ok</span>';
+    return '';
+  }
+  function renderGePicker(){
+    const el=$('gePicker'); if(!el)return;
+    el.innerHTML=geOrder.map(k=>{const c=GE.colleges[k];
+      return `<button class="cbtn" data-col="${k}" aria-pressed="${k===geCollege?'true':'false'}">${esc(c.name)}<small>${esc(c.est)}</small></button>`;}).join('');
+  }
+  function renderGeBody(){
+    const el=$('geBody'), c=GE.colleges&&GE.colleges[geCollege]; if(!el||!c)return;
+    const tags=c.tags.map(t=>`<span class="ge-tag ${t[0]}">${esc(t[1])}</span>`).join('');
+    const rows=c.areas.map(a=>`<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}</td><td>${geGradeBadge(a[3])}</td></tr>`).join('');
+    el.innerHTML=`<div class="ge-card">
+      <div class="ge-hd"><span class="cen">${esc(c.en)}</span><h3>${esc(c.name)} — ${esc(c.tagline)}</h3><p class="char">${esc(c.char)}</p></div>
+      <div class="ge-tags">${tags}</div>
+      <div class="ge-tbl-wrap"><table class="ge-tbl">
+        <thead><tr><th>Area</th><th>Requirement &amp; notes</th><th>Grading</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+      <div class="ge-note"><span class="lab">Transfer</span>${esc(c.transfer)}</div>
+    </div>`;
+  }
+  function renderGeUni(){
+    const el=$('geUniGrid'); if(!el)return;
+    el.innerHTML=(GE.university||[]).map(u=>`<div class="ge-uni-item"><div class="k">${esc(u[0])}</div><h5>${esc(u[1])}</h5><p>${esc(u[2])}</p></div>`).join('');
+  }
+  function renderGeSrc(){
+    const el=$('geSrc'); if(!el)return;
+    const links=(GE.sources||[]).map(s=>`<li><a href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[0])}</a>${s[2]==='secondary'?' <span style="color:var(--faint)">· secondary</span>':''}</li>`).join('');
+    el.innerHTML=`<h4>Confidence &amp; sources</h4>
+      <div class="ckey">
+        <span><i class="cdot" style="background:var(--gA)"></i>High · triple-verified</span>
+        <span><i class="cdot" style="background:var(--gD)"></i>Catalog-sourced · not triple-verified</span>
+        <span><i class="cdot" style="background:var(--gW)"></i>Reference · secondary/common</span>
+      </div>
+      <ul>${links}</ul>
+      <p class="disc">Verified ${esc(GE.meta&&GE.meta.date||'')} against the current catalog.ucsd.edu &amp; college sites (pages not explicitly version-stamped “2026–27”; the catalog rolls over in summer). Course counts are approximate and vary by major, transfer agreement and year. Reference only — <b>not official, not academic advice</b>. Confirm every requirement with the official UCSD catalog and your academic advisor.</p>`;
+  }
+  function setCollege(k){
+    if(!GE.colleges||!GE.colleges[k])return;
+    geCollege=k;
+    try{localStorage.setItem(GE_KEY,k);}catch(e){}
+    document.querySelectorAll('#gePicker .cbtn').forEach(b=>b.setAttribute('aria-pressed',b.dataset.col===k?'true':'false'));
+    renderGeBody();
+  }
+  function renderGE(){
+    if(!GE.colleges){$('geBody').innerHTML='<div class="ge-card"><div class="ge-note">Requirements data unavailable.</div></div>';return;}
+    if(geInit)return; geInit=true;
+    renderGePicker(); renderGeBody(); renderGeUni(); renderGeSrc();
+  }
+  $('gePicker').addEventListener('click',e=>{const b=e.target.closest('.cbtn');if(b)setCollege(b.dataset.col);});
+
   let curView='rank';
   function setView(v){
     curView=v;
     $('tab-rank').setAttribute('aria-selected',v==='rank'?'true':'false');
     $('tab-sched').setAttribute('aria-selected',v==='sched'?'true':'false');
+    $('tab-ge').setAttribute('aria-selected',v==='ge'?'true':'false');
     $('rankView').classList.toggle('hidden',v!=='rank');
     $('scheduleView').classList.toggle('active',v==='sched');
+    $('geView').classList.toggle('active',v==='ge');
     if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The Fall 2026 catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
+    if(v==='ge') renderGE();
   }
   $('tab-rank').addEventListener('click',()=>setView('rank'));
   $('tab-sched').addEventListener('click',()=>setView('sched'));
+  $('tab-ge').addEventListener('click',()=>setView('ge'));
   tabCount();
 
   render();
