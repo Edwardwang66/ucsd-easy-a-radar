@@ -55,6 +55,13 @@
   }
 
   *{box-sizing:border-box}
+  /* Silky theme switching: fade the themed properties when the palette flips
+     (OS change or manual toggle). Bare `*` keeps specificity at (0,0,0) so any
+     element's own transition still wins — existing transform/hover
+     micro-interactions are untouched. No first-load animation: the theme is
+     resolved before first paint, so there's no value change to animate. */
+  *{transition:background-color .28s ease,border-color .28s ease,color .28s ease,box-shadow .28s ease}
+  @media (prefers-reduced-motion:reduce){*{transition:none}}
   [hidden]{display:none!important}  /* the hidden attribute must always win over display:grid/flex etc. */
   html{background:var(--bg)}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
@@ -531,6 +538,28 @@
 
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<script>
+/* Theme = system-synced. Runs before first paint to avoid a flash.
+   - If the browser reports an OS color preference (prefers-color-scheme is
+     supported), we leave data-theme UNSET so the CSS @media query follows the
+     OS live — including when the user flips their OS theme with the page open.
+   - Fallback (OS preference unavailable / unsupported browser): time-based —
+     local 09:00–16:59 => light, otherwise => dark. Re-checked each minute so it
+     flips at the 9am / 5pm boundaries without a reload. */
+(function(){
+  var root=document.documentElement;
+  var mq=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');
+  var osAware=!!(mq&&mq.media==='(prefers-color-scheme: dark)');
+  if(osAware) return; // CSS handles it; nothing to set.
+  function applyTimeTheme(){
+    if(root.getAttribute('data-theme-manual')) return; // user override wins
+    var h=new Date().getHours();
+    root.setAttribute('data-theme',(h>=9&&h<17)?'light':'dark');
+  }
+  applyTimeTheme();
+  setInterval(applyTimeTheme,60000);
+})();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -2832,6 +2861,9 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
   const root=document.documentElement;
   const cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+  // Manual pick wins for the rest of the session (stops the time-fallback timer
+  // from re-applying, and stands as an explicit override of the OS sync).
+  root.setAttribute('data-theme-manual','1');
 });
 
 (async function boot(){
