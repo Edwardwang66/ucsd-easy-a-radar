@@ -65,8 +65,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/HIST-gr.html",
         "msUnits": 36,
-        "notes": "Terminal coursework MA: nine 4-unit courses (36 units) + oral exam; PhD in seven concentrations."
-      }
+        "notes": "Terminal coursework MA: nine 4-unit courses (36 units) + oral exam; PhD in seven concentrations.",
+        "code": "HI75"
+      },
+      "majorCode": "HI75"
     },
     {
       "school": "AH",
@@ -81,8 +83,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/LIT-gr.html",
         "msUnits": 72,
-        "notes": "MFA in Writing = 72 units; MA awarded only en route to the PhD."
-      }
+        "notes": "MFA in Writing = 72 units; MA awarded only en route to the PhD.",
+        "code": "LT77"
+      },
+      "majorCode": "LT77"
     },
     {
       "school": "AH",
@@ -96,8 +100,10 @@
           "MA"
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/MUS-gr.html",
-        "notes": "PhD/DMA focused; MA earned only during doctoral progress (no terminal MA)."
-      }
+        "notes": "PhD/DMA focused; MA earned only during doctoral progress (no terminal MA).",
+        "code": "MU75"
+      },
+      "majorCode": "MU75"
     },
     {
       "school": "AH",
@@ -110,8 +116,10 @@
           "MA"
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/PHIL-gr.html",
-        "notes": "No terminal master's; MA earned only during PhD progress."
-      }
+        "notes": "No terminal master's; MA earned only during PhD progress.",
+        "code": "PL75"
+      },
+      "majorCode": "PL75"
     },
     {
       "school": "AH",
@@ -125,8 +133,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/THEA-gr.html",
         "msUnits": 90,
-        "notes": "MFA (acting, dance, design, directing, playwriting, stage mgmt) ≥90 quarter-units; PhD joint with UC Irvine."
-      }
+        "notes": "MFA (acting, dance, design, directing, playwriting, stage mgmt) ≥90 quarter-units; PhD joint with UC Irvine.",
+        "code": "TH76"
+      },
+      "majorCode": "TH76"
     },
     {
       "school": "AH",
@@ -141,8 +151,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/VIS-gr.html",
         "msUnits": 72,
-        "notes": "MFA = 72 units; PhD in Art History, Theory & Criticism (en-route non-terminal MA)."
-      }
+        "notes": "MFA = 72 units; PhD in Art History, Theory & Criticism (en-route non-terminal MA).",
+        "code": "VA75"
+      },
+      "majorCode": "VA75"
     },
     {
       "school": "BIO",
@@ -156,8 +168,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/BIOL-gr.html",
         "msUnits": 36,
-        "notes": "PhD plus contiguous BS/MS; MS ≥36 units of grad coursework + thesis."
-      }
+        "notes": "PhD plus contiguous BS/MS; MS ≥36 units of grad coursework + thesis.",
+        "code": "BI77"
+      },
+      "majorCode": "BI77"
     },
     {
       "school": "HDSI",
@@ -170,8 +184,10 @@
         ],
         "reqUrl": "https://datascience.ucsd.edu/graduate/ms-program/",
         "msUnits": 48,
-        "notes": "MS in Data Science: 48 units (twelve 4-unit courses) + Plan I thesis or Plan II comprehensive."
-      }
+        "notes": "MS in Data Science: 48 units (twelve 4-unit courses) + Plan I thesis or Plan II comprehensive.",
+        "code": "DS75"
+      },
+      "majorCode": "DS75"
     },
     {
       "school": "HDSI",
@@ -184,8 +200,10 @@
         ],
         "reqUrl": "https://mds.ucsd.edu/program/index.html",
         "msUnits": 40,
-        "notes": "Fully online Master of Data Science: 40 units (ten 4-unit courses incl. capstone), no thesis."
-      }
+        "notes": "Fully online Master of Data Science: 40 units (ten 4-unit courses incl. capstone), no thesis.",
+        "code": "DS78"
+      },
+      "majorCode": "DS78"
     },
     {
       "school": "HDSI",
@@ -198,8 +216,10 @@
         ],
         "reqUrl": "https://mas-dse.ucsd.edu/program/index.html",
         "msUnits": 38,
-        "notes": "MAS in Data Science & Engineering: 38-unit coursework degree (11 courses) with capstone."
-      }
+        "notes": "MAS in Data Science & Engineering: 38-unit coursework degree (11 courses) with capstone.",
+        "code": "CS85"
+      },
+      "majorCode": "CS85"
     },
     {
       "school": "GPS",
@@ -215,8 +235,10 @@
           "PhD"
         ],
         "reqUrl": "https://gps.ucsd.edu/admissions/degrees-at-a-glance.html",
-        "notes": "Professional master's (MIA/MPP/MCEPA/MAS-IA) coursework-based; PhD in Political Science & International Affairs."
-      }
+        "notes": "Professional master's (MIA/MPP/MCEPA/MAS-IA) coursework-based; PhD in Political Science & International Affairs.",
+        "code": "IR75"
+      },
+      "majorCode": "IR75"
     },
     {
       "school": "HS",
@@ -228,8 +250,10 @@
           "AuD"
         ],
         "reqUrl": "https://oto.ucsd.edu/education/jdp-audiology/index.html",
-        "notes": "SDSU/UCSD joint 4-year professional Doctor of Audiology; no coursework MS."
-      }
+        "notes": "SDSU/UCSD joint 4-year professional Doctor of Audiology; no coursework MS.",
+        "code": "AU75"
+      },
+      "majorCode": "AU75"
     },
     {
       "school": "HS",
@@ -241,8 +265,10 @@
           "PhD"
         ],
         "reqUrl": "https://biomedsci.ucsd.edu/how-to-apply/phd-program1.html",
-        "notes": "Research PhD (plus MD/PhD, PharmD/PhD); no standalone coursework master's."
-      }
+        "notes": "Research PhD (plus MD/PhD, PharmD/PhD); no standalone coursework master's.",
+        "code": "BS75"
+      },
+      "majorCode": "BS75"
     },
     {
       "school": "HS",
@@ -254,8 +280,10 @@
           "PhD"
         ],
         "reqUrl": "https://psychiatry.ucsd.edu/education-training/psychology-programs/index.html",
-        "notes": "SDSU/UCSD joint doctoral program (APA-accredited); no coursework MS."
-      }
+        "notes": "SDSU/UCSD joint doctoral program (APA-accredited); no coursework MS.",
+        "code": "CY75"
+      },
+      "majorCode": "CY75"
     },
     {
       "school": "HS",
@@ -268,8 +296,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/CLRE.html",
         "msUnits": 40,
-        "notes": "Master of Advanced Studies, 40 units (34 required course units)."
-      }
+        "notes": "Master of Advanced Studies, 40 units (34 required course units).",
+        "code": "AS79"
+      },
+      "majorCode": "AS79"
     },
     {
       "school": "HS",
@@ -282,8 +312,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/DDPM.html",
         "msUnits": 36,
-        "notes": "Skaggs MS: self-supporting 36-unit coursework degree + comprehensive exam."
-      }
+        "notes": "Skaggs MS: self-supporting 36-unit coursework degree + comprehensive exam.",
+        "code": "PH77"
+      },
+      "majorCode": "PH77"
     },
     {
       "school": "HS",
@@ -308,8 +340,10 @@
           "PhD"
         ],
         "reqUrl": "https://cogsci.ucsd.edu/graduates/SDSU%20LCD%20Program/index.html",
-        "notes": "SDSU/UCSD joint doctoral program; interdisciplinary 5-year research degree."
-      }
+        "notes": "SDSU/UCSD joint doctoral program; interdisciplinary 5-year research degree.",
+        "code": "LC75"
+      },
+      "majorCode": "LC75"
     },
     {
       "school": "HS",
@@ -321,8 +355,10 @@
           "PhD"
         ],
         "reqUrl": "https://neurograd.ucsd.edu/handbook/prog-requirement/index.html",
-        "notes": "Research PhD (MD/PhD option, computational neuroscience specialization); no coursework MS."
-      }
+        "notes": "Research PhD (MD/PhD option, computational neuroscience specialization); no coursework MS.",
+        "code": "NE75"
+      },
+      "majorCode": "NE75"
     },
     {
       "school": "HS",
@@ -335,8 +371,10 @@
         ],
         "reqUrl": "https://pmto.ucsd.edu/curriculum/index.html",
         "msUnits": 36,
-        "notes": "New Master of Advanced Studies (36 units), launching Fall 2026."
-      }
+        "notes": "New Master of Advanced Studies (36 units), launching Fall 2026.",
+        "code": "AS84"
+      },
+      "majorCode": "AS84"
     },
     {
       "school": "HWSPH",
@@ -350,8 +388,10 @@
         ],
         "reqUrl": "https://ph.ucsd.edu/masters/biostat/requirements.html",
         "msUnits": 60,
-        "notes": "MS ≥60 units (36 biostat core + 16 advanced + 8 life sciences + electives); PhD also offered."
-      }
+        "notes": "MS ≥60 units (36 biostat core + 16 advanced + 8 life sciences + electives); PhD also offered.",
+        "code": "PB76"
+      },
+      "majorCode": "PB76"
     },
     {
       "school": "HWSPH",
@@ -365,8 +405,10 @@
         ],
         "reqUrl": "https://ph.ucsd.edu/masters/mph/curriculum/index.html",
         "msUnits": 64,
-        "notes": "MPH: 64 units (36 core + 16 concentration + 12 electives); PhD & SDSU/UCSD JDP also offered."
-      }
+        "notes": "MPH: 64 units (36 core + 16 concentration + 12 electives); PhD & SDSU/UCSD JDP also offered.",
+        "code": "PB75"
+      },
+      "majorCode": "PB75"
     },
     {
       "school": "JSOE",
@@ -426,8 +468,10 @@
           "PhD"
         ],
         "reqUrl": "https://astro.ucsd.edu/grad/requirements/index.html",
-        "notes": "PhD only (Astronomy & Astrophysics); ~10 grad courses; no standalone coursework MS."
-      }
+        "notes": "PhD only (Astronomy & Astrophysics); ~10 grad courses; no standalone coursework MS.",
+        "code": "AT76"
+      },
+      "majorCode": "AT76"
     },
     {
       "school": "PS",
@@ -441,8 +485,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/CHEM-gr.html",
         "msUnits": 36,
-        "notes": "MS Chemistry: Plan I thesis / Plan II comprehensive, min 36 units; separate BIOC MS/PhD."
-      }
+        "notes": "MS Chemistry: Plan I thesis / Plan II comprehensive, min 36 units; separate BIOC MS/PhD.",
+        "code": "CH75"
+      },
+      "majorCode": "CH75"
     },
     {
       "school": "PS",
@@ -457,8 +503,10 @@
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/MATH-gr.html",
         "msUnits": 48,
-        "notes": "MA (pure/applied) and MS (statistics) each 48 units of coursework."
-      }
+        "notes": "MA (pure/applied) and MS (statistics) each 48 units of coursework.",
+        "code": "MA75"
+      },
+      "majorCode": "MA75"
     },
     {
       "school": "PS",
@@ -471,8 +519,10 @@
           "PhD"
         ],
         "reqUrl": "https://physics.ucsd.edu/students/graduate/degree-requirements",
-        "notes": "PhD (Physics & Biophysics) primary; MS via Plan I/II, mainly en route to PhD."
-      }
+        "notes": "PhD (Physics & Biophysics) primary; MS via Plan I/II, mainly en route to PhD.",
+        "code": "PY76"
+      },
+      "majorCode": "PY76"
     },
     {
       "school": "RADY",
@@ -488,8 +538,10 @@
           "PhD"
         ],
         "reqUrl": "https://rady.ucsd.edu/programs/",
-        "notes": "MBAs plus specialized master's (Business Analytics, Quantitative Finance, Professional Accountancy) and a PhD in Management."
-      }
+        "notes": "MBAs plus specialized master's (Business Analytics, Quantitative Finance, Professional Accountancy) and a PhD in Management.",
+        "code": "RR75"
+      },
+      "majorCode": "RR75"
     },
     {
       "school": "SIO",
@@ -504,8 +556,10 @@
         ],
         "reqUrl": "https://scripps.ucsd.edu/masters",
         "msUnits": 36,
-        "notes": "MS (Oceanography/Marine Biology/Earth Sciences) min 36 units (24 coursework + 12 research) + thesis; also MAS and PhD tracks."
-      }
+        "notes": "MS (Oceanography/Marine Biology/Earth Sciences) min 36 units (24 coursework + 12 research) + thesis; also MAS and PhD tracks.",
+        "code": "SI78"
+      },
+      "majorCode": "SI78"
     },
     {
       "school": "SS",
@@ -518,8 +572,10 @@
           "PhD"
         ],
         "reqUrl": "https://anthropology.ucsd.edu/graduate-studies/program-requirements/index.html",
-        "notes": "PhD program; MA earned en route to the doctorate, not a terminal coursework degree."
-      }
+        "notes": "PhD program; MA earned en route to the doctorate, not a terminal coursework degree.",
+        "code": "AN75"
+      },
+      "majorCode": "AN75"
     },
     {
       "school": "SS",
@@ -532,8 +588,10 @@
           "PhD"
         ],
         "reqUrl": "https://cogsci.ucsd.edu/graduates/phd-program/requirements/index.html",
-        "notes": "PhD; MS only as an intermediate credential, not a terminal coursework degree."
-      }
+        "notes": "PhD; MS only as an intermediate credential, not a terminal coursework degree.",
+        "code": "CG75"
+      },
+      "majorCode": "CG75"
     },
     {
       "school": "SS",
@@ -545,8 +603,10 @@
           "PhD"
         ],
         "reqUrl": "https://communication.ucsd.edu/graduate/grad-program-requirements.html",
-        "notes": "PhD only; no terminal master's."
-      }
+        "notes": "PhD only; no terminal master's.",
+        "code": "CM75"
+      },
+      "majorCode": "CM75"
     },
     {
       "school": "SS",
@@ -558,8 +618,10 @@
           "MS"
         ],
         "reqUrl": "https://css.ucsd.edu/masters/index.html",
-        "notes": "Terminal one-year coursework MS (bootcamp, core, electives, capstone); total units not published."
-      }
+        "notes": "Terminal one-year coursework MS (bootcamp, core, electives, capstone); total units not published.",
+        "code": "CT75"
+      },
+      "majorCode": "CT75"
     },
     {
       "school": "SS",
@@ -571,8 +633,10 @@
           "PhD"
         ],
         "reqUrl": "https://economics.ucsd.edu/graduate-program/index.html",
-        "notes": "PhD only; no terminal coursework master's."
-      }
+        "notes": "PhD only; no terminal coursework master's.",
+        "code": "EN75"
+      },
+      "majorCode": "EN75"
     },
     {
       "school": "SS",
@@ -587,8 +651,10 @@
           "PhD"
         ],
         "reqUrl": "https://eds.ucsd.edu/graduate/doctoral/phd/index.html",
-        "notes": "PhD & EdD plus M.Ed. credential and MA programs (credential/cohort based)."
-      }
+        "notes": "PhD & EdD plus M.Ed. credential and MA programs (credential/cohort based).",
+        "code": "ED82"
+      },
+      "majorCode": "ED82"
     },
     {
       "school": "SS",
@@ -601,8 +667,10 @@
           "PhD"
         ],
         "reqUrl": "https://ethnicstudies.ucsd.edu/graduate-studies/index.html",
-        "notes": "PhD; MA earned en route, not terminal."
-      }
+        "notes": "PhD; MA earned en route, not terminal.",
+        "code": "ET75"
+      },
+      "majorCode": "ET75"
     },
     {
       "school": "SS",
@@ -615,8 +683,10 @@
         ],
         "reqUrl": "https://globalhealthprogram.ucsd.edu/graduate/overview.html",
         "msUnits": 36,
-        "notes": "Terminal one-year coursework MA: 36 units / 9 courses (6 core + 3 electives) + comprehensive exam & portfolio."
-      }
+        "notes": "Terminal one-year coursework MA: 36 units / 9 courses (6 core + 3 electives) + comprehensive exam & portfolio.",
+        "code": "GH75"
+      },
+      "majorCode": "GH75"
     },
     {
       "school": "SS",
@@ -629,8 +699,10 @@
         ],
         "reqUrl": "https://las.ucsd.edu/graduate/graduate-requirements/index.html",
         "msUnits": 38,
-        "notes": "Terminal coursework MA: 38 units (42 with concentration); core seminar + theory + methods + electives + research."
-      }
+        "notes": "Terminal coursework MA: 38 units (42 with concentration); core seminar + theory + methods + electives + research.",
+        "code": "LA76"
+      },
+      "majorCode": "LA76"
     },
     {
       "school": "SS",
@@ -643,8 +715,10 @@
           "PhD"
         ],
         "reqUrl": "https://linguistics.ucsd.edu/grad/requirements.html",
-        "notes": "PhD; MA and C.Phil. only as milestones en route, not terminal."
-      }
+        "notes": "PhD; MA and C.Phil. only as milestones en route, not terminal.",
+        "code": "LN75"
+      },
+      "majorCode": "LN75"
     },
     {
       "school": "SS",
@@ -656,8 +730,10 @@
           "PhD"
         ],
         "reqUrl": "https://catalog.ucsd.edu/curric/MSED.html",
-        "notes": "PhD only; joint doctoral program with SDSU."
-      }
+        "notes": "PhD only; joint doctoral program with SDSU.",
+        "code": "ME75"
+      },
+      "majorCode": "ME75"
     },
     {
       "school": "SS",
@@ -669,8 +745,10 @@
           "PhD"
         ],
         "reqUrl": "https://polisci.ucsd.edu/grad/current-students/rules-and-requirements/index.html",
-        "notes": "PhD only; no MA program listed."
-      }
+        "notes": "PhD only; no MA program listed.",
+        "code": "PS75"
+      },
+      "majorCode": "PS75"
     },
     {
       "school": "SS",
@@ -683,8 +761,10 @@
           "PhD"
         ],
         "reqUrl": "https://psychology.ucsd.edu/graduate-program/current-students/program-requirements/index.html",
-        "notes": "PhD; MA optional, earned during PhD study, not terminal."
-      }
+        "notes": "PhD; MA optional, earned during PhD study, not terminal.",
+        "code": "PC81"
+      },
+      "majorCode": "PC81"
     },
     {
       "school": "SS",
@@ -696,8 +776,10 @@
           "PhD"
         ],
         "reqUrl": "https://sociology.ucsd.edu/graduate/phd-requirements.html",
-        "notes": "PhD only; MA incidental en route, no terminal master's."
-      }
+        "notes": "PhD only; MA incidental en route, no terminal master's.",
+        "code": "SO75"
+      },
+      "majorCode": "SO75"
     },
     {
       "school": "SS",
@@ -711,8 +793,10 @@
         ],
         "reqUrl": "https://usp.ucsd.edu/graduate/murp/curriculum.html",
         "msUnits": 72,
-        "notes": "Professional Master of Urban & Regional Planning (72 units) + separate Urban Planning PhD."
-      }
+        "notes": "Professional Master of Urban & Regional Planning (72 units) + separate Urban Planning PhD.",
+        "code": "US75"
+      },
+      "majorCode": "US75"
     }
   ],
   "plans": [
@@ -2840,10 +2924,10 @@
       ]
     },
     {
-      "code": "BENG-MS",
+      "code": "BE75",
       "dept": "BENG",
-      "area": "BENG",
-      "name": "Bioengineering M.S.",
+      "area": "",
+      "name": "Bioengineering",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://catalog.ucsd.edu/curric/BENG-gr.html",
@@ -2988,10 +3072,10 @@
       ]
     },
     {
-      "code": "NANO-MS",
+      "code": "NA75",
       "dept": "NANO",
-      "area": "NANO",
-      "name": "NanoEngineering M.S.",
+      "area": "",
+      "name": "Nanoengineering",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://cne.ucsd.edu/graduate-programs/degree/nanoengineering/masters",
@@ -3057,10 +3141,10 @@
       ]
     },
     {
-      "code": "CENG-MS",
+      "code": "CE75",
       "dept": "NANO",
-      "area": "CENG",
-      "name": "Chemical Engineering M.S.",
+      "area": "",
+      "name": "Chemical Engineering",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://cne.ucsd.edu/graduate-programs/degree/chemical-engineering/masters",
@@ -3126,10 +3210,10 @@
       ]
     },
     {
-      "code": "MATS-MS",
+      "code": "MS76",
       "dept": "MATS",
-      "area": "MATS",
-      "name": "Materials Science & Engineering M.S.",
+      "area": "",
+      "name": "Materials Science and Engineering",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://matsci.ucsd.edu/graduate-studies/masters-program",
@@ -3279,10 +3363,10 @@
       ]
     },
     {
-      "code": "CSE-MS",
+      "code": "CS75",
       "dept": "CSE",
-      "area": "CSE",
-      "name": "Computer Science M.S.",
+      "area": "",
+      "name": "Computer Science",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://cse.ucsd.edu/graduate/degree-programs/ms-program",
@@ -3458,10 +3542,10 @@
       ]
     },
     {
-      "code": "SE-MS",
+      "code": "SE75",
       "dept": "SE",
-      "area": "SE",
-      "name": "Structural Engineering M.S.",
+      "area": "",
+      "name": "Structural Engineering",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://catalog.ucsd.edu/curric/SE-gr.html",
@@ -3545,10 +3629,10 @@
       ]
     },
     {
-      "code": "BISB-PHD",
+      "code": "BF76",
       "dept": "BISB",
-      "area": "BISB",
-      "name": "Bioinformatics & Systems Biology Ph.D. (coursework)",
+      "area": "",
+      "name": "Bioinformatics and Systems Biology (Ph.D.)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://bioinformatics.ucsd.edu/grad/curriculum/requirements",
@@ -3763,10 +3847,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC81",
+      "code": "MC81",
       "dept": "MAE",
-      "area": "Mechanical Engineering",
-      "name": "MAE M.S. — Mechanical Engineering (MC81)",
+      "area": "",
+      "name": "Engineering Sciences (Mechanical Engineering)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -3847,10 +3931,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC75",
+      "code": "MC75",
       "dept": "MAE",
-      "area": "Aerospace Engineering",
-      "name": "MAE M.S. — Aerospace Engineering (MC75)",
+      "area": "",
+      "name": "Engineering Sciences (Aerospace Engineering)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -3916,10 +4000,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC76",
+      "code": "MC76",
       "dept": "MAE",
-      "area": "Applied Mechanics / Materials & Robotic Design",
-      "name": "MAE M.S. — Applied Mechanics / Materials & Robotic Design (MC76)",
+      "area": "",
+      "name": "Engineering Sciences (Applied Mechanics)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -3985,10 +4069,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC78",
+      "code": "MC78",
       "dept": "MAE",
-      "area": "Applied Ocean Science",
-      "name": "MAE M.S. — Applied Ocean Science (MC78)",
+      "area": "",
+      "name": "Engineering Sciences (Applied Ocean Science)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -4054,10 +4138,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC91",
+      "code": "MC91",
       "dept": "MAE",
-      "area": "Computational Engineering & Science",
-      "name": "MAE M.S. — Computational Engineering & Science (MC91)",
+      "area": "",
+      "name": "Engineering Science (Computational Engineering and Science)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -4128,10 +4212,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC92",
+      "code": "MC92",
       "dept": "MAE",
-      "area": "Power & Energy Systems",
-      "name": "MAE M.S. — Power & Energy Systems (MC92)",
+      "area": "",
+      "name": "Engineering Science (Power and Energy Systems)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -4197,10 +4281,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC93",
+      "code": "MC93",
       "dept": "MAE",
-      "area": "Controls & Mechatronics",
-      "name": "MAE M.S. — Controls & Mechatronics (MC93)",
+      "area": "",
+      "name": "Engineering Science (Controls and Mechatronics)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -4266,10 +4350,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC94",
+      "code": "MC94",
       "dept": "MAE",
-      "area": "Biomechanics & Biomedical Engineering",
-      "name": "MAE M.S. — Biomechanics & Biomedical Engineering (MC94)",
+      "area": "",
+      "name": "Engineering Science (Biomechanics and Biomedical Engineering)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
@@ -4337,10 +4421,10 @@
       ]
     },
     {
-      "code": "MAE-MS-MC99",
+      "code": "MC99",
       "dept": "MAE",
-      "area": "Energy & Climate",
-      "name": "MAE M.S. — Energy & Climate (MC99)",
+      "area": "",
+      "name": "Engineering Science (Energy & Climate)",
       "year": "2025-2026",
       "detailed": true,
       "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
