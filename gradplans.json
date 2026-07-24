@@ -370,46 +370,21 @@
     },
     {
       "school": "JSOE",
-      "code": "BIOENGINEERING",
+      "code": "BENG",
       "name": "Bioengineering",
-      "available": true,
-      "overview": {
-        "degrees": [
-          "MS",
-          "MEng",
-          "PhD"
-        ],
-        "reqUrl": "https://catalog.ucsd.edu/curric/BENG-gr.html",
-        "msUnits": 48,
-        "notes": "MS Plan I thesis (36 coursework + 12 research) or Plan II comprehensive (48 units)."
-      }
+      "available": true
     },
     {
       "school": "JSOE",
-      "code": "BIOINFORMATICS-SYSTEMS-B",
+      "code": "BISB",
       "name": "Bioinformatics & Systems Biology",
-      "available": true,
-      "overview": {
-        "degrees": [
-          "PhD"
-        ],
-        "reqUrl": "https://bioinformatics.ucsd.edu/grad/curriculum/requirements",
-        "notes": "PhD-only program (no standalone MS); 4 core courses + electives across BISB/BMI tracks."
-      }
+      "available": true
     },
     {
       "school": "JSOE",
-      "code": "COMPUTER-SCIENCE-AND-ENG",
+      "code": "CSE",
       "name": "Computer Science and Engineering",
-      "available": true,
-      "overview": {
-        "degrees": [
-          "MS",
-          "PhD"
-        ],
-        "reqUrl": "https://cse.ucsd.edu/graduate/degree-programs/ms-program",
-        "notes": "MS in three plans (Thesis / Comprehensive Standard / Comprehensive Interdisciplinary): Breadth + Depth + electives."
-      }
+      "available": true
     },
     {
       "school": "JSOE",
@@ -419,63 +394,27 @@
     },
     {
       "school": "JSOE",
-      "code": "MATERIALS-SCIENCE-AND-EN",
+      "code": "MATS",
       "name": "Materials Science and Engineering",
-      "available": true,
-      "overview": {
-        "degrees": [
-          "MS",
-          "PhD"
-        ],
-        "reqUrl": "https://matsci.ucsd.edu/graduate-studies/masters-program",
-        "msUnits": 36,
-        "notes": "MS Plan I thesis or Plan II comprehensive; 4 mandatory core + electives; 36 units."
-      }
+      "available": true
     },
     {
       "school": "JSOE",
-      "code": "MECHANICAL-AND-AEROSPACE",
+      "code": "MAE",
       "name": "Mechanical and Aerospace Engineering",
-      "available": true,
-      "overview": {
-        "degrees": [
-          "MS",
-          "PhD"
-        ],
-        "reqUrl": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
-        "msUnits": 36,
-        "notes": "MS Plan I thesis (24 coursework + 12 research) or Plan II comprehensive exam; 36 units."
-      }
+      "available": true
     },
     {
       "school": "JSOE",
-      "code": "NANOENGINEERING-CHEMICAL",
+      "code": "NANO",
       "name": "Nanoengineering / Chemical Engineering",
-      "available": true,
-      "overview": {
-        "degrees": [
-          "MS",
-          "PhD"
-        ],
-        "reqUrl": "https://cne.ucsd.edu/graduate-programs/degree/nanoengineering/masters",
-        "msUnits": 36,
-        "notes": "NanoEngineering & Chemical Engineering MS: Plan I thesis or Plan II comprehensive; 5 core + electives; 36 units."
-      }
+      "available": true
     },
     {
       "school": "JSOE",
-      "code": "STRUCTURAL-ENGINEERING",
+      "code": "SE",
       "name": "Structural Engineering",
-      "available": true,
-      "overview": {
-        "degrees": [
-          "MS",
-          "PhD"
-        ],
-        "reqUrl": "https://structures.ucsd.edu/academics/graduate-program/masters-program/masters-studies",
-        "msUnits": 48,
-        "notes": "MS Comprehensive (12 courses) or Thesis (9 courses + SE 299); 48 units. Tracks SE75/SE82."
-      }
+      "available": true
     },
     {
       "school": "PS",
@@ -2896,6 +2835,1572 @@
           "units": 24,
           "kind": "free",
           "rule": "Any 4-unit, 200+ course from ECE, CSE, MAE, BENG, CENG, NANO, SE, MATS, MATH, PHYS or COGS (letter grade). Up to 12 units of upper-division ECE (111+) OR two upper-div ECE plus one CSE (100+) may count.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "BENG-MS",
+      "dept": "BENG",
+      "area": "BENG",
+      "name": "Bioengineering M.S.",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://catalog.ucsd.edu/curric/BENG-gr.html",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive",
+          "totalUnits": 48,
+          "researchMax": null,
+          "note": "12 courses (6 core + 6 electives), all for letter grade; pass comprehensive exam; no research."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 48,
+          "researchMax": 12,
+          "note": "36 units coursework (6 core + 3 electives) + 12 units research (BENG 299, S/U); thesis."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core-ep",
+          "name": "Core Courses — Engineering Physics",
+          "units": 12,
+          "kind": "pick",
+          "rule": "Choose 3 courses (12 units) from the Engineering Physics core list, taken for a letter grade.",
+          "courses": [
+            {
+              "code": "BENG 202/CSE 282",
+              "title": "Bioinformatics II: Introduction to Bioinformatics Algorithms",
+              "units": 4
+            },
+            {
+              "code": "BENG 203/CSE 283",
+              "title": "Genomics/Proteomics/Network Biology",
+              "units": 4
+            },
+            {
+              "code": "BENG 216",
+              "title": "Neuromorphic Integrated Bioelectronics",
+              "units": 4
+            },
+            {
+              "code": "BENG 226",
+              "title": "Foundations of Bioengineering I: Tissue and Cell Properties",
+              "units": 4
+            },
+            {
+              "code": "BENG 227",
+              "title": "Transport Phenomena in Living Systems",
+              "units": 4
+            },
+            {
+              "code": "BENG 211",
+              "title": "Systems Biology and Bioengineering I: Biological Components",
+              "units": 4
+            },
+            {
+              "code": "BENG 221",
+              "title": "Mathematical Methods for Bioengineering",
+              "units": 4
+            },
+            {
+              "code": "BENG 223",
+              "title": "Thermodynamics, Statistical Mechanics, and Interfacial Phenomena in Living Systems",
+              "units": 4
+            },
+            {
+              "code": "BENG 280A",
+              "title": "Principles of Biomedical Imaging",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "core-ls",
+          "name": "Core Courses — Life Sciences",
+          "units": 12,
+          "kind": "pick",
+          "rule": "Choose 3 courses (12 units) from the Life Sciences core list, taken for a letter grade.",
+          "courses": [
+            {
+              "code": "BENG 204",
+              "title": "Systems Medicine: Data Analytics and Mechanisms",
+              "units": 4
+            },
+            {
+              "code": "BENG 230A",
+              "title": "Biochemistry",
+              "units": 4
+            },
+            {
+              "code": "BENG 230B",
+              "title": "Cell and Molecular Biology",
+              "units": 4
+            },
+            {
+              "code": "BENG 230C",
+              "title": "Cardiovascular Physiology",
+              "units": 4
+            },
+            {
+              "code": "BENG 230D",
+              "title": "Respiratory and Renal Physiology",
+              "units": 4
+            },
+            {
+              "code": "BENG 232",
+              "title": "Musculoskeletal Health, Injury, and Disease",
+              "units": 4
+            },
+            {
+              "code": "BENG 234",
+              "title": "Introduction to Neurophysiology: Molecules to Systems",
+              "units": 4
+            },
+            {
+              "code": "BENG 241A",
+              "title": "Tissue Engineering and Regenerative Medicine: Foundations",
+              "units": 4
+            },
+            {
+              "code": "BENG 260/BGGN 260",
+              "title": "Neurodynamics",
+              "units": 4
+            },
+            {
+              "code": "BENG 285",
+              "title": "Statistical Learning in Bioinformatics",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 24,
+          "kind": "free",
+          "rule": "Plan II: 6 elective courses (24 units); Plan I: 3 elective courses (12 units). Graduate-level BENG courses, plus graduate engineering/science courses in other departments with faculty approval; letter grade. Up to two undergraduate prerequisite courses (≤8 units) may count with adviser permission. BENG 281/282/299/501 units may not apply.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "NANO-MS",
+      "dept": "NANO",
+      "area": "NANO",
+      "name": "NanoEngineering M.S.",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://cne.ucsd.edu/graduate-programs/degree/nanoengineering/masters",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "20 core + 4 electives (16 units); ≤8 units NANO 298 may apply. Comprehensive exam (60% min per component, one retake)."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "20 core + 1 elective (4 units) + 12 units NANO 299. Thesis with 3-member committee."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Five required core courses (20 units), all letter grade.",
+          "courses": [
+            {
+              "code": "NANO 201",
+              "title": "Introduction to NanoEngineering",
+              "units": 4
+            },
+            {
+              "code": "NANO 202",
+              "title": "Intermolecular and Surface Forces",
+              "units": 4
+            },
+            {
+              "code": "NANO 203",
+              "title": "Nanoscale Characterization",
+              "units": 4
+            },
+            {
+              "code": "NANO 205",
+              "title": "Nanosystems Integration",
+              "units": 4
+            },
+            {
+              "code": "NANO 206",
+              "title": "Nanomanufacturing",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Plan II: four electives (16 units) from any focus area, incl. up to 8 units NANO 298. Plan I: one elective (4 units) plus 12 units NANO 299 research. NANO 200 required every quarter but does not count toward the 36 units.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "CENG-MS",
+      "dept": "NANO",
+      "area": "CENG",
+      "name": "Chemical Engineering M.S.",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://cne.ucsd.edu/graduate-programs/degree/chemical-engineering/masters",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "20 core + 4 electives (16 units), CENG or STEM grad/upper-div; ≤8 units CENG 297 may apply. Comprehensive exam."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "20 core + 1 elective (4 units) + 12 units CENG 299. Letter grade, C- or above passing."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Five required core courses (20 units), all letter grade.",
+          "courses": [
+            {
+              "code": "CENG 210A",
+              "title": "Fluid Mechanics I",
+              "units": 4
+            },
+            {
+              "code": "CENG 221A",
+              "title": "Heat Transfer",
+              "units": 4
+            },
+            {
+              "code": "CENG 221B",
+              "title": "Mass Transfer",
+              "units": 4
+            },
+            {
+              "code": "CENG 251",
+              "title": "Thermodynamics",
+              "units": 4
+            },
+            {
+              "code": "CENG 252",
+              "title": "Chemical Reaction Engineering",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Plan II: four electives (16 units) of CENG or STEM grad/upper-div courses, incl. up to 8 units CENG 297. Plan I: one elective (4 units) plus 12 units CENG 299 research. CENG 205 required every quarter but does not count toward the 36 units.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MATS-MS",
+      "dept": "MATS",
+      "area": "MATS",
+      "name": "Materials Science & Engineering M.S.",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://matsci.ucsd.edu/graduate-studies/masters-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "Comprehensive exam covering the core courses; no thesis. Pass/No Pass (60%+)."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "Thesis research with faculty advisor; requires 12 units MATS 299, thesis, and oral defense."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Required Core",
+          "units": 16,
+          "kind": "required",
+          "rule": "Complete all four Mandatory Core Courses: MATS 201A, 201B, 201C, and 227.",
+          "courses": [
+            {
+              "code": "MATS 201A",
+              "title": "Thermodynamics of Solids",
+              "units": 4
+            },
+            {
+              "code": "MATS 201B",
+              "title": "Solid State Diffusion and Reaction Kinetics",
+              "units": 4
+            },
+            {
+              "code": "MATS 201C",
+              "title": "Phase Transformations",
+              "units": 4
+            },
+            {
+              "code": "MATS 227",
+              "title": "Structure and Analysis of Solids",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "electivecore",
+          "name": "Elective Core",
+          "units": 8,
+          "kind": "pick",
+          "rule": "Select at least two of the Elective Core Courses (min. 8 units).",
+          "courses": [
+            {
+              "code": "MATS 205A",
+              "title": "Imperfections in Solids",
+              "units": 4
+            },
+            {
+              "code": "MATS 213A",
+              "title": "Dynamic Behavior of Materials I",
+              "units": 4
+            },
+            {
+              "code": "MATS 231",
+              "title": "Mechanics of Soft Materials",
+              "units": 4
+            },
+            {
+              "code": "MATS 236",
+              "title": "Advanced Ceramics",
+              "units": 4
+            },
+            {
+              "code": "MATS 251A",
+              "title": "Electronic and Photonic Properties of Materials",
+              "units": 4
+            },
+            {
+              "code": "MATS 251B",
+              "title": "Magnetic Materials: Principles and Applications",
+              "units": 4
+            },
+            {
+              "code": "MATS 252",
+              "title": "Biomaterials and Medical Devices",
+              "units": 4
+            },
+            {
+              "code": "MATS 253",
+              "title": "Nanomaterials and Properties",
+              "units": 4
+            },
+            {
+              "code": "MATS 254",
+              "title": "Frontier Micro-Electro-Mechanical Systems (MEMS) Materials and Devices",
+              "units": 4
+            },
+            {
+              "code": "MATS 255",
+              "title": "Biomaterials and Biomimetics",
+              "units": 4
+            },
+            {
+              "code": "MATS 256",
+              "title": "Energy Materials and Applications",
+              "units": 4
+            },
+            {
+              "code": "MATS 257",
+              "title": "Polymer Science and Engineering",
+              "units": 4
+            },
+            {
+              "code": "MATS 261A",
+              "title": "Processing of Polymers and Composites",
+              "units": 4
+            },
+            {
+              "code": "MATS 261B",
+              "title": "Mechanical Behavior of Polymers and Composites",
+              "units": 4
+            },
+            {
+              "code": "MATS 269",
+              "title": "Engineering Solar Cells at the Nanoscale",
+              "units": 4
+            },
+            {
+              "code": "PHYS 152A",
+              "title": "Condensed Matter / Materials Physics",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 12,
+          "kind": "free",
+          "rule": "Remaining units from graduate-level (200+) courses to reach 36 total; letter grades (P/NP only for MATS 200 and 299). Plan I typically fills these with MATS 299 research (up to 12 units).",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "CSE-MS",
+      "dept": "CSE",
+      "area": "CSE",
+      "name": "Computer Science M.S.",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://cse.ucsd.edu/graduate/degree-programs/ms-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam, Standard",
+          "totalUnits": 40,
+          "researchMax": 4,
+          "note": "12 breadth + 12 depth + 16 electives/research; pass comprehensive exams. Max 4 units research (CSE 293) count toward electives."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 40,
+          "researchMax": 12,
+          "note": "12 breadth + 12 depth + 16 electives/research; requires 8–12 units CSE 298 (Independent Research) plus a thesis."
+        },
+        {
+          "id": "II-ID",
+          "name": "Plan II — Comprehensive Exam, Interdisciplinary",
+          "totalUnits": 48,
+          "researchMax": 4,
+          "note": "48 units: 12 breadth + 12 depth + 12 CSE electives/research + 12 units approved coursework in a secondary field."
+        }
+      ],
+      "groups": [
+        {
+          "id": "breadth",
+          "name": "Breadth",
+          "units": 12,
+          "kind": "pick",
+          "rule": "One graduate course (4 units) from EACH of the three breadth areas — Theory, Systems, and Applications; letter grade, B- or higher. Full official code lists: Theory: CSE 200, 201A, 202, 203A, 203B, 205A, 207A. Systems: CSE 220, 221, 222A, 223B, 224, 231, 234, 237A-D, 240A-B, 241A, 243A, 244A. Applications: CSE 210, 216, 218, 230, 232, 250A, 251A, 251U, 252A-B, 256, 260, 280A, 284.",
+          "courses": [
+            {
+              "code": "CSE 200",
+              "title": "Computability and Complexity",
+              "units": 4
+            },
+            {
+              "code": "CSE 201A",
+              "title": "Advanced Complexity",
+              "units": 4
+            },
+            {
+              "code": "CSE 202",
+              "title": "Algorithm Design and Analysis",
+              "units": 4
+            },
+            {
+              "code": "CSE 203A",
+              "title": "Advanced Algorithms",
+              "units": 4
+            },
+            {
+              "code": "CSE 205A",
+              "title": "Logic in Computer Science",
+              "units": 4
+            },
+            {
+              "code": "CSE 221",
+              "title": "Operating Systems",
+              "units": 4
+            },
+            {
+              "code": "CSE 222A",
+              "title": "Computer Communication Networks",
+              "units": 4
+            },
+            {
+              "code": "CSE 223B",
+              "title": "Distributed Computing and Systems",
+              "units": 4
+            },
+            {
+              "code": "CSE 231",
+              "title": "Advanced Compiler Design",
+              "units": 4
+            },
+            {
+              "code": "CSE 237A",
+              "title": "Introduction to Embedded Computing",
+              "units": 4
+            },
+            {
+              "code": "CSE 240A",
+              "title": "Principles in Computer Architecture",
+              "units": 4
+            },
+            {
+              "code": "CSE 241A",
+              "title": "VLSI Integration of Computing Circuitry",
+              "units": 4
+            },
+            {
+              "code": "CSE 243A",
+              "title": "Introduction to Synthesis Methodologies in VLSI CAD",
+              "units": 4
+            },
+            {
+              "code": "CSE 244A",
+              "title": "VLSI Test",
+              "units": 4
+            },
+            {
+              "code": "CSE 210",
+              "title": "Principles of Software Engineering",
+              "units": 4
+            },
+            {
+              "code": "CSE 216",
+              "title": "Interaction Design Research",
+              "units": 4
+            },
+            {
+              "code": "CSE 218",
+              "title": "Advanced Topics in Software Engineering",
+              "units": 4
+            },
+            {
+              "code": "CSE 230",
+              "title": "Principles of Programming Languages",
+              "units": 4
+            },
+            {
+              "code": "CSE 232",
+              "title": "Principles of Database Systems",
+              "units": 4
+            },
+            {
+              "code": "CSE 250A",
+              "title": "Principles of Artificial Intelligence: Probabilistic Reasoning and Learning",
+              "units": 4
+            },
+            {
+              "code": "CSE 252A",
+              "title": "Computer Vision I",
+              "units": 4
+            },
+            {
+              "code": "CSE 256",
+              "title": "Statistical Natural Language Processing",
+              "units": 4
+            },
+            {
+              "code": "CSE 260",
+              "title": "Parallel Computation",
+              "units": 4
+            },
+            {
+              "code": "CSE 280A",
+              "title": "Algorithms in Computational Biology",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "depth",
+          "name": "Depth",
+          "units": 12,
+          "kind": "pick",
+          "rule": "Three graduate courses (12 units) from ONE depth area, letter grade. Depth areas: AI, Bioinformatics, Computer Engineering, Computer Systems (& Security), Database Systems, Graphics & Vision, Human-Computer Interaction, Programming Languages/Compilers/SE, Robotics, Theoretical CS. Computer Engineering majors must use Computer Engineering as depth.",
+          "courses": []
+        },
+        {
+          "id": "tech",
+          "name": "Electives and Research",
+          "units": 16,
+          "kind": "free",
+          "rule": "16 units electives/research (12 for the Interdisciplinary option, plus 12 in the secondary field). Letter grade. Max one CSE upper-division undergrad course. Max 4 units research (CSE 293). Plan I: 8–12 units CSE 298 fulfill this in place of electives.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "SE-MS",
+      "dept": "SE",
+      "area": "SE",
+      "name": "Structural Engineering M.S.",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://catalog.ucsd.edu/curric/SE-gr.html",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive",
+          "totalUnits": 48,
+          "researchMax": null,
+          "note": "12 courses (48 units): 2 core + 6 focus-area (two 3-course sequences) + 4 technical electives. Written comprehensive exam. Also 3 quarters of SE 290 (seminar)."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 48,
+          "researchMax": 12,
+          "note": "9 courses (36 units): 2 core + 6 focus-area + 3 electives, plus 12 units SE 299 (thesis). Requires research advisor + defense. Also 3 quarters SE 290."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Courses",
+          "units": 8,
+          "kind": "pick",
+          "rule": "Complete 2 of these 7 core courses (SE 233 or SE 276A may count, but not both): SE 201A, 202, 203A, 241, 271, 233, 276A.",
+          "courses": [
+            {
+              "code": "SE 201A",
+              "title": "Advanced Structural Analysis",
+              "units": 4
+            },
+            {
+              "code": "SE 202",
+              "title": "Structural Stability",
+              "units": 4
+            },
+            {
+              "code": "SE 203A",
+              "title": "Structural Dynamics I",
+              "units": 4
+            },
+            {
+              "code": "SE 241",
+              "title": "Advanced Soil Mechanics",
+              "units": 4
+            },
+            {
+              "code": "SE 271",
+              "title": "Solid Mechanics for Structural and Aerospace Engineering",
+              "units": 4
+            },
+            {
+              "code": "SE 233",
+              "title": "Computational Techniques in Finite Elements",
+              "units": 4
+            },
+            {
+              "code": "SE 276A",
+              "title": "Finite Element Methods in Solid Mechanics I",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "focus",
+          "name": "Focus-area Courses",
+          "units": 24,
+          "kind": "pick",
+          "rule": "Two focus-area sequences (each = three preapproved courses from one area), i.e. 6 courses / 24 units. Choose 2 of 8 areas: Structural Analysis; Computational Mechanics & Finite Elements; Structural Design; Earthquake Engineering; Advanced Composites; Geotechnical Engineering; Solid Mechanics; Structural Health Monitoring & NDE. (See official page for each area's course list.)",
+          "courses": []
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Technical electives: any science/math/engineering graduate course, or approved upper-division. Plan II = 4 (16 units); Plan I = 3 (12 units). ≤4 units SE 296 may apply.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "BISB-PHD",
+      "dept": "BISB",
+      "area": "BISB",
+      "name": "Bioinformatics & Systems Biology Ph.D. (coursework)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://bioinformatics.ucsd.edu/grad/curriculum/requirements",
+      "plans": [
+        {
+          "id": "PHD",
+          "name": "Ph.D. Coursework",
+          "totalUnits": 32,
+          "researchMax": null,
+          "note": "PhD-only program; MS not offered. Coursework portion only (16 core + 16 elective = 32 units). Two tracks: BISB and Biomedical Informatics (BMI)."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Courses",
+          "units": 16,
+          "kind": "pick",
+          "rule": "Four core courses (16 units). Shared: BENG 202/CSE 282 and MATH 283. Track third course: BISB → BENG 203/CSE 283; BMI → MED 264. Plus a Fourth Core (4 units) from CSE 280A, CSE 284, ECE 208, ECE 213, BNFO 285, BNFO 286 (or BENG 203 if not used). Pick the four for your track.",
+          "courses": [
+            {
+              "code": "BENG 202/CSE 282",
+              "title": "Introduction to Bioinformatics Algorithms",
+              "units": 4
+            },
+            {
+              "code": "MATH 283",
+              "title": "Statistical Methods in Bioinformatics",
+              "units": 4
+            },
+            {
+              "code": "BENG 203/CSE 283",
+              "title": "Genomics, Proteomics, and Network Biology (BISB track core)",
+              "units": 4
+            },
+            {
+              "code": "MED 264",
+              "title": "Principles of Biomedical Informatics (BMI track core)",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "elective",
+          "name": "Track Electives",
+          "units": 16,
+          "kind": "pick",
+          "rule": "16 units of electives. BISB track: ≥4 units CS series + ≥4 units BIO series. BMI track: ≥4 units CS series + ≥8 units BMI series. Remaining from any listed category.",
+          "courses": [
+            {
+              "code": "BENG 230A",
+              "title": "Biochemistry",
+              "units": 4
+            },
+            {
+              "code": "CHEM 213A",
+              "title": "Structure of Biomolecules and Biomolecular Assemblies",
+              "units": 4
+            },
+            {
+              "code": "CHEM 213B",
+              "title": "Biophysical Chemistry of Macromolecules",
+              "units": 4
+            },
+            {
+              "code": "BICD 100",
+              "title": "Genetics",
+              "units": 4
+            },
+            {
+              "code": "BGGN 220",
+              "title": "Graduate Molecular Biology",
+              "units": 4
+            },
+            {
+              "code": "BGGN 223",
+              "title": "Graduate Genetics",
+              "units": 4
+            },
+            {
+              "code": "BICD 110",
+              "title": "Cell Biology",
+              "units": 4
+            },
+            {
+              "code": "BGGN 222",
+              "title": "Graduate Cell Biology",
+              "units": 4
+            },
+            {
+              "code": "CSE 101",
+              "title": "Design and Analysis of Algorithms",
+              "units": 4
+            },
+            {
+              "code": "CSE 200",
+              "title": "Computability and Complexity",
+              "units": 4
+            },
+            {
+              "code": "CSE 202",
+              "title": "Algorithm Design and Analysis",
+              "units": 4
+            },
+            {
+              "code": "CSE 280A",
+              "title": "Algorithms in Computational Biology",
+              "units": 4
+            },
+            {
+              "code": "ECE 213",
+              "title": "Parallel Computing in Bioinformatics",
+              "units": 4
+            },
+            {
+              "code": "BNFO 285",
+              "title": "Statistical Learning in Bioinformatics",
+              "units": 4
+            },
+            {
+              "code": "CSE 250A",
+              "title": "Probabilistic Reasoning and Learning",
+              "units": 4
+            },
+            {
+              "code": "CSE 251A",
+              "title": "Machine Learning: Learning Algorithms",
+              "units": 4
+            },
+            {
+              "code": "CSE 251B",
+              "title": "Deep Learning",
+              "units": 4
+            },
+            {
+              "code": "CSE 255",
+              "title": "Data Mining and Predictive Analytics",
+              "units": 4
+            },
+            {
+              "code": "ECE 208",
+              "title": "Computational Evolutionary Biology",
+              "units": 4
+            },
+            {
+              "code": "ECE 271A",
+              "title": "Statistical Learning I",
+              "units": 4
+            },
+            {
+              "code": "MATH 282A",
+              "title": "Applied Statistics I",
+              "units": 4
+            },
+            {
+              "code": "MATH 282B",
+              "title": "Applied Statistics II",
+              "units": 4
+            },
+            {
+              "code": "BENG 211",
+              "title": "Systems Biology and Bioengineering I",
+              "units": 4
+            },
+            {
+              "code": "BENG 212",
+              "title": "Systems Biology and Bioengineering II: Large-Scale Data Analysis",
+              "units": 4
+            },
+            {
+              "code": "BNFO 286",
+              "title": "Network Biology and Biomedicine",
+              "units": 4
+            },
+            {
+              "code": "BNFO 284",
+              "title": "Nonlinear Dynamics in Quantitative Biology",
+              "units": 4
+            },
+            {
+              "code": "MED 263",
+              "title": "Bioinformatics Applications to Human Disease",
+              "units": 4
+            },
+            {
+              "code": "MED 265",
+              "title": "Informatics in Clinical Environments",
+              "units": 4
+            },
+            {
+              "code": "MED 267",
+              "title": "Modeling Clinical Data and Knowledge for Computation",
+              "units": 4
+            },
+            {
+              "code": "MED 268",
+              "title": "Statistics Concepts for Biomedical Research",
+              "units": 4
+            },
+            {
+              "code": "MED 277",
+              "title": "Introduction to Biomedical Natural Language Processing",
+              "units": 4
+            },
+            {
+              "code": "BNFO 262",
+              "title": "Quantitative Methods in Genetics",
+              "units": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC81",
+      "dept": "MAE",
+      "area": "Mechanical Engineering",
+      "name": "MAE M.S. — Mechanical Engineering (MC81)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses, letter grade; pass 3+ comprehensive-exam components; min 3.0 GPA."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Required + Emphasis Courses",
+          "units": 20,
+          "kind": "pick",
+          "rule": "MAE 208 required; then select 4 from MAE 200/201/202/203/204/206/209.",
+          "courses": [
+            {
+              "code": "MAE 208",
+              "title": "Mathematics for Engineers",
+              "units": 4
+            },
+            {
+              "code": "MAE 200",
+              "title": "Controls",
+              "units": 4
+            },
+            {
+              "code": "MAE 201",
+              "title": "Mechanics of Fluids",
+              "units": 4
+            },
+            {
+              "code": "MAE 202",
+              "title": "Thermal Processes",
+              "units": 4
+            },
+            {
+              "code": "MAE 203",
+              "title": "Solid Mechanics and Materials",
+              "units": 4
+            },
+            {
+              "code": "MAE 204",
+              "title": "Robotics",
+              "units": 4
+            },
+            {
+              "code": "MAE 206",
+              "title": "Energy Systems",
+              "units": 4
+            },
+            {
+              "code": "MAE 209",
+              "title": "Continuum Mechanics Applied to Medicine/Biology",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level; no seminars/research courses.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC75",
+      "dept": "MAE",
+      "area": "Aerospace Engineering",
+      "name": "MAE M.S. — Aerospace Engineering (MC75)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses; pass 3+ comprehensive-exam components; min 3.0 GPA."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Curriculum: MAE 208, 212, 240, 201, 202.",
+          "courses": [
+            {
+              "code": "MAE 208",
+              "title": "Mathematics for Engineers",
+              "units": 4
+            },
+            {
+              "code": "MAE 212",
+              "title": "Introductory Compressible Flow",
+              "units": 4
+            },
+            {
+              "code": "MAE 240",
+              "title": "Space Flight Mechanics",
+              "units": 4
+            },
+            {
+              "code": "MAE 201",
+              "title": "Mechanics of Fluids",
+              "units": 4
+            },
+            {
+              "code": "MAE 202",
+              "title": "Thermal Processes",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC76",
+      "dept": "MAE",
+      "area": "Applied Mechanics / Materials & Robotic Design",
+      "name": "MAE M.S. — Applied Mechanics / Materials & Robotic Design (MC76)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses; min 3.0 GPA."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Curriculum: MAE 203, 204, 269, 232A, 257.",
+          "courses": [
+            {
+              "code": "MAE 203",
+              "title": "Solid Mechanics and Materials",
+              "units": 4
+            },
+            {
+              "code": "MAE 204",
+              "title": "Robotics",
+              "units": 4
+            },
+            {
+              "code": "MAE 269",
+              "title": "Bioinspired Mobile Robotics",
+              "units": 4
+            },
+            {
+              "code": "MAE 232A",
+              "title": "Finite Element Methods in Solid Mechanics I",
+              "units": 4
+            },
+            {
+              "code": "MAE 257",
+              "title": "Polymer Science and Engineering",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC78",
+      "dept": "MAE",
+      "area": "Applied Ocean Science",
+      "name": "MAE M.S. — Applied Ocean Science (MC78)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses (5 core + 4 electives); min 3.0 GPA."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Curriculum: MAE 210A, 210B, 223, 208, 224A.",
+          "courses": [
+            {
+              "code": "MAE 210A",
+              "title": "Fluid Mechanics I",
+              "units": 4
+            },
+            {
+              "code": "MAE 210B",
+              "title": "Fluid Mechanics II",
+              "units": 4
+            },
+            {
+              "code": "MAE 223",
+              "title": "Ocean Technology Design and Development",
+              "units": 4
+            },
+            {
+              "code": "MAE 208",
+              "title": "Mathematics for Engineers",
+              "units": 4
+            },
+            {
+              "code": "MAE 224A",
+              "title": "Environmental Fluid Dynamics I",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC91",
+      "dept": "MAE",
+      "area": "Computational Engineering & Science",
+      "name": "MAE M.S. — Computational Engineering & Science (MC91)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses; min 3.0 GPA."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 24,
+          "kind": "pick",
+          "rule": "Curriculum: MAE 290A, 290B, 290C, 232A, 232B, plus MAE 201 OR 210A (6 courses).",
+          "courses": [
+            {
+              "code": "MAE 290A",
+              "title": "Numerical Linear Algebra",
+              "units": 4
+            },
+            {
+              "code": "MAE 290B",
+              "title": "Numerical Differential Equations",
+              "units": 4
+            },
+            {
+              "code": "MAE 290C",
+              "title": "Computational Fluid Dynamics",
+              "units": 4
+            },
+            {
+              "code": "MAE 232A",
+              "title": "Finite Element Methods in Solid Mechanics I",
+              "units": 4
+            },
+            {
+              "code": "MAE 232B",
+              "title": "Finite Element Methods in Solid Mechanics II",
+              "units": 4
+            },
+            {
+              "code": "MAE 201 / 210A",
+              "title": "Mechanics of Fluids OR Fluid Mechanics I (choose one)",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 12,
+          "kind": "free",
+          "rule": "Select 3 electives; ≥1 must be 200-level.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC92",
+      "dept": "MAE",
+      "area": "Power & Energy Systems",
+      "name": "MAE M.S. — Power & Energy Systems (MC92)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses (5 core + 4 electives); min 3.0 GPA."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Curriculum: MAE 208, 206, 227, 280A, 243.",
+          "courses": [
+            {
+              "code": "MAE 208",
+              "title": "Mathematics for Engineers",
+              "units": 4
+            },
+            {
+              "code": "MAE 206",
+              "title": "Energy Systems",
+              "units": 4
+            },
+            {
+              "code": "MAE 227",
+              "title": "Convex Optimization for Engineers",
+              "units": 4
+            },
+            {
+              "code": "MAE 280A",
+              "title": "Linear Systems Theory",
+              "units": 4
+            },
+            {
+              "code": "MAE 243",
+              "title": "Electric Power Systems Modeling",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC93",
+      "dept": "MAE",
+      "area": "Controls & Mechatronics",
+      "name": "MAE M.S. — Controls & Mechatronics (MC93)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses (5 core + 4 electives); min 3.0 GPA."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Curriculum: MAE 280A, 204, 242, 283A, 281A.",
+          "courses": [
+            {
+              "code": "MAE 280A",
+              "title": "Linear Systems Theory",
+              "units": 4
+            },
+            {
+              "code": "MAE 204",
+              "title": "Robotics",
+              "units": 4
+            },
+            {
+              "code": "MAE 242",
+              "title": "Robot Motion Planning",
+              "units": 4
+            },
+            {
+              "code": "MAE 283A",
+              "title": "Parametric Identification: Theory and Methods",
+              "units": 4
+            },
+            {
+              "code": "MAE 281A",
+              "title": "Nonlinear Systems",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC94",
+      "dept": "MAE",
+      "area": "Biomechanics & Biomedical Engineering",
+      "name": "MAE M.S. — Biomechanics & Biomedical Engineering (MC94)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses (5 core + 4 electives). Confirm MAE 275B/275C on the department page."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 20,
+          "kind": "required",
+          "rule": "Curriculum: MAE 208, 275B, 275C, 201, 209 (confirm 275B/275C on the department page).",
+          "courses": [
+            {
+              "code": "MAE 208",
+              "title": "Mathematics for Engineers",
+              "units": 4
+            },
+            {
+              "code": "MAE 275B",
+              "title": "Biomechanics (confirm with department)",
+              "units": 4,
+              "note": "Title not in current catalog — confirm."
+            },
+            {
+              "code": "MAE 275C",
+              "title": "Biomechanics (confirm with department)",
+              "units": 4,
+              "note": "Title not in current catalog — confirm."
+            },
+            {
+              "code": "MAE 201",
+              "title": "Mechanics of Fluids",
+              "units": 4
+            },
+            {
+              "code": "MAE 209",
+              "title": "Continuum Mechanics Applied to Medicine/Biology",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; ≥1 must be 200-level; ≤3 upper-division 100-level.",
+          "courses": []
+        }
+      ]
+    },
+    {
+      "code": "MAE-MS-MC99",
+      "dept": "MAE",
+      "area": "Energy & Climate",
+      "name": "MAE M.S. — Energy & Climate (MC99)",
+      "year": "2025-2026",
+      "detailed": true,
+      "pdf": "https://maeweb.ucsd.edu/grad/mae-master-science-program",
+      "plans": [
+        {
+          "id": "II",
+          "name": "Plan II — Comprehensive Exam",
+          "totalUnits": 36,
+          "researchMax": null,
+          "note": "36 units = 9 courses; may include SIOC 217-series courses (confirm on department page)."
+        },
+        {
+          "id": "I",
+          "name": "Plan I — Thesis",
+          "totalUnits": 36,
+          "researchMax": 12,
+          "note": "24 units coursework + 12 units MAE 299 research."
+        }
+      ],
+      "groups": [
+        {
+          "id": "core",
+          "name": "Core Specialization Courses",
+          "units": 20,
+          "kind": "pick",
+          "rule": "Curriculum: MAE 221A, 221B, 256, 208, plus MAE 221C OR 206.",
+          "courses": [
+            {
+              "code": "MAE 221A",
+              "title": "Conduction Heat Transfer",
+              "units": 4
+            },
+            {
+              "code": "MAE 221B",
+              "title": "Mass Transfer",
+              "units": 4
+            },
+            {
+              "code": "MAE 256",
+              "title": "Radiative Transfer for Energy Applications",
+              "units": 4
+            },
+            {
+              "code": "MAE 208",
+              "title": "Mathematics for Engineers",
+              "units": 4
+            },
+            {
+              "code": "MAE 221C / 206",
+              "title": "Convection Heat Transfer OR Energy Systems (choose one)",
+              "units": 4
+            }
+          ]
+        },
+        {
+          "id": "tech",
+          "name": "Electives",
+          "units": 16,
+          "kind": "free",
+          "rule": "Select 4 electives; may include SIOC 217-series (confirm on department page); ≥1 must be 200-level.",
           "courses": []
         }
       ]

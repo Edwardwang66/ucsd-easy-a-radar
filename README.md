@@ -143,9 +143,13 @@ returns `index.html` and serves `*.json` as static files works.
   `gradplans.json`) covers the whole UCSD graduate catalog by **school → department**: 11 schools
   and 51 departments. Every department shows its verified degree types (MS/MA/PhD/MEng/MAS/MFA/…)
   and a link to its official requirements page; departments without a course-bucket worksheet render
-  as an **overview card** rather than a fabricated unit table. Only **Electrical & Computer
-  Engineering** has the full course-level worksheet — all **thirteen ECE research areas** modeled
-  from their own official 2025–2027 degree planners — ISRC (EC80),
+  as an **overview card** rather than a fabricated unit table. All eight **Jacobs School of
+  Engineering** departments now have full course-level worksheets — Electrical & Computer
+  Engineering (13 research areas), Computer Science (breadth/depth), Mechanical & Aerospace (9
+  specialization tracks), Bioengineering, Materials Science, NanoEngineering + Chemical Engineering,
+  Structural Engineering, and Bioinformatics & Systems Biology (PhD coursework) — each with its own
+  per-program plans and unit totals (36–52u). The **ECE** worksheets remain the most detailed — all
+  **thirteen ECE research areas** modeled from their own official 2025–2027 degree planners — ISRC (EC80),
   CE (EC79), ECS (EC78), SIP (EC82), MLDS (EC93), CTS, AEM, AOS, AP-EDM, MDS, MI, NDS and PHO —
   each with its own core / additional / technical-elective **groups**, course lists and unit quotas
   (which genuinely differ by area: cores of 8–16u, tech electives of 12–24u, and MI even has extra
