@@ -8,3 +8,4 @@ dist
 # Local env / secrets — never commit (e.g. GH_FEEDBACK_TOKEN)
 .env
 .env.*
+.claude/
