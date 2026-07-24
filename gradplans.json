@@ -263,7 +263,7 @@
       ]
     },
     {
-      "code": "CTS", "area": "CTS", "name": "Communication Theory & Systems", "year": "2026-2027", "detailed": true,
+      "code": "EC77", "area": "CTS", "name": "Communication Theory & Systems", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/CTS%202026-2027-Fillable_0.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 8, "kind": "required", "rule": "Both required (4 units each).",
@@ -292,7 +292,7 @@
       ]
     },
     {
-      "code": "AEM", "area": "AEM", "name": "Applied Electromagnetics", "year": "2026-2027", "detailed": true,
+      "code": "EC92", "area": "AEM", "name": "Applied Electromagnetics", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/AEM%202026-2027-Fillable.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 12, "kind": "pick",
@@ -340,7 +340,7 @@
       ]
     },
     {
-      "code": "AOS", "area": "AOS", "name": "Applied Ocean Sciences", "year": "2026-2027", "detailed": true,
+      "code": "EC75", "area": "AOS", "name": "Applied Ocean Sciences", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/AOS%202026-2027-Fillable.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 16, "kind": "pick",
@@ -380,7 +380,7 @@
       ]
     },
     {
-      "code": "AP-EDM", "area": "AP-EDM", "name": "Applied Physics — Electronic Devices & Materials", "year": "2026-2027", "detailed": true,
+      "code": "EC76", "area": "AP-EDM", "name": "Applied Physics — Electronic Devices & Materials", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/AP-EDM%202026-2027-Fillable.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 12, "kind": "required", "rule": "All three required (ECE 230 series, 4 units each).",
@@ -426,7 +426,7 @@
       ]
     },
     {
-      "code": "MDS", "area": "MDS", "name": "Medical Devices & Systems", "year": "2026-2027", "detailed": true,
+      "code": "EC90", "area": "MDS", "name": "Medical Devices & Systems", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/MDS%202026-2027-Fillable.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 12, "kind": "pick",
@@ -450,7 +450,7 @@
       ]
     },
     {
-      "code": "MI", "area": "MI", "name": "Medical Imaging", "year": "2026-2027", "detailed": true,
+      "code": "EC95", "area": "MI", "name": "Medical Imaging", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/MI%202026-2027-Fillable.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 8, "kind": "pick",
@@ -494,7 +494,7 @@
       ]
     },
     {
-      "code": "NDS", "area": "NDS", "name": "Nanoscale Devices & Systems", "year": "2026-2027", "detailed": true,
+      "code": "EC86", "area": "NDS", "name": "Nanoscale Devices & Systems", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/NDS%202026-2027-Fillable.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 12, "kind": "required", "rule": "All three required (ECE 212 series, 4 units each).",
@@ -540,7 +540,7 @@
       ]
     },
     {
-      "code": "PHO", "area": "PHO", "name": "Photonics", "year": "2026-2027", "detailed": true,
+      "code": "EC81", "area": "PHO", "name": "Photonics", "year": "2026-2027", "detailed": true,
       "pdf": "https://www.ece.ucsd.edu/sites/default/files/research-areas/PHO%202026-2027-Fillable.pdf",
       "groups": [
         { "id": "core", "name": "Core Courses", "units": 12, "kind": "required", "rule": "All three required (ECE 240 series, 4 units each).",
