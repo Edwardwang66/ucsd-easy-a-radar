@@ -1339,17 +1339,26 @@ function init(DATA){
                       :'No direct TSS link for this course yet — opens the TSS launchpad to search (sign in first)';
     return `<a class="seatlink" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${label}</a>`;
   }
-  function matchQ(r,q){
-    if(!q) return true;
+  // Relevance rank: higher = better. 0 = no match. Code/title matches outrank a
+  // professor-name-only match, so e.g. "math" lists every MATH course before it
+  // surfaces VIS 105A (whose instructor is "Mathieu…") — instead of interleaving them.
+  function matchRank(r,q){
+    if(!q) return 1;
+    const subj=(r[C.s]||'').toLowerCase();
     const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
     const title=(r[C.t]>=0?(T[r[C.t]]||''):'').toLowerCase(), instr=(r[C.i]||'').toLowerCase();
-    if(code.includes(q)||code2.includes(q)||title.includes(q)||instr.includes(q)) return true;
+    if(subj===q||code.startsWith(q)||code2.startsWith(q)) return 5; // subject / course-code prefix
+    if(code.includes(q)||code2.includes(q)) return 4;               // course code contains
+    if(title.startsWith(q)) return 3;
+    if(title.includes(q)) return 2;                                 // title contains
+    if(instr.includes(q)) return 1;                                 // professor name only — lowest
     const aka=AKA[r[C.i]]; // also match the professor's known name variants
-    return !!aka&&aka.some(n=>n.toLowerCase().includes(q));
+    return (aka&&aka.some(n=>n.toLowerCase().includes(q))) ? 1 : 0;
   }
+  function matchQ(r,q){ return matchRank(r,q)>0; }
   function tie(a,b){const ga=a[C.g],gb=b[C.g];if(ga!=null&&gb!=null&&ga!==gb)return gb-ga;if(ga!=null&&gb==null)return -1;if(ga==null&&gb!=null)return 1;return b[C.n]-a[C.n];}
   function compute(){
-    const q=state.q.trim().toLowerCase(), out=[];
+    const q=state.q.trim().toLowerCase(), out=[], rankOf=new Map();
     for(const r of R){
       if(state.offered && !r[C.off]) continue;
       if(state.time && SCHED){                      // meeting-time filter (needs schedule.json)
@@ -1361,13 +1370,14 @@ function init(DATA){
       if(state.prof && r[C.i]!==state.prof) continue;
       if(!levelOk(r[C.lv])) continue;
       if(r[C.src]===0 && r[C.n]<state.minoff) continue;   // min-times filter only gates real grade rows
-      if(!matchQ(r,q)) continue;
-      out.push(r);
+      const mr=matchRank(r,q); if(!mr) continue;
+      rankOf.set(r,mr); out.push(r);
     }
     const key=state.sort, dir=(key==='risk'||key==='rd')?1:-1;
     out.sort((a,b)=>{
       const a2=a[C.src]>=2, b2=b[C.src]>=2;                 // no-grade-data rows (0×/TBA) always sink to the bottom
       if(a2!==b2) return a2?1:-1;
+      if(q){ const ra=rankOf.get(a),rb=rankOf.get(b); if(ra!==rb) return rb-ra; } // relevance: code/title beat professor-name-only
       let va=sortVal(a,key), vb=sortVal(b,key);
       const an=(va==null), bn=(vb==null);
       if(an&&bn) return tie(a,b);
