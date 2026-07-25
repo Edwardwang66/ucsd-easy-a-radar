@@ -764,7 +764,7 @@
  </div><!-- /scheduleView -->
 
  <div id="geView" role="tabpanel" aria-label="Graduation and GE requirements">
-   <p class="ge-intro">Pick your <b>undergraduate college</b> — every UCSD student shares the same degree floor (180 units, ELWR, AHI, DEI…), but your college adds its own general-education (GE) curriculum on top. Requirements below are for <b>first-year (frosh) entrants</b>; transfer differences are noted per college. All figures verified against the official UCSD catalog &amp; college sites — see sources at the bottom.</p>
+   <p class="ge-intro">Every UCSD student shares one degree floor (180 units, ELWR, AHI, DEI…); each college adds its own general-education curriculum. Shown for <b>first-year entrants</b> — transfer differences noted per college.</p>
    <div class="ge-picker" id="gePicker" role="group" aria-label="Choose your college"></div>
    <div id="geBody"></div>
    <details class="ge-uni" id="geUni">
@@ -957,7 +957,7 @@
    </div>
 
    <div id="dpUG">
-   <p class="ge-intro">Build your quarter-by-quarter plan. Pick your <b>college, entering year and major</b> to load UCSD's <b>official academic plan</b> (2022–2026) as a starting point — then make it yours: drag courses between quarters, add or drop them, check off what you've finished, and watch your unit totals stay in the full-time zone. Each course links straight to its <b>grade ranking</b> so you can swap in GPA-friendly options.</p>
+   <p class="ge-intro">Load UCSD's <b>official academic plan</b> (2022–2026) for your college, entering year and major — then make it yours: drag, add, check off, and keep units in the full-time zone. Each course links to its <b>grade ranking</b>.</p>
 
    <div class="dp-controls">
      <div class="dp-field"><label>College</label>
@@ -1011,7 +1011,7 @@
    </div><!-- /dpUG -->
 
    <div id="dpGrad" hidden>
-     <p class="ge-intro">Plan a graduate degree by <b>school → department → research area</b>. Every UCSD graduate <b>ISIS major code</b> is a selectable option — base degrees, specializations, joint-doctoral and online variants — each with its official title and degrees. The <b>Jacobs School of Engineering</b> programs have the full <b>course-level planner</b> (ECE's thirteen research areas plus the CSE, MAE, Bioengineering, Materials, Nano/Chem, Structural and Bioinformatics worksheets): pick a research area and plan, add courses to each requirement bucket, tag the quarter, check off what's done, and watch each bucket fill toward its unit quota, with every course linking to its <b>grade ranking</b>. Every other ISIS code opens a program overview card; follow its official-requirements link to plan there.</p>
+     <p class="ge-intro">Browse by <b>school → department → research area</b> — every UCSD graduate <b>ISIS major code</b>. Coursework degrees (all engineering programs and more) open a full <b>worksheet</b>: fill each requirement bucket and track units, with every course linked to its <b>grade ranking</b>. Research doctorates and specializations open an overview card with the official requirements link.</p>
 
      <div class="dp-controls">
        <div class="dp-field"><label>School</label>
@@ -2273,7 +2273,7 @@ function init(DATA){
         <span><i class="cdot" style="background:var(--gW)"></i>Reference · secondary/common</span>
       </div>
       <ul>${links}</ul>
-      <p class="disc">Verified ${esc(GE.meta&&GE.meta.date||'')} against the current catalog.ucsd.edu &amp; college sites (pages not explicitly version-stamped “2026–27”; the catalog rolls over in summer). Course counts are approximate and vary by major, transfer agreement and year. Reference only — <b>not official, not academic advice</b>. Confirm every requirement with the official UCSD catalog and your academic advisor.</p>`;
+      <p class="disc">Reference only — <b>not official, not academic advice</b>. Course counts are approximate and vary by major, transfer agreement and year; confirm every requirement with the official UCSD catalog and your advisor. Verified ${esc(GE.meta&&GE.meta.date||'')}.</p>`;
   }
   function setCollege(k){
     if(!GE.colleges||!GE.colleges[k])return;
