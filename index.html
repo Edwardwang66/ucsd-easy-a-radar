@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1017'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%235b8def' stroke-width='2' stroke-opacity='.55'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='none' stroke='%235b8def' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%235b8def'/%3E%3C/svg%3E">
 <!-- Start the critical dataset download during HTML parse, before the app JS runs.
-     as="fetch" with the same credentials mode as the app's fetch('data.242d797061.json')
+     as="fetch" with the same credentials mode as the app's fetch('data.a70608fb92.json')
      — i.e. NO crossorigin, since fetch() defaults to credentials:'same-origin'. Adding
      crossorigin would make the preload an anonymous CORS request, which on a cookie-gated
      origin (e.g. a protected Vercel preview) redirects cross-origin and fails outright.
      hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
-<link rel="preload" href="data.242d797061.json" as="fetch">
+<link rel="preload" href="data.a70608fb92.json" as="fetch">
 <link rel="prefetch" href="hist.520c32e21c.json" as="fetch">
 <title>Easy-A Radar — UCSD GPA-friendly courses & professor ratings</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions, RateMyProfessors ratings, a schedule builder, and a graduate degree planner covering every major.">
@@ -213,6 +213,16 @@
   /* WebReg course-page link */
   .seatlink{font-size:11px;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap}
   .seatlink:hover{text-decoration:underline}
+  /* Graduate-course SET (Student Evaluation of Teaching) links */
+  .badge-set{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.05em;color:var(--accent);
+    border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:5px;padding:1px 5px;margin-left:7px;vertical-align:1px;text-transform:uppercase}
+  .setblock{padding:2px 18px 16px 40px}
+  .setblock .spark-h{margin-bottom:6px}
+  .setrow{display:grid;grid-template-columns:60px minmax(90px,1fr) auto;gap:12px;align-items:center;
+    padding:6px 0;border-top:1px dashed var(--line)}
+  .setrow:first-of-type{border-top:0}
+  .setrow .tq{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink)}
+  .setrow .setwho{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   .instr{display:flex;flex-direction:column;gap:2px;min-width:0}
   .instr .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1390,6 +1400,30 @@ function init(DATA){
                       :'No direct TSS link for this course yet — opens the TSS launchpad to search (sign in first)';
     return `<a class="seatlink" href="${esc(href)}" target="_blank" rel="noopener" title="${esc(title)}">${label}</a>`;
   }
+  // Graduate courses (≥200) have no published grade distribution, so instead we
+  // surface the official UCSD SET evaluation reports: data.set["SUBJ NUM"] is a
+  // newest-first list of { i:instructor, t:term, sec, sid, u:reportUrl }. Only
+  // the deep-link is stored — students open the report on UCSD themselves.
+  const SET=(DATA&&DATA.set)||{};
+  // Match a SET instructor ("Last, First M") to a row's instructor ("Last, First"),
+  // tolerating middle-initial differences — same key machinery as the RMP linker.
+  function setInstrMatch(a,b){ if(!a||!b) return false; const ak=ourKeysJS(a),bk=ourKeysJS(b); return ak.some(x=>bk.some(y=>keyEq(x,y))); }
+  // Per-professor (option B): a row shows only its own instructor's evaluations, so the
+  // eval links never conflict with the row's RMP rating. A no-instructor row (rare now —
+  // most SET instructors are promoted to their own src=5 row) falls back to the whole course.
+  function setListForRow(r){
+    const list=SET[CK(r[C.s],r[C.c])]; if(!list||!list.length) return null;
+    if(!r[C.i]) return list;
+    const mine=list.filter(e=>setInstrMatch(e.i,r[C.i]));
+    return mine.length?mine:null;
+  }
+  function setHTML(r){
+    const list=setListForRow(r); if(!list) return '';
+    const who=!r[C.i];   // show the per-section instructor only on course-level (no-instructor) rows
+    const rows=list.map(e=>`<div class="setrow"><span class="tq">${esc(e.t)}</span>${who?`<span class="setwho" title="${esc(e.i)}">${esc(instrShort(e.i))}</span>`:'<span></span>'}<a class="seatlink" href="${esc(e.u)}" target="_blank" rel="noopener" title="Open the official UCSD Student Evaluation of Teaching (SET) report for this section on academicaffairs.ucsd.edu">SET report ↗</a></div>`).join('');
+    const lab=who?`Course evaluations · ${list.length} section${list.length>1?'s':''}`:`Course evaluations · ${list.length} term${list.length>1?'s':''}`;
+    return `<div class="setblock"><div class="spark-h">${lab} <span class="axhint">official UCSD SET ↗</span></div>${rows}</div>`;
+  }
   // Relevance rank: higher = better. 0 = no match. Code/title matches outrank a
   // professor-name-only match, so e.g. "math" lists every MATH course before it
   // surfaces VIS 105A (whose instructor is "Mathieu…") — instead of interleaving them.
@@ -1500,8 +1534,10 @@ function init(DATA){
       const msg=r[C.src]===2?'No grade-distribution data for this course — the professor may be new to UCSD, or this course (often a grad/seminar course) has no recorded grade breakdown. Listed so the rankings match the Fall 2026 schedule.'
         :r[C.src]===3?'This course runs in Fall 2026 but has no assigned instructor yet (or is a research / independent-study course with many advisors) and no grade-distribution history. Listed so the rankings match the schedule.'
         :r[C.src]===4?'Listed in the UCSD catalog, but UCSD has never published a grade distribution for it (typical of grad seminars, directed study and research courses) and it isn’t on the Fall 2026 schedule. Shown for reference — title and prerequisites only.'
+        :r[C.src]===5?'Instructor identified from UCSD course evaluations (SET); no grade distribution is published for graduate courses.'
         :'No term-by-term grade data (this row comes from RateMyProfessors course history).';
-      return `<div class="tdetail">${fb}${preHTML(r)}<div class="tdet-none">${msg}</div></div>`;}
+      const sh=setHTML(r);   // grad courses: show SET evaluation links instead of the "no data" note
+      return `<div class="tdetail">${fb}${preHTML(r)}${sh||`<div class="tdet-none">${msg}</div>`}</div>`;}
     // h newest-first: [yr,q,g,A,B,C,D,F,W]
     const terms=h.map(x=>({yr:x[0],q:x[1],g:x[2],A:x[3],B:x[4],Cc:x[5],D:x[6],F:x[7],W:x[8]}));
     const oldestFirst=[...terms].reverse();
@@ -1525,10 +1561,11 @@ function init(DATA){
   }
 
   function rowHTML(r){
-    const isRmp=r[C.src]===1, isNew2=r[C.src]===2, isTBA=r[C.src]===3, isCat=r[C.src]===4;
+    const isRmp=r[C.src]===1, isNew2=r[C.src]===2, isTBA=r[C.src]===3, isCat=r[C.src]===4, isSet=r[C.src]===5;
     const idx=RI.get(r), isOpen=expanded.has(idx);
     const code=r[C.s]+'-'+r[C.c];
     const off=r[C.off]?'<span class="badge-off" title="This course runs in Fall 2026.">Offered</span>':'';
+    const setBadge=setListForRow(r)?'<span class="badge-set" title="Official UCSD SET course evaluations available — expand this row for this instructor’s per-year report links">SET</span>':'';
     const fakey=CK(r[C.s],r[C.c]);
     const faList=(DATA.fa&&DATA.fa[fakey])||null;
     const umbrella=isTBA&&faList&&faList.length>1;   // research / independent study (many advisors)
@@ -1553,6 +1590,7 @@ function init(DATA){
     else if(isCat) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Not offered in Fall 2026</span>';
     else if(isTBA) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>${umbrella?'Research / independent study':'Instructor to be announced'}</span>`;
     else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
+    else if(isSet) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--accent)"></span>Recent instructor · course evaluations below</span>';
     else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>FA26: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
     const g=r[C.g];
     const gpaCell=isNew2?'<span class="firstx" title="No grade data for this course">0×</span>'
@@ -1562,6 +1600,7 @@ function init(DATA){
     const dist=isNew2?'<span class="nodata">No grade data for this course</span>'
               :isCat?'<span class="nodata">No recorded grade distribution</span>'
               :isTBA?`<span class="nodata">${umbrella?'Research / independent study':'Instructor to be announced'}</span>`
+              :isSet?'<span class="nodata">No grade distribution · course evaluations ↓</span>'
               :isRmp?'<span class="nodata">No grade data on record</span>':distHTML(r);
     const rq=r[C.rq],rd=r[C.rd],rwta=r[C.rw],rn=r[C.rn],rid=r[C.rid];
     let rmpCell;
@@ -1577,15 +1616,16 @@ function init(DATA){
     const sample=isNew2?`<span class="n">0×</span><div class="yr">no grades</div>`
       :isTBA?`<span class="n">—</span><div class="yr">${umbrella?faList.length+' instr':'TBA'}</div>`
       :isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
+      :isSet?`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}" title="Times this instructor taught the course, per SET evaluations">${yr!=null?'latest 20'+yr:'taught'}</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
-    const instrLabel=isTBA?'FA26':isNew2?(isNewProf?'New instructor':'FA26 instructor'):'Past instructor';
+    const instrLabel=isTBA?'FA26':isNew2?(isNewProf?'New instructor':'FA26 instructor'):isSet?'Instructor':'Past instructor';
     const displayName=isTBA?(umbrella?`Instructors vary · ${faList.length}`:'Instructor TBA'):instrShort(r[C.i]);
     const aka=AKA[r[C.i]];
     const nmTitle=aka?` title="Also known as ${esc(aka.join(', '))}"`:'';
     const akaTag=aka?`<span class="aka" title="Also known as ${esc(aka.join(', '))}">aka ${esc(aka[0])}</span>`:'';
     const seatL=seatLink(r);
     return `<div class="trow" data-i="${idx}" aria-expanded="${isOpen}">
-      <div class="course"><div class="top"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}${nowBadge}${addBtn}</div><div class="title">${esc(title)}</div></div>
+      <div class="course"><div class="top"><span class="code"><span class="chev">›</span>${esc(code)}</span>${off}${setBadge}${nowBadge}${addBtn}</div><div class="title">${esc(title)}</div></div>
       <div class="instr"><span class="k">${instrLabel}</span><span class="nm ${isTBA?'na':''}"${nmTitle}>${esc(displayName)}</span>${akaTag}${rmpStar}${nowLine}${seatL}</div>
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
@@ -3151,7 +3191,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 (async function boot(){
   try{
     let data=window.__DATA__;
-    if(!data){const res=await fetch('data.242d797061.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
+    if(!data){const res=await fetch('data.a70608fb92.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
     init(data);
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
