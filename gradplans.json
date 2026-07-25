@@ -771,8 +771,8 @@
    "degrees": [
     "AuD"
    ],
-   "reqUrl": "https://oto.ucsd.edu/education/jdp-audiology/index.html",
-   "deptNotes": "SDSU/UCSD joint 4-year professional Doctor of Audiology; no coursework MS."
+   "reqUrl": "https://catalog.ucsd.edu/curric/AUDL.html",
+   "deptNotes": "Joint doctoral program (SDSU + UC San Diego), clinical professional doctorate: requirements are milestone-based, not a fixed university-published course worksheet, so no course/unit table is provided. Concrete facts the official UCSD catalog states: 4-year full-time program (Year 1 courses/clinic at SDSU; Year 2 at UC San Diego; Year 3 SDSU courses + San Diego-area off-campus clinical sites; Year 4 full-time externship). Structure is described only in aggregate as fourteen core courses (seven from each campus) plus fourteen elective courses (minimum four from each campus), ~140 semester-equivalent units; the catalog explicitly notes 'an exact unit minimum is not specified' because it mixes SDSU semester units and UC San Diego quarter units, and it lists no individual course numbers or titles. Degree milestones: maintain 3.0 cumulative GPA in academic and clinical coursework; ~700 hours of precepted clinical experience before the 4th-year externship; pass Year 1 and Year 2 qualifying evaluations; advance to candidacy (prerequisites + Years 1-2 + approved doctoral project); pass a comprehensive examination after Year 3; complete a data-based doctoral project with committee approval and public presentation; full-time 4th-year externship at an approved site. Admits Fall only, no part-time and no transfer students. CAA-accredited. Detailed course lists live on the SDSU program site, not the UCSD catalog."
   },
   {
    "code": "BE75",
@@ -2688,7 +2688,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/CLAS-gr.html",
+   "deptNotes": "Research doctorate: requirements are milestone-based (department/adviser-approved seminar coursework, qualifying exams, language proficiency, and dissertation), so no single fixed university-published course worksheet is appropriate. UCSD Classics is part of the University of California Tri-Campus Graduate Program in Classics (with UC Irvine and UC Riverside). The catalog does state concrete facts: PhD students complete a minimum of 18 approved seminar-level courses, distributed as four quarters of CLASSIC 200A-B-C and 201 (core), twelve quarters of CLASSIC 220 (graduate seminars), and two external graduate seminars from outside Classics (up to two quarters of CLASSIC 280 enhanced upper-division Greek/Latin may substitute for 220s if remedial work is needed, with adviser permission; up to twelve equivalent graduate courses from partner campuses may substitute with JEC approval). Language: reading proficiency in one modern research language (e.g. German, French, Italian) by end of year two and a second by end of year three. Students pass seven qualifying exams (Greek and Latin translation, Greek and Roman history, history of Greek and Roman literature, a special-area exam, and an oral exam) before advancing to candidacy, then write and publicly defend a dissertation. Normative time: four years to candidacy, seven years maximum. Exact seminar topics vary by term, so no fixed course list is published."
   },
   {
    "code": "CY75",
@@ -2723,8 +2725,246 @@
    "degrees": [
     "MAS"
    ],
-   "reqUrl": "https://catalog.ucsd.edu/curric/CLRE.html",
-   "deptNotes": "Master of Advanced Studies, 40 units (34 required course units)."
+   "reqUrl": "https://clre.ucsd.edu/curriculum/",
+   "deptNotes": "MAS in Clinical Research is a 40-unit coursework-based professional master's completed in 12 or 24 months (summer start). Structure per the official program curriculum page: 22 units required core courses (11 x 2-unit courses), 6 units Independent Study Project sequence (the ISP master's thesis capstone: CLRE 295A/295B seminars + CLRE 297), plus elective buckets: min 4 units Experiential Learning electives, min 4 units Advanced Statistics electives, and general electives to reach the 40-unit total. Core (22) + ISP (6) + Experiential (4) + Adv Stats (4) + General electives (4) = 40 units.",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Required Core Courses",
+     "units": 22,
+     "kind": "required",
+     "rule": "All 11 core courses required (22 units)",
+     "courses": [
+      {
+       "code": "CLRE 250",
+       "title": "Patient-Oriented Research I",
+       "units": 2
+      },
+      {
+       "code": "CLRE 256",
+       "title": "Patient-Oriented Research II",
+       "units": 2
+      },
+      {
+       "code": "CLRE 251",
+       "title": "Epidemiology I",
+       "units": 2
+      },
+      {
+       "code": "CLRE 257",
+       "title": "Epidemiology II",
+       "units": 2
+      },
+      {
+       "code": "CLRE 253",
+       "title": "Biostatistics I",
+       "units": 2
+      },
+      {
+       "code": "CLRE 254",
+       "title": "Biostatistics II",
+       "units": 2
+      },
+      {
+       "code": "CLRE 255",
+       "title": "Data Management and Informatics",
+       "units": 2
+      },
+      {
+       "code": "CLRE 252",
+       "title": "Health Services Research",
+       "units": 2
+      },
+      {
+       "code": "CLRE 259",
+       "title": "Scientific Communication Skills",
+       "units": 2
+      },
+      {
+       "code": "CLRE 236R",
+       "title": "Translational Research Fundamentals",
+       "units": 2
+      },
+      {
+       "code": "CLRE 258",
+       "title": "Professional Development Seminar Series",
+       "units": 2
+      }
+     ]
+    },
+    {
+     "id": "isp",
+     "name": "Independent Study Project (Capstone)",
+     "units": 6,
+     "kind": "required",
+     "rule": "All 3 required (6 units) — master's thesis capstone",
+     "courses": [
+      {
+       "code": "CLRE 295A",
+       "title": "Independent Study Project Seminar Series A",
+       "units": 2
+      },
+      {
+       "code": "CLRE 295B",
+       "title": "Independent Study Project Seminar Series B",
+       "units": 2
+      },
+      {
+       "code": "CLRE 297",
+       "title": "Independent Study Project",
+       "units": 2
+      }
+     ]
+    },
+    {
+     "id": "experiential",
+     "name": "Experiential Learning Electives",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose min 4 units (2 courses) from this list",
+     "courses": [
+      {
+       "code": "CLRE 270",
+       "title": "Experiential Learning in Clinical Research / Advanced Topics",
+       "units": 2
+      },
+      {
+       "code": "CLRE 237",
+       "title": "Translational Regenerative Medicine",
+       "units": 2
+      },
+      {
+       "code": "CLRE 238R",
+       "title": "Applied Translational Research",
+       "units": 2
+      },
+      {
+       "code": "CLRE 238",
+       "title": "Applied Translational Research",
+       "units": 2
+      },
+      {
+       "code": "CLRE 239",
+       "title": "Applied Translational Research II",
+       "units": 2
+      },
+      {
+       "code": "CLRE 232",
+       "title": "Qualitative Research",
+       "units": 2
+      },
+      {
+       "code": "CLRE 240",
+       "title": "Designing Research for Diversity and Community Engagement",
+       "units": 2
+      }
+     ]
+    },
+    {
+     "id": "advstats",
+     "name": "Advanced Statistics Electives",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose min 4 units (2 courses) from this list",
+     "courses": [
+      {
+       "code": "CLRE 263",
+       "title": "Longitudinal Data Analysis",
+       "units": 2
+      },
+      {
+       "code": "CLRE 265",
+       "title": "Advanced Regression Methods",
+       "units": 2
+      },
+      {
+       "code": "CLRE 267",
+       "title": "Machine Learning and Predictive Analysis in Biomedical Research / Advanced Statistics Using R",
+       "units": 2
+      },
+      {
+       "code": "CLRE 264",
+       "title": "Clinical Decision Analysis",
+       "units": 2
+      },
+      {
+       "code": "CLRE 234",
+       "title": "Social Network Analysis",
+       "units": 2
+      }
+     ]
+    },
+    {
+     "id": "general",
+     "name": "General Electives",
+     "units": 4,
+     "kind": "free",
+     "rule": "Min 2 units required; complete general electives to reach the 40-unit total (~4 units)",
+     "courses": [
+      {
+       "code": "CLRE 242",
+       "title": "Life Cycle Evidence Planning",
+       "units": 2
+      },
+      {
+       "code": "CLRE 243",
+       "title": "Dissemination and Implementation",
+       "units": 2
+      },
+      {
+       "code": "CLRE 230",
+       "title": "Digital Health",
+       "units": 2
+      },
+      {
+       "code": "CLRE 231",
+       "title": "Implementation Science",
+       "units": 2
+      },
+      {
+       "code": "CLRE 233",
+       "title": "Regulatory Science",
+       "units": 2
+      },
+      {
+       "code": "CLRE 235",
+       "title": "Team Science",
+       "units": 2
+      },
+      {
+       "code": "CLRE 266",
+       "title": "Comparative Effectiveness Research",
+       "units": 2
+      },
+      {
+       "code": "CLRE 268",
+       "title": "Behavioral Science Research",
+       "units": 2
+      },
+      {
+       "code": "MED 262",
+       "title": "Current Trends in Biomedical Informatics",
+       "units": 1
+      },
+      {
+       "code": "MED 268",
+       "title": "Statistics Concepts for Biomedical Research",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "mas40",
+     "name": "MAS Clinical Research (40 units)",
+     "totalUnits": 40,
+     "note": "Summer-quarter start; F-1 international students complete in 12 months. ISP (CLRE 295A/295B/297) is the master's thesis capstone."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://clre.ucsd.edu/curriculum/"
   },
   {
    "code": "CG75",
@@ -2868,7 +3108,9 @@
    "award": "PHD",
    "degrees": [
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://catalog.ucsd.edu/curric/COMP.html",
+   "deptNotes": "Research doctorate with no fixed university-published course worksheet: requirements are milestone-based and individualized. This is an interdisciplinary program (administered through the Department of Music) in which students are first admitted to a primary home department in the humanities, social sciences, or arts, satisfy that department's advancement-to-candidacy requirements and qualifying examination, and then design an individualized curriculum, research program, and dissertation under the guidance of an interdepartmental and/or intercampus PhD committee. Application to the program is made at the earliest during the student's third quarter of residency in the primary department. Advancement to candidacy occurs upon successfully defending a written dissertation proposal before the committee. Degree titles are customized to the student's research (e.g., 'PhD in comparative literature and ethnopoetics' or 'in linguistics and literary studies'), and time-limit policies follow those of the primary department. Because coursework is set by the primary department and the individual advisory committee rather than a fixed program list, no concrete course/unit worksheet is published."
   },
   {
    "code": "CU75",
@@ -3053,8 +3295,77 @@
    "degrees": [
     "MS"
    ],
-   "reqUrl": "https://css.ucsd.edu/masters/index.html",
-   "deptNotes": "Terminal one-year coursework MS (bootcamp, core, electives, capstone); total units not published."
+   "reqUrl": "https://catalog.ucsd.edu/curric/CSS-gr.html",
+   "deptNotes": "MS in Computational Social Science: a full-time, self-supporting, one-year (summer, fall, winter, spring) interdisciplinary coursework master's offered by the School of Social Sciences (administratively housed in Political Science). Requires 55 units / 14 courses: 43 core units (including a capstone via CSS 296 taken three times) plus 12 elective units. Follows Master Plan II (Comprehensive Examination) satisfied through a capstone/portfolio project. Course numbers, titles, and units are taken verbatim from the official general catalog (catalog.ucsd.edu/curric/CSS-gr.html). Note: the department curriculum page shows a slightly different term-by-term distribution and lists a CSS 212; the catalog course list above is treated as authoritative.",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core Courses",
+     "units": 43,
+     "kind": "required",
+     "rule": "Complete all core courses (43 units). All core courses except CSS 209 and CSS 296 must be taken for a letter grade.",
+     "courses": [
+      {
+       "code": "CSS 201S",
+       "title": "Principles of Computational Social Science",
+       "units": 8,
+       "note": "Summer bootcamp"
+      },
+      {
+       "code": "CSS 202S",
+       "title": "Computational Social Science Technical Bootcamp",
+       "units": 8,
+       "note": "Summer bootcamp"
+      },
+      {
+       "code": "CSS 211",
+       "title": "Statistical Methods for Computational Social Science",
+       "units": 4
+      },
+      {
+       "code": "CSS 205",
+       "title": "Statistical Computing and Inference from Data II",
+       "units": 4
+      },
+      {
+       "code": "CSS 206",
+       "title": "Machine Learning for Social Sciences",
+       "units": 4
+      },
+      {
+       "code": "CSS 209",
+       "title": "Computational Social Science Research Seminar",
+       "units": 3,
+       "note": "1 unit, taken three times"
+      },
+      {
+       "code": "CSS 296",
+       "title": "Research in Computational Social Science (Capstone)",
+       "units": 12,
+       "note": "4 units, taken three times; constitutes the capstone project"
+      }
+     ]
+    },
+    {
+     "id": "electives",
+     "name": "Electives",
+     "units": 12,
+     "kind": "free",
+     "rule": "Complete three elective courses (12 units) in computational social science from the program's approved list (via advising).",
+     "courses": []
+    }
+   ],
+   "plans": [
+    {
+     "id": "css-ms",
+     "name": "MS Computational Social Science (1-year)",
+     "totalUnits": 55,
+     "note": "43 core units (incl. capstone) + 12 elective units = 55 units across 14 courses, completed summer through spring."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://catalog.ucsd.edu/curric/CSS-gr.html"
   },
   {
    "code": "CS75",
@@ -4432,7 +4743,97 @@
     "MS"
    ],
    "reqUrl": "https://catalog.ucsd.edu/curric/DDPM.html",
-   "deptNotes": "Skaggs MS: self-supporting 36-unit coursework degree + comprehensive exam."
+   "deptNotes": "Coursework-based, cohort MS in Drug Development & Product Management (Skaggs School of Pharmacy). 36 units total, completed over three consecutive quarters (fall, winter, spring) of full-time study, entering fall. All ten DDPM core courses are required (no electives). A master's comprehensive examination at the end of the program must be passed to graduate. Classes meet Tue/Wed/Thu 4-8 PM. Structure: Fall 12 units (DDPM 200/201/202/203), Winter 12 units (DDPM 204/208/213), Spring 12 units (DDPM 210/211/214).",
+   "groups": [
+    {
+     "id": "fall",
+     "name": "Fall Quarter (required)",
+     "units": 12,
+     "kind": "required",
+     "rule": "All courses required (12 units)",
+     "courses": [
+      {
+       "code": "DDPM 200",
+       "title": "Opportunities in Pharma, Biotech, and Managed Care",
+       "units": 1
+      },
+      {
+       "code": "DDPM 201",
+       "title": "Pharmacotherapy and Diseases",
+       "units": 3
+      },
+      {
+       "code": "DDPM 202",
+       "title": "Pharmaceutics for Small Molecules and Macromolecules",
+       "units": 4
+      },
+      {
+       "code": "DDPM 203",
+       "title": "Pre-Clinical and Clinical Regulatory Submissions and Strategy",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "winter",
+     "name": "Winter Quarter (required)",
+     "units": 12,
+     "kind": "required",
+     "rule": "All courses required (12 units)",
+     "courses": [
+      {
+       "code": "DDPM 204",
+       "title": "Clinical Trial Development from Phase 0 to Phase 3 Studies",
+       "units": 4
+      },
+      {
+       "code": "DDPM 208",
+       "title": "Principles of Marketing Strategy, Product Value, and Life Cycle Management",
+       "units": 4
+      },
+      {
+       "code": "DDPM 213",
+       "title": "Health Outcomes Evidence",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "spring",
+     "name": "Spring Quarter (required)",
+     "units": 12,
+     "kind": "required",
+     "rule": "All courses required (12 units)",
+     "courses": [
+      {
+       "code": "DDPM 210",
+       "title": "Biologics and Biosimilars Drug Development",
+       "units": 4
+      },
+      {
+       "code": "DDPM 211",
+       "title": "Foundations of Project Management and US Health Insurance Managed Markets",
+       "units": 4
+      },
+      {
+       "code": "DDPM 214",
+       "title": "Business Development, Entrepreneurship, Corporate, and Intellectual Property Strategy",
+       "units": 4
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "ddpm-ms",
+     "name": "MS Drug Development & Product Management (36 units, 1 year)",
+     "totalUnits": 36,
+     "note": "Lockstep cohort: all 10 DDPM core courses required; plus a passing comprehensive exam at end of spring."
+    }
+   ],
+   "detailed": true,
+   "year": "2024-2025",
+   "pdf": "https://catalog.ucsd.edu/curric/DDPM.html"
   },
   {
    "code": "EC75",
@@ -7263,8 +7664,75 @@
    "degrees": [
     "MA"
    ],
-   "reqUrl": "https://globalhealthprogram.ucsd.edu/graduate/overview.html",
-   "deptNotes": "Terminal one-year coursework MA: 36 units / 9 courses (6 core + 3 electives) + comprehensive exam & portfolio."
+   "reqUrl": "https://catalog.ucsd.edu/curric/GLBH-gr.html",
+   "deptNotes": "One-year, full-time, in-person terminal MA in Global Health. Requires a minimum of 36 units (9 courses) of graduate coursework with a 3.0 GPA: 24 units of core (6 required courses) + 12 units of electives (3 courses; at least two must be 200-level GLBH graduate courses; no more than one 100-level upper-division course with director approval; one GLBH 299 Independent Research may count). Non-course capstone: students must pass a comprehensive examination at the end of Spring quarter and submit a final career portfolio.",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Core Courses",
+     "units": 24,
+     "kind": "required",
+     "rule": "Complete all six core courses (24 units)",
+     "courses": [
+      {
+       "code": "GLBH 200",
+       "title": "Global Health Masters Core Seminar",
+       "units": 4
+      },
+      {
+       "code": "GLBH 214",
+       "title": "Program Management and Global Health",
+       "units": 4
+      },
+      {
+       "code": "GLBH 215",
+       "title": "Community Health Workers",
+       "units": 4
+      },
+      {
+       "code": "GLBH 248",
+       "title": "Introduction to Global Health Research",
+       "units": 4
+      },
+      {
+       "code": "GLBH 249",
+       "title": "Social Epidemiology",
+       "units": 4
+      },
+      {
+       "code": "GLBH 260",
+       "title": "Global Health Policy",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "electives",
+     "name": "Electives",
+     "units": 12,
+     "kind": "free",
+     "rule": "Complete 3 elective courses (12 units); at least two must be 200-level GLBH graduate courses. No more than one 100-level upper-division course (director approval). GLBH 299 Independent Research may count for one.",
+     "courses": [
+      {
+       "code": "GLBH 299",
+       "title": "Independent Research (may count as one elective)",
+       "units": 4,
+       "note": "Optional; taken with a faculty advisor. Remaining electives are 200-level GLBH graduate courses or approved courses across departments (Anthropology, Economics, History, Philosophy, Psychology, Sociology, etc.)."
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "ma",
+     "name": "MA Global Health (one-year)",
+     "totalUnits": 36,
+     "note": "24 core units + 12 elective units. Comprehensive exam + portfolio required (no unit value)."
+    }
+   ],
+   "detailed": true,
+   "year": "2024-2025",
+   "pdf": "https://catalog.ucsd.edu/curric/GLBH-gr.html"
   },
   {
    "code": "GP75",
@@ -8408,7 +8876,7 @@
     "PhD"
    ],
    "reqUrl": "https://catalog.ucsd.edu/curric/HIST-gr.html",
-   "deptNotes": "Terminal coursework MA: nine 4-unit courses (36 units) + oral exam; PhD in seven concentrations."
+   "deptNotes": "No fixed university-published course worksheet applies to this code because it spans a research doctorate plus a faculty-directed MA. The PhD is milestone-based: requirements are set by the field group and advisor (research seminars, historiography courses, cross-field colloquium such as HIGR 200, two minor-field exams, one or two foreign languages depending on field, an oral qualifying exam by the third year, advancement to candidacy by end of year four, and a dissertation) with no single fixed course list — the specific courses differ by concentration (Ancient/East Roman/Post-Roman, East Asian, European, History of Science, Latin American, Middle Eastern, United States). Concrete PhD facts: full-time load 12 units/quarter; ~9 quarters of coursework via Option 1 (two 2-quarter research seminars + three 1-quarter major-field historiography courses + four electives incl. one cross-field colloquium) or Option 2 (three 2-quarter research seminars + three historiography courses + three electives); normative time 7 years (8-year max). The MA is coursework-based (nine four-unit courses = 36 units, all letter-graded, max two upper-division undergrad courses, one-hour oral exam with three examiners over a 40-70 title reading list; no foreign language required) but the specific courses depend on the chosen field concentration (Europe, History of Science, United States, or a faculty-approved Special Field) and are largely selected in consultation with faculty, so no single fixed course list is published. 'MA on the way' is also awarded to continuing PhD students upon passing the qualifying exam."
   },
   {
    "code": "HI76",
@@ -8420,7 +8888,7 @@
     "MA"
    ],
    "reqUrl": "https://catalog.ucsd.edu/curric/HIST-gr.html",
-   "deptNotes": "Terminal coursework MA: nine 4-unit courses (36 units) + oral exam; PhD in seven concentrations."
+   "deptNotes": "No fixed course worksheet is published for this MA concentration. History offers the MA under a set of field concentrations (Europe, History of Science, United States, and faculty-approved Special Fields; the catalog also lists Jewish/Judaic Studies as an available MA area under the auspices of the Department of History). The Judaic/Jewish Studies path is interdisciplinary — students select courses primarily in history and literature but also anthropology, political science, and sociology in consultation with core and affiliated Jewish Studies faculty — so there is no single university-published fixed course/unit list to reproduce. Concrete structure that does apply to the History MA: nine four-unit courses (36 units total), all letter grades, no more than two upper-division undergraduate courses counted, completion in one year full-time or two years part-time, a comprehensive one-hour oral exam before three faculty examiners over a 40-70 title reading list, and no foreign-language requirement. Note: graduate students apply through the Department of History (not directly to the Jewish Studies Program) and work with Jewish Studies core/affiliated faculty; MA admissions in this area are limited/contingent on faculty availability."
   },
   {
    "code": "HI77",
@@ -8432,7 +8900,7 @@
     "PhD"
    ],
    "reqUrl": "https://catalog.ucsd.edu/curric/HIST-gr.html",
-   "deptNotes": "Terminal coursework MA: nine 4-unit courses (36 units) + oral exam; PhD in seven concentrations."
+   "deptNotes": "Research doctorate: requirements are milestone-based (coursework set by the field group/advisor, minor-field exams, an oral qualifying exam, and a dissertation), so no fixed university-published course worksheet exists. This is the History PhD taken in the History of Science field within the interdisciplinary Science Studies Program (SSP). SSP students major in one of five disciplines (Anthropology, Communication, History, Philosophy, or Sociology) and complete minor-field work in the others; Science Studies is the mandatory minor for History-major SSP students. Concrete facts the pages state: SSP core coursework (Introduction to Science Studies, Advanced Approaches to Science Studies, and two interdisciplinary topical core seminars, plus attendance at the program colloquium; History-side seminars include HIGR 236A-B, 238, 239, 240, 241); most SSP coursework is concentrated in years 1-2, then students deepen disciplinary expertise in History for qualifying exams; competency in one foreign language beyond English is required before advancement to candidacy. General History PhD milestones also apply (full-time 12 units/quarter, two minor-field exams, oral qualifying exam by ~year three, advancement to candidacy by end of year four, dissertation; normative 7-year time-to-degree)."
   },
   {
    "code": "HI78",
@@ -8444,7 +8912,7 @@
     "PhD"
    ],
    "reqUrl": "https://catalog.ucsd.edu/curric/HIST-gr.html",
-   "deptNotes": "Terminal coursework MA: nine 4-unit courses (36 units) + oral exam; PhD in seven concentrations."
+   "deptNotes": "Specialization overlay on a research doctorate: this is the History PhD (milestone-based — field-group/advisor coursework, two minor-field exams, one or two foreign languages by field, an oral qualifying exam by ~year three, advancement to candidacy by end of year four, and a dissertation, with no fixed university-published course worksheet) plus the interdisciplinary Graduate Specialization in Critical Gender Studies (CGS). The CGS overlay adds five courses beyond the home department's core requirements: CGS 200 (Advanced Studies in Critical Gender Studies, taken shortly after admission), CGS 299 (Practicum in Critical Gender Studies, during the final two years of dissertation writing), and three electives from preapproved seminars in participating departments (or petitioned courses with significant gender/sexuality content). At least one dissertation committee member must be drawn from the CGS core or affiliate faculty. Because the base degree is a research doctorate and this is an add-on specialization, there is no standalone fixed course worksheet."
   },
   {
    "code": "SU75",
@@ -8455,8 +8923,8 @@
    "degrees": [
     "PhD"
    ],
-   "reqUrl": "https://idgph.ucsd.edu/education/joint-doctoral-programs/irsu.html",
-   "deptNotes": "SDSU/UCSD joint research doctoral program; no coursework MS."
+   "reqUrl": "https://catalog.ucsd.edu/curric/IRSU.html",
+   "deptNotes": "Research doctorate offered as an SDSU-UC San Diego Joint Doctoral Program (JDP) in Interdisciplinary Research on Substance Use: requirements are milestone-based, not a fixed UC-San-Diego-published course worksheet. Per the UCSD catalog, students complete a minimum of 60 units total (24 semester units at SDSU in year 1 + 36 quarter units at UC San Diego in year 2), with coursework set jointly by the two campuses/advisor. Advancement to candidacy (required by end of year 3) requires completing coursework and passing a two-part qualifying examination (in-person after year 1; a take-home NIH-style grant proposal after year 2, each requiring at least 80% within two attempts), developing an NIH-style dissertation proposal, and passing an oral defense of that proposal. The dissertation may follow a primary-research or a secondary-research (three sequential first-authored publishable papers) format. Normative time is four years; maximum 6 years registered and 4 years of support. Because coursework is jointly administered with SDSU and driven by milestones/advisor rather than a fixed UCSD course list, no course worksheet is provided."
   },
   {
    "code": "LC75",
@@ -8467,8 +8935,8 @@
    "degrees": [
     "PhD"
    ],
-   "reqUrl": "https://cogsci.ucsd.edu/graduates/SDSU%20LCD%20Program/index.html",
-   "deptNotes": "SDSU/UCSD joint doctoral program; interdisciplinary 5-year research degree."
+   "reqUrl": "https://catalog.ucsd.edu/curric/LANG.html",
+   "deptNotes": "Research doctorate and joint doctoral program (SDSU/UC San Diego JDP in Language and Communicative Disorders): requirements are milestone-based (coursework set by the department/advisor plus qualifying exam, two lab rotations, two research projects, advancement to candidacy, and a dissertation), so no fixed university-published course worksheet with course numbers/titles/units exists. The catalog does state a broad category structure: a Tools requirement (~5 courses: two statistics/research design, one neuroanatomy/physiology, one language structure/theory, one professional survival skills), a Foundations requirement (~5 courses: two normal-language, three disorders-of-language), and an Electives requirement (at least 4 courses, minimum 3 in the chosen concentration) drawn from approved departments (Cognitive Science, Communication, Linguistics, Psychology, Computer Science, Neurosciences). Students choose one of three concentrations (Adult Language, Child Language, or Multilingualism); five-year curriculum; advancement to candidacy by end of year four; max eight years registered time at UC San Diego."
   },
   {
    "code": "LA76",
@@ -10845,7 +11313,7 @@
     "PhD"
    ],
    "reqUrl": "https://catalog.ucsd.edu/curric/MSED.html",
-   "deptNotes": "PhD only; joint doctoral program with SDSU."
+   "deptNotes": "Research doctorate AND joint doctoral program: the PhD in Mathematics and Science Education is awarded jointly by UC San Diego and San Diego State University, and its requirements are milestone-based (research apprenticeships, qualifying/comprehensive exams, advancement to candidacy, dissertation) rather than a fixed, university-published course worksheet, so no course worksheet is appropriate. Concrete facts the official pages state: designed for students holding a master's in biology, chemistry, mathematics, or physics; core coursework includes UC San Diego MSED 296A/296B/296C, MSED 295, MSED 298 and SDSU courses (MSE 603, MSE 801/802/820, plus a science-track TE610C/TE680 or additional math-track courses); three required research-methods courses (SDSU MSE 810 plus a quantitative/qualitative sequence such as UC San Diego PSYC 201A/201B, MATH 282A/282B, or EDS courses). Beyond the core, no fixed number of courses is required; students supplement with electives chosen with their advisor. Milestones: first-year evaluation (~24 units), written and oral comprehensive exams (end of year two), oral dissertation proposal defense (year three), advancement to candidacy by end of year four, and final dissertation defense (five-member committee). Normative time to degree: five years."
   },
   {
    "code": "MS76",
@@ -11021,7 +11489,9 @@
    "degrees": [
     "MS",
     "PhD"
-   ]
+   ],
+   "reqUrl": "https://registrar.ucsd.edu/catalog/11-12/curric/PATH.html",
+   "deptNotes": "Research doctorate: requirements are milestone-based (qualifying exams, advancement to candidacy, and dissertation), with coursework set by the department/advisor rather than a fixed university-published course worksheet. The Molecular Pathology graduate program (interdepartmental/interinstitutional, administered by the UCSD Department of Pathology with the Sanford-Burnham Institute) has been CLOSED to new-student entrance since the 2008 academic year and integrated into the Biomedical Sciences (BMS) graduate program as a track; incoming students now enter through BMS. The official catalog states a core curriculum (Molecular Biology of the Cell; Methods in Cellular and Molecular Pathology; The Molecular Pathology of Cancer; Neurologic and Muscle Disease; plus School of Medicine Histology and a human pathology overview course) and requires two electives totaling 6 units (options include Microbial Pathogenesis, 4 units, and Mouse Models for Human Disease, 2 units), but these are not published as a fixed unit-by-unit degree worksheet and course numbers are not enumerated on the official page, so no concrete course worksheet is provided. Milestones: First Qualifying Exam (minor proposition) by end of fall quarter of year 2; Second Qualifying Exam (major proposition, oral) by end of year 3 (must finish by end of year 4); advancement to candidacy within 4 years; max university support 6 years, 7 years total registration."
   },
   {
    "code": "MU75",
@@ -13164,7 +13634,128 @@
     "MAS"
    ],
    "reqUrl": "https://pmto.ucsd.edu/curriculum/index.html",
-   "deptNotes": "New Master of Advanced Studies (36 units), launching Fall 2026."
+   "deptNotes": "Master of Advanced Studies in Precision Medicine Therapeutics in Oncology (MAS PMTO), UC San Diego School of Medicine. Requires 36 units, all required (no electives). 18 distinct courses (PMTO 200-216, 299). Offered full-time (3 quarters) or part-time (6 quarters over 2 years); classes meet weekday late afternoons/evenings. Curriculum covers scientific, clinical, regulatory, policy, and business aspects of precision oncology, culminating in a faculty-mentored capstone (PMTO 201 Capstone Directed Study + PMTO 299 Capstone Project). This is a professional/terminal coursework-based MAS with a concrete published course structure. As a School of Medicine MAS, it is not listed in the general UCSD catalog curric pages; the department's own site is the authoritative source. Reference only; verify with the program.",
+   "groups": [
+    {
+     "id": "core",
+     "name": "Required Core Courses",
+     "units": 32,
+     "kind": "required",
+     "rule": "Complete all core PMTO courses (32 units).",
+     "courses": [
+      {
+       "code": "PMTO 200",
+       "title": "Precision Medicine for Cancer Screening",
+       "units": 1
+      },
+      {
+       "code": "PMTO 202",
+       "title": "Biological Basis of Precision Medicine in Cancer",
+       "units": 3
+      },
+      {
+       "code": "PMTO 203",
+       "title": "Companion Diagnostics in Oncology",
+       "units": 1
+      },
+      {
+       "code": "PMTO 204",
+       "title": "Analytical Approaches to Precision Medicine",
+       "units": 3
+      },
+      {
+       "code": "PMTO 205",
+       "title": "Precision Cancer Imaging & AI",
+       "units": 1
+      },
+      {
+       "code": "PMTO 206",
+       "title": "Functional Precision Oncology",
+       "units": 2
+      },
+      {
+       "code": "PMTO 207",
+       "title": "Genomics Alterations in Cancer",
+       "units": 3
+      },
+      {
+       "code": "PMTO 208",
+       "title": "Precision Immunotherapy",
+       "units": 3
+      },
+      {
+       "code": "PMTO 209",
+       "title": "Regulatory & Ethical Framework",
+       "units": 2
+      },
+      {
+       "code": "PMTO 210",
+       "title": "Cell and Gene Therapy",
+       "units": 4
+      },
+      {
+       "code": "PMTO 211",
+       "title": "Personalized Medicine for Infections",
+       "units": 2
+      },
+      {
+       "code": "PMTO 212",
+       "title": "Applied Precision Medicine",
+       "units": 1
+      },
+      {
+       "code": "PMTO 213",
+       "title": "Precision Neurosurgical Oncology",
+       "units": 1
+      },
+      {
+       "code": "PMTO 214",
+       "title": "Clinical Trial Drug Development",
+       "units": 2
+      },
+      {
+       "code": "PMTO 215",
+       "title": "Clinical Pharmacology and Regulatory Sciences",
+       "units": 1
+      },
+      {
+       "code": "PMTO 216",
+       "title": "Drug Commercialization",
+       "units": 2
+      }
+     ]
+    },
+    {
+     "id": "capstone",
+     "name": "Capstone",
+     "units": 4,
+     "kind": "required",
+     "rule": "Complete both capstone courses (4 units).",
+     "courses": [
+      {
+       "code": "PMTO 201",
+       "title": "Capstone Directed Study",
+       "units": 1
+      },
+      {
+       "code": "PMTO 299",
+       "title": "Capstone Project",
+       "units": 3
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "mas-pmto",
+     "name": "MAS Precision Medicine Therapeutics in Oncology",
+     "totalUnits": 36,
+     "note": "All 36 units are required; no electives. Full-time = 3 quarters, part-time = 6 quarters."
+    }
+   ],
+   "detailed": true,
+   "year": "2025-2026",
+   "pdf": "https://pmto.ucsd.edu/curriculum/index.html"
   },
   {
    "code": "PC81",
@@ -16908,11 +17499,11 @@
    "name": "Urban Studies and Planning",
    "award": "MA PHD",
    "degrees": [
-    "MA",
-    "PhD"
+    "PhD",
+    "MA"
    ],
-   "reqUrl": "https://usp.ucsd.edu/graduate/murp/curriculum.html",
-   "deptNotes": "Professional Master of Urban & Regional Planning (72 units) + separate Urban Planning PhD."
+   "reqUrl": "https://usp.ucsd.edu/graduate/phd/curriculum.html",
+   "deptNotes": "Research doctorate: requirements are milestone-based (foundation coursework set with the department/advisor, a third-year field examination of three papers plus oral defense, a candidacy/dissertation-proposal examination, apprentice teaching, and an original dissertation with final oral defense), so no fixed course worksheet is published. The department's Urban Studies and Planning PhD (ISIS US75) is 'ordinarily a six-year course of study' totaling 64 units (typically 13 four-unit courses plus a credit-bearing research colloquium and apprentice teaching), of which up to 16 units may be waived for students entering with a relevant master's. Stated required foundation courses include USP 201, 202, 210, 224, 240, and the USP 290 research colloquium sequence; students also take 2 advanced-methods courses, 1 human-settlements course, apprentice teaching (USP 500/501), and elective units. The department page states no master's (MA) degree is awarded along the way, so the MA label on this ISIS code has no separately published standalone coursework worksheet; it is administered as part of the doctoral program. No foreign language requirement."
   },
   {
    "code": "US76",
@@ -16924,7 +17515,187 @@
     "MURP"
    ],
    "reqUrl": "https://usp.ucsd.edu/graduate/murp/curriculum.html",
-   "deptNotes": "Professional Master of Urban & Regional Planning (72 units) + separate Urban Planning PhD."
+   "deptNotes": "Master of Urban and Regional Planning (MURP): a professional two-year, 72-unit program (typically 18 four-unit courses) comprising 7 required foundation courses (28 units), 1 advanced research methods course, 1 human settlements course, 1 practicum, 6 electives (24 units), and a two-quarter thesis or capstone sequence (8 units). Course codes, titles, and structure are from the department's published MURP curriculum page. Bucket units sum to 72.",
+   "groups": [
+    {
+     "id": "foundation",
+     "name": "Required Foundation Courses",
+     "units": 28,
+     "kind": "required",
+     "rule": "Complete all 7 foundation courses (28 units)",
+     "courses": [
+      {
+       "code": "USP 201",
+       "title": "Planning Histories",
+       "units": 4
+      },
+      {
+       "code": "USP 202",
+       "title": "Social and Spatial Justice in Planning Theories",
+       "units": 4
+      },
+      {
+       "code": "USP 210",
+       "title": "Introduction to Planning Research Methods",
+       "units": 4
+      },
+      {
+       "code": "USP 224",
+       "title": "Land Use Planning",
+       "units": 4
+      },
+      {
+       "code": "USP 225",
+       "title": "Planning Law and Policy",
+       "units": 4
+      },
+      {
+       "code": "USP 230",
+       "title": "Economic Analysis for Urban and Regional Planning",
+       "units": 4
+      },
+      {
+       "code": "USP 240",
+       "title": "Climate Justice and Planning",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "methods",
+     "name": "Advanced Research Methods",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose 1 course (4 units)",
+     "courses": [
+      {
+       "code": "USP 211",
+       "title": "Transdisciplinary Field Research",
+       "units": 4
+      },
+      {
+       "code": "USP 212",
+       "title": "Geographic Information Systems",
+       "units": 4
+      },
+      {
+       "code": "USP 213",
+       "title": "Urban Analytics",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "settlements",
+     "name": "Human Settlements",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose 1 course (4 units)",
+     "courses": [
+      {
+       "code": "USP 250",
+       "title": "Housing and Community Development",
+       "units": 4
+      },
+      {
+       "code": "USP 257",
+       "title": "Urbanisms in the Global South",
+       "units": 4
+      },
+      {
+       "code": "USP 270",
+       "title": "Environmental Policy and Planning",
+       "units": 4
+      },
+      {
+       "code": "USP 271",
+       "title": "Sustainable Development",
+       "units": 4
+      },
+      {
+       "code": "USP 280",
+       "title": "Transportation Planning",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "practicum",
+     "name": "Practicum",
+     "units": 4,
+     "kind": "pick",
+     "rule": "Choose 1 course (4 units)",
+     "courses": [
+      {
+       "code": "USP 277",
+       "title": "Urban Design Practicum",
+       "units": 4
+      },
+      {
+       "code": "USP 287",
+       "title": "Practicum in Community Planning",
+       "units": 4
+      },
+      {
+       "code": "USP 288",
+       "title": "Fieldwork in Migrant and Border Communities",
+       "units": 4
+      }
+     ]
+    },
+    {
+     "id": "electives",
+     "name": "Electives",
+     "units": 24,
+     "kind": "free",
+     "rule": "Complete 6 elective courses (24 units) from USP graduate offerings or approved cross-listed courses",
+     "courses": []
+    },
+    {
+     "id": "thesis-capstone",
+     "name": "Thesis or Capstone",
+     "units": 8,
+     "kind": "pick",
+     "rule": "Complete either the Thesis sequence (USP 290 + USP 295) OR the Capstone sequence (USP 296A + USP 296B) — 2 quarters, 8 units",
+     "courses": [
+      {
+       "code": "USP 290",
+       "title": "Thesis Research / Research Colloquium (thesis option)",
+       "units": 4,
+       "note": "Thesis option, quarter 1"
+      },
+      {
+       "code": "USP 295",
+       "title": "Thesis Preparation (thesis option)",
+       "units": 4,
+       "note": "Thesis option, quarter 2"
+      },
+      {
+       "code": "USP 296A",
+       "title": "Capstone Project I (capstone option)",
+       "units": 4,
+       "note": "Capstone option, quarter 1"
+      },
+      {
+       "code": "USP 296B",
+       "title": "Capstone Project II (capstone option)",
+       "units": 4,
+       "note": "Capstone option, quarter 2"
+      }
+     ]
+    }
+   ],
+   "plans": [
+    {
+     "id": "murp",
+     "name": "MURP (72 units)",
+     "totalUnits": 72,
+     "note": "Two-year professional master's; culminates in a thesis or capstone. Elective options include USP 248/254/255/256/265A-D and cross-listed courses (DSGN, GPEC, GPPS, MGTF, POLI, SOCG)."
+    }
+   ],
+   "detailed": true,
+   "year": "2024-2025",
+   "pdf": "https://usp.ucsd.edu/graduate/murp/curriculum.html"
   },
   {
    "code": "VA75",
