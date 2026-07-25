@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1017'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%235b8def' stroke-width='2' stroke-opacity='.55'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='none' stroke='%235b8def' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%235b8def'/%3E%3C/svg%3E">
 <!-- Start the critical dataset download during HTML parse, before the app JS runs.
-     as="fetch" + crossorigin so it matches the app's fetch('data.242d797061.json') (no double download).
+     as="fetch" with the same credentials mode as the app's fetch('data.242d797061.json')
+     — i.e. NO crossorigin, since fetch() defaults to credentials:'same-origin'. Adding
+     crossorigin would make the preload an anonymous CORS request, which on a cookie-gated
+     origin (e.g. a protected Vercel preview) redirects cross-origin and fails outright.
      hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
-<link rel="preload" href="data.242d797061.json" as="fetch" crossorigin>
-<link rel="prefetch" href="hist.520c32e21c.json" as="fetch" crossorigin>
+<link rel="preload" href="data.242d797061.json" as="fetch">
+<link rel="prefetch" href="hist.520c32e21c.json" as="fetch">
 <title>Easy-A Radar — UCSD GPA-friendly courses & professor ratings</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions, RateMyProfessors ratings, a schedule builder, and a graduate degree planner covering every major.">
 <meta name="theme-color" content="#0b1017">
