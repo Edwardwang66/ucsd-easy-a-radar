@@ -2007,7 +2007,9 @@ function init(DATA){
     const has=schItems.length>0;
     $('schedEmpty').hidden=has; $('schedGrid').hidden=!has;
     const cnt=$('schedTabCnt'); cnt.hidden=!has; cnt.textContent=schItems.length;
-    if(!has){ $('schedItems').innerHTML=''; const _c=$('cal'); if(_c)_c.innerHTML=''; return; }
+    if(!has){ $('schedItems').innerHTML=''; const _c=$('cal'); if(_c)_c.innerHTML='';
+      const _g=$('gaBody'); if(_g)_g.innerHTML='';   // clear walk/bike rows too, or they go stale
+      return; }
     const evs=schEvents(), confSet=new Set(evs.filter(e=>e.clash).map(e=>e.ci));
     schItems.forEach((it,ci)=>it._conf=confSet.has(ci));
     // final-exam overlaps (same date, overlapping time, different courses)
