@@ -1620,7 +1620,7 @@ function init(DATA){
     const sample=setL?`<span class="n">${setL.length}×</span><div class="yr ${setYr>=25?'recent':''}" title="Terms this instructor taught the course, per official SET evaluations">${setYr?'latest 20'+setYr:'taught'}</div>`
       :isNew2?`<span class="n">0×</span><div class="yr">no grades</div>`
       :isTBA?`<span class="n">—</span><div class="yr">${umbrella?faList.length+' instr':'TBA'}</div>`
-      :isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
+      :isRmp?`<span class="n">${r[C.n]}</span><div class="yr" title="RateMyProfessors reviews written specifically about this course. The RMP column shows this professor's total review count across all their courses.">for this course</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
     const instrLabel=isTBA?'FA26':isNew2?(isNewProf?'New instructor':'FA26 instructor'):isSet?'Instructor':'Past instructor';
     const displayName=isTBA?(umbrella?`Instructors vary · ${faList.length}`:'Instructor TBA'):instrShort(r[C.i]);
