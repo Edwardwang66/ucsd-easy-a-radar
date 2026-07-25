@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c121b"/><stop offset="1" stop-color="#080b11"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.12" r="0.7">
+      <stop offset="0" stop-color="#1c3f6b" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#080b11" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g stroke="#3b82f6" fill="none">
+    <circle cx="1010" cy="150" r="70" stroke-opacity="0.22"/>
+    <circle cx="1010" cy="150" r="135" stroke-opacity="0.15"/>
+    <circle cx="1010" cy="150" r="205" stroke-opacity="0.09"/>
+    <line x1="1010" y1="150" x2="1150" y2="60" stroke="#5b8def" stroke-opacity="0.5" stroke-width="3"/>
+    <circle cx="1150" cy="60" r="7" fill="#5b8def" stroke="none"/>
+  </g>
+  <text x="80" y="132" font-family="ui-monospace, Menlo, monospace" font-size="25" letter-spacing="5" fill="#5b8def" font-weight="700">UCSD · GPA INTELLIGENCE</text>
+  <text x="76" y="272" font-family="Helvetica, Arial, sans-serif" font-size="118" font-weight="800" fill="#f3f6fa">Easy-A <tspan fill="#5b8def">Radar</tspan></text>
+  <text x="80" y="348" font-family="Helvetica, Arial, sans-serif" font-size="35" fill="#b2bccb">Find UCSD's most GPA-friendly courses &amp; professors —</text>
+  <text x="80" y="398" font-family="Helvetica, Arial, sans-serif" font-size="35" fill="#b2bccb">real 2015–2026 grade distributions + RateMyProfessors.</text>
+  <g transform="translate(80,470)"><rect width="248" height="96" rx="16" fill="#111823" stroke="#22303f" stroke-width="1.5"/><text x="20" y="52" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="800" fill="#f3f6fa">5,187</text><text x="20" y="80" font-family="Helvetica, Arial, sans-serif" font-size="19" fill="#8493a6">course × prof</text></g>
+  <g transform="translate(352,470)"><rect width="248" height="96" rx="16" fill="#111823" stroke="#22303f" stroke-width="1.5"/><text x="20" y="52" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="800" fill="#f3f6fa">3.35</text><text x="20" y="80" font-family="Helvetica, Arial, sans-serif" font-size="19" fill="#8493a6">median GPA</text></g>
+  <g transform="translate(624,470)"><rect width="248" height="96" rx="16" fill="#111823" stroke="#22303f" stroke-width="1.5"/><text x="20" y="52" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="800" fill="#f3f6fa">52%</text><text x="20" y="80" font-family="Helvetica, Arial, sans-serif" font-size="19" fill="#8493a6">mean A rate</text></g>
+  <g transform="translate(896,470)"><rect width="248" height="96" rx="16" fill="#111823" stroke="#22303f" stroke-width="1.5"/><text x="20" y="52" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="800" fill="#f3f6fa">82%</text><text x="20" y="80" font-family="Helvetica, Arial, sans-serif" font-size="19" fill="#8493a6">RMP coverage</text></g>
+  <text x="80" y="602" font-family="ui-monospace, Menlo, monospace" font-size="22" fill="#6b7788">easy-a-radar.vercel.app</text>
+</svg>
