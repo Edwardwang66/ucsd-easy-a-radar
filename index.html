@@ -362,6 +362,34 @@
   .cal .ev .et{opacity:.9;font-size:9.5px}
   .cal .ev.clash{outline:2px solid #fff;outline-offset:-2px;box-shadow:0 0 0 2px var(--gF)}
   #leaflet-map{height:340px;width:100%;background:var(--surface-2)}
+  /* Getting around campus (walk/bike between classes) */
+  .ga-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);margin-top:14px;overflow:hidden}
+  .ga-head{padding:9px 14px;border-bottom:1px solid var(--line);background:var(--surface-2);font-size:12.5px;color:var(--muted)}
+  .ga-head b{color:var(--ink)}
+  .ga-body{padding:8px 12px}
+  .ga-day{margin:6px 0 10px}
+  .ga-dname{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin:0 0 4px}
+  .ga-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;border:1px solid var(--line);border-left-width:3px;margin-bottom:5px;font-size:12.5px;background:var(--surface-2)}
+  .ga-row .ga-time{font-family:var(--mono);font-size:10.5px;color:var(--muted);flex:none}
+  .ga-row .ga-path{flex:1;min-width:150px;color:var(--ink)}
+  .ga-row .ga-path b{font-family:var(--mono);font-size:11.5px}
+  .ga-row .ga-t{font-family:var(--mono);font-size:12px;flex:none;white-space:nowrap}
+  .ga-row .ga-gap{font-size:11px;flex:none;color:var(--muted);white-space:nowrap}
+  .ga-row.ok{border-left-color:#1F9D6B}
+  .ga-row.warn{border-left-color:#d9a441}
+  .ga-row.warn .ga-gap{color:#d9a441}
+  .ga-row.bad{border-left-color:#e2564d}
+  .ga-row.bad .ga-gap{color:#e2564d;font-weight:700}
+  .ga-empty,.ga-load{padding:12px;font-size:12.5px;color:var(--muted)}
+  .ga-lookup{border-top:1px solid var(--line);padding:11px 14px}
+  .ga-lk-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:8px}
+  .ga-lk-row{display:flex;align-items:center;gap:8px}
+  .ga-lk-row select{flex:1;min-width:0;padding:8px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-size:12.5px;font-family:var(--sans)}
+  .ga-arrow{color:var(--muted);flex:none}
+  .ga-lk-out{margin-top:9px;font-size:13px;color:var(--ink);min-height:18px;line-height:1.6}
+  .ga-lk-out .g{font-family:var(--mono)}
+  .ga-lk-out a{color:var(--accent-2);text-decoration:none;font-weight:600}
+  .ga-foot{padding:9px 14px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.5}
   .map-card{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
   .map-head{padding:11px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
   .map-head b{color:var(--ink)}
@@ -774,6 +802,20 @@
        <div class="map-card">
          <div class="map-head" id="mapHead"><b>Campus map</b> — buildings for your selected sections</div>
          <div id="leaflet-map"></div>
+       </div>
+       <div class="ga-card" id="gaCard">
+         <div class="ga-head"><b>Getting around campus</b> — walk / bike time between your back-to-back classes</div>
+         <div id="gaBody" class="ga-body"></div>
+         <div class="ga-lookup">
+           <div class="ga-lk-title">Any two buildings</div>
+           <div class="ga-lk-row">
+             <select id="gaFrom" aria-label="From building"></select>
+             <span class="ga-arrow">→</span>
+             <select id="gaTo" aria-label="To building"></select>
+           </div>
+           <div id="gaLkOut" class="ga-lk-out"></div>
+         </div>
+         <div class="ga-foot">Times are real OpenStreetMap walking / cycling routes (precomputed). Bike times ignore parking &amp; walk-your-bike zones — treat as a lower bound.</div>
        </div>
      </div>
    </div>
@@ -1784,7 +1826,7 @@ function init(DATA){
       for(const s of secs){
         const days=parseDays(s[S_DAYS]),a=parseMin(s[S_START]),b=parseMin(s[S_END]);
         if(a==null||b==null||!days.length)continue;
-        for(const d of days) evs.push({d,a,b,ci,color,code:it.k,type:s[S_TYPE]});
+        for(const d of days) evs.push({d,a,b,ci,color,code:it.k,type:s[S_TYPE],bld:s[S_BLD]||'',room:s[S_ROOM]||''});
       }
     });
     for(let i=0;i<evs.length;i++)for(let j=i+1;j<evs.length;j++){
@@ -1901,6 +1943,66 @@ function init(DATA){
       ${it._finConf?'<div class="conf-note">⚠ Final exam overlaps another course’s final</div>':''}
     </div>`;
   }
+  // ---- Getting around campus: walk/bike times between buildings ----
+  let WALK=null, walkPromise=null;
+  function ensureWalk(){
+    if(WALK) return Promise.resolve(WALK);
+    if(walkPromise) return walkPromise;
+    walkPromise=fetch('walkbike.965ef1e4c6.json').then(r=>r.ok?r.json():null).then(j=>{
+      if(j) j._idx=Object.fromEntries(j.names.map((n,i)=>[n,i]));
+      WALK=j; return j;
+    }).catch(()=>null);
+    return walkPromise;
+  }
+  function walkPair(a,b){ if(!WALK)return null; const i=WALK._idx[a],j=WALK._idx[b]; if(i==null||j==null)return null; return {walk:WALK.walk[i][j],bike:WALK.bike[i][j],m:WALK.meters[i][j],ci:WALK.coords[i],cj:WALK.coords[j]}; }
+  function wbMin(t){ return t<1?'<1':String(Math.round(t)); }
+  function minLabel(m){ let h=Math.floor(m/60),mm=m%60,ap=h<12?'a':'p',hh=h%12; if(hh===0)hh=12; return hh+':'+String(mm).padStart(2,'0')+ap; }
+  function gmapsDir(c1,c2){ return 'https://www.google.com/maps/dir/?api=1&origin='+c1[0]+','+c1[1]+'&destination='+c2[0]+','+c2[1]+'&travelmode=walking'; }
+  function renderTransitions(){
+    const host=$('gaBody'); if(!host) return;
+    if(!WALK){ host.innerHTML='<div class="ga-load">Loading walk / bike times…</div>'; ensureWalk().then(w=>{ if(w){ gaFillSelects(); renderTransitions(); } else host.innerHTML='<div class="ga-empty">Couldn’t load campus distances.</div>'; }); return; }
+    const evs=schEvents().filter(e=>e.bld && WALK._idx[e.bld]!=null);
+    const DAYNAMES=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    let html='';
+    for(let d=0; d<5; d++){
+      const day=evs.filter(e=>e.d===d).sort((x,y)=>x.a-y.a||x.b-y.b);
+      const rows=[];
+      for(let i=0;i+1<day.length;i++){
+        const A=day[i],B=day[i+1];
+        if(A.bld===B.bld) continue;                    // same building — no walk
+        const t=walkPair(A.bld,B.bld); if(!t) continue;
+        rows.push({A,B,t,gap:B.a-A.b});
+      }
+      if(!rows.length) continue;
+      html+='<div class="ga-day"><div class="ga-dname">'+DAYNAMES[d]+'</div>'+rows.map(r=>{
+        const need=r.t.walk;
+        const cls=r.gap<0?'bad':(r.gap<need?'bad':(r.gap<need+3?'warn':'ok'));
+        const gapTxt=r.gap<0?'overlaps':(r.gap+' min break'+(r.gap<need?' · tight':''));
+        return '<div class="ga-row '+cls+'">'
+          +'<span class="ga-time">'+minLabel(r.A.b)+'→'+minLabel(r.B.a)+'</span>'
+          +'<span class="ga-path"><b>'+esc(r.A.code)+'</b> '+esc(r.A.bld)+' → <b>'+esc(r.B.code)+'</b> '+esc(r.B.bld)+'</span>'
+          +'<span class="ga-t">🚶 '+wbMin(r.t.walk)+' · 🚲 '+wbMin(r.t.bike)+' min</span>'
+          +'<span class="ga-gap">'+gapTxt+'</span>'
+          +'</div>';
+      }).join('')+'</div>';
+    }
+    host.innerHTML=html||'<div class="ga-empty">No back-to-back classes in different buildings — nothing to walk between. 🎉</div>';
+  }
+  function gaFillSelects(){
+    if(!WALK) return;
+    const from=$('gaFrom'), to=$('gaTo'); if(!from||from.options.length) return;
+    const opts='<option value="">Select building…</option>'+WALK.names.slice().sort((a,b)=>a.localeCompare(b)).map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+    from.innerHTML=opts; to.innerHTML=opts;
+    from.onchange=to.onchange=gaLookup;
+  }
+  function gaLookup(){
+    const out=$('gaLkOut'), a=$('gaFrom').value, b=$('gaTo').value;
+    if(!a||!b){ out.innerHTML=''; return; }
+    if(a===b){ out.innerHTML='Same building.'; return; }
+    const t=walkPair(a,b); if(!t){ out.innerHTML='No route data.'; return; }
+    out.innerHTML='<span class="g">🚶 '+wbMin(t.walk)+' min walk · 🚲 '+wbMin(t.bike)+' min bike · '+t.m+' m</span> · '
+      +'<a href="'+gmapsDir(t.ci,t.cj)+'" target="_blank" rel="noopener">Directions ↗</a>';
+  }
   function renderSchedule(){
     const has=schItems.length>0;
     $('schedEmpty').hidden=has; $('schedGrid').hidden=!has;
@@ -1933,6 +2035,7 @@ function init(DATA){
     {const btn=$('openAllPages');if(btn){btn.disabled=schItems.length===0;const c=$('openAllCnt');if(c)c.textContent=schItems.length?`· ${schItems.length}`:'';}}
     if(calMode==='finals') renderCal(finalsEvents(),FINALS_LABELS); else renderCal(evs);
     renderMap();
+    renderTransitions();
   }
   let calMode='week';
   function setCalMode(m){
