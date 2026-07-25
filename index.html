@@ -1413,7 +1413,7 @@ function init(DATA){
   // most SET instructors are promoted to their own src=5 row) falls back to the whole course.
   function setListForRow(r){
     const list=SET[CK(r[C.s],r[C.c])]; if(!list||!list.length) return null;
-    if(!r[C.i]) return list;
+    if(!r[C.i]) return null;   // no-instructor rows (TBA / umbrella): every real SET instructor is promoted to its own src=5 row, so nothing to show here
     const mine=list.filter(e=>setInstrMatch(e.i,r[C.i]));
     return mine.length?mine:null;
   }
@@ -1565,7 +1565,8 @@ function init(DATA){
     const idx=RI.get(r), isOpen=expanded.has(idx);
     const code=r[C.s]+'-'+r[C.c];
     const off=r[C.off]?'<span class="badge-off" title="This course runs in Fall 2026.">Offered</span>':'';
-    const setBadge=setListForRow(r)?'<span class="badge-set" title="Official UCSD SET course evaluations available — expand this row for this instructor’s per-year report links">SET</span>':'';
+    const setL=setListForRow(r);
+    const setBadge=setL?'<span class="badge-set" title="Official UCSD SET course evaluations available — expand this row for this instructor’s per-year report links">SET</span>':'';
     const fakey=CK(r[C.s],r[C.c]);
     const faList=(DATA.fa&&DATA.fa[fakey])||null;
     const umbrella=isTBA&&faList&&faList.length>1;   // research / independent study (many advisors)
@@ -1613,10 +1614,13 @@ function init(DATA){
     }
     const rmpStar=rq==null?'':`<span class="rmpq"><span class="star">★</span>${rq.toFixed(1)}</span>`;
     const yr=r[C.y],recent=(yr!=null&&yr>=25);
-    const sample=isNew2?`<span class="n">0×</span><div class="yr">no grades</div>`
+    // Any row with SET evaluations shows times-taught (SET term count) — takes precedence over
+    // the RMP ratings count, so it stays in sync with the per-year list in the expansion.
+    const setYr=setL?Math.max(0,...setL.map(e=>{const m=(e.t||'').match(/(\d{2})$/);return m?+m[0]:0})):0;
+    const sample=setL?`<span class="n">${setL.length}×</span><div class="yr ${setYr>=25?'recent':''}" title="Terms this instructor taught the course, per official SET evaluations">${setYr?'latest 20'+setYr:'taught'}</div>`
+      :isNew2?`<span class="n">0×</span><div class="yr">no grades</div>`
       :isTBA?`<span class="n">—</span><div class="yr">${umbrella?faList.length+' instr':'TBA'}</div>`
       :isRmp?`<span class="n">${r[C.n]}</span><div class="yr">course ratings</div>`
-      :isSet?`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}" title="Times this instructor taught the course, per SET evaluations">${yr!=null?'latest 20'+yr:'taught'}</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
     const instrLabel=isTBA?'FA26':isNew2?(isNewProf?'New instructor':'FA26 instructor'):isSet?'Instructor':'Past instructor';
     const displayName=isTBA?(umbrella?`Instructors vary · ${faList.length}`:'Instructor TBA'):instrShort(r[C.i]);
