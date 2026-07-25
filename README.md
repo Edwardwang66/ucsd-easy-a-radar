@@ -164,7 +164,7 @@ returns `index.html` and serves `*.json` as static files works.
 `data.json` is produced by joining grade JSONs, RMP professors, and the FA26 catalog. The
 current-term instructor columns (`fa` map + `cur` flag) and `schedule.json` are both derived from the
 [WebReg Course Planner](https://github.com/SahirSSharma/WebReg-Course-Planner) `data/catalog.json`
-and `data/buildings.json` (MIT-licensed, © Sahir Sharma). To refresh, pull a newer catalog snapshot
+and `data/buildings.json` (MIT-licensed, © Sahir Sharma) Huge Thanks. To refresh, pull a newer catalog snapshot
 and re-run the join. The schemas (`cols` / `titles` / `recs` / `fa` / `alias` / `newProf`, and
 `secCols` / `courses` / `buildings`) are self-describing.
 
