@@ -3073,7 +3073,13 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
       if(!mq.matches){ setHidden(false); lastY=y; return; }   // desktop: always visible
       if(y<=TOP||keepShown()){ setHidden(false); lastY=y; return; }
       var dy=y-lastY;
-      if(dy>DELTA) setHidden(true);          // scrolling down → tuck away
+      if(dy>DELTA){                          // scrolling down → tuck away…
+        // …but only once the bar is actually pinned to the top. Before it sticks,
+        // it sits right below the tab bar, so translateY(-116%) would lift it over
+        // the tabs (mobile overlap bug). Measure only while shown — a hidden bar's
+        // own transform would otherwise fake a "pinned" (negative) top.
+        if(hidden || toolbar.getBoundingClientRect().top<=1) setHidden(true);
+      }
       else if(dy<-DELTA) setHidden(false);   // scrolling up → bring it back
       lastY=y;
     });
