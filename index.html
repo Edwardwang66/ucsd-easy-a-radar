@@ -2777,15 +2777,20 @@ function init(DATA){
     let done=false;
     const commit=save=>{
       if(done)return; done=true;
+      // If a same-row control (✕ / grades↗ / done checkbox) was clicked, its handler
+      // ran first; skip re-rendering (the ✕ already removed this course and re-rendered).
+      const gone=!dpModel.courses.includes(c);
       const v=inp.value.trim();
-      if(save && v && v!==c.name){c.name=v; dpSave();}
-      dpRender();                             // refresh subject → grades↗ link + summary
+      if(!gone && save && v && v!==c.name){c.name=v; dpSave();}
+      if(!gone) dpRender();                    // refresh subject → grades↗ link + summary
     };
     inp.onkeydown=e=>{
       if(e.key==='Enter'){e.preventDefault();commit(true);}
       else if(e.key==='Escape'){e.preventDefault();commit(false);}
     };
-    inp.onblur=()=>commit(true);
+    // Commit AFTER the click that caused the blur — a synchronous dpRender() here would
+    // destroy the clicked control before its click fires, swallowing it (blur-before-click).
+    inp.onblur=()=>setTimeout(()=>commit(true),0);
   }
   function dpUpdateSummary(){
     const total=dpSum(dpModel.courses), done=dpSum(dpModel.courses.filter(c=>c.done));
