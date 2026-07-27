@@ -888,6 +888,7 @@
    .dp-btn.ghost{background:var(--surface);color:var(--accent-2);border-color:var(--line-strong)}
    .dp-btn.ghost:hover{background:var(--surface-2)}
    .dp-btn.sm{padding:6px 11px;font-size:12.5px}
+   .dp-btn.ghost[aria-pressed="true"]{background:color-mix(in srgb,var(--gold) 18%,var(--surface));border-color:var(--gold);color:var(--ink)}
    .dp-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px;align-items:center}
    .dp-toolbar .sp{flex:1}
    .dp-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin:12px 0}
@@ -908,6 +909,11 @@
    .dp-quarters{display:grid;grid-template-columns:repeat(var(--dpqc,3),1fr)}
    .dp-q{border-right:1px dashed var(--line);min-height:118px;display:flex;flex-direction:column}
    .dp-q:last-child{border-right:none}
+   /* Summer is an optional, lighter-load term — tint it warm so it reads as extra. */
+   .dp-q.sum{background:color-mix(in srgb,var(--gold) 6%,transparent)}
+   .dp-q.sum .dp-qhead{color:var(--gold)}
+   .dp-q.sum .opt{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);
+     border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);border-radius:20px;padding:0 5px;margin-left:5px}
    .dp-qhead{display:flex;justify-content:space-between;align-items:center;padding:7px 11px;font-size:12px;font-weight:700;color:var(--ink)}
    .dp-qu{font-family:var(--mono);font-weight:700;padding:1px 7px;border-radius:20px;font-size:11px}
    .dp-qu.ok{background:color-mix(in srgb,#1F9D6B 16%,transparent);color:#1F9D6B}
@@ -1059,6 +1065,7 @@
    <div id="dpApp" hidden>
      <div class="dp-toolbar">
        <button class="dp-btn ghost sm" id="dpReset">↺ Reset to official</button>
+       <button class="dp-btn ghost sm" id="dpSummer" aria-pressed="false" title="Show a Summer session column each year — drag or add courses to catch up, lighten a heavy term, or graduate early">☀ Summer terms</button>
        <span class="sp"></span>
        <button class="dp-btn ghost sm" id="dpImport">⭱ Import</button>
        <button class="dp-btn ghost sm" id="dpExport">⭳ Save to file</button>
@@ -2572,6 +2579,7 @@ function init(DATA){
       $('dpType').onchange=()=>{$('dpLoad').disabled=!$('dpType').value;};
       $('dpLoad').onclick=dpLoadOfficial;
       $('dpReset').onclick=()=>{if(dpOfficial){dpModel=JSON.parse(JSON.stringify(dpOfficial));dpSave();dpRender();}};
+      $('dpSummer').onclick=()=>{if(!dpModel)return;dpModel.showSummer=!dpModel.showSummer;dpSave();dpRender();};
       $('dpExport').onclick=dpExport;
       $('dpImport').onclick=()=>$('dpFile').click();
       $('dpFile').onchange=dpImport;
@@ -2664,13 +2672,24 @@ function init(DATA){
     dpOfficial=JSON.parse(JSON.stringify(dpModel));
     $('dpNotes').value=''; dpSave(); dpRender();
   }
-  function dpMaxQuarter(){return Math.max(3,...dpModel.courses.map(c=>c.quarter));}
+  // A Summer column (q=4) shows when the user turns it on, or whenever a course
+  // already lives in Summer (so imported/dragged plans never hide courses).
+  function dpMaxQuarter(){return Math.max(dpModel.showSummer?4:3,...dpModel.courses.map(c=>c.quarter));}
+  // Summer is a light, optional session — a sub-12-unit load is normal there, so
+  // only flag it when genuinely overloaded; Fall/Winter/Spring keep the 12–18 zone.
+  function dpQFlag(q,u){
+    if(u<=0) return '';
+    if(q===4) return u>12?'hi':'ok';
+    return u<12?'lo':u>18?'hi':'ok';
+  }
   function dpRender(){
     if(!dpModel)return;
     $('dpEmpty').hidden=true; $('dpApp').hidden=false;
     $('dpTitle').textContent=dpModel.meta.title;
     $('dpSub').textContent=dpModel.meta.collegeName+' · Entering '+dpModel.meta.year+'–'+(dpModel.meta.year+1)+' · '+dpModel.meta.L+'-year plan';
     const qc=dpMaxQuarter(), host=$('dpYears'); host.innerHTML=''; host.style.setProperty('--dpqc',qc);
+    const sumShown=qc>=4, sb=$('dpSummer');
+    if(sb){sb.setAttribute('aria-pressed',sumShown?'true':'false');sb.textContent=sumShown?'☀ Hide summer':'☀ Summer terms';}
     for(let y=1;y<=dpModel.meta.L;y++){
       const yc=dpModel.courses.filter(c=>c.year===y);
       const row=document.createElement('div'); row.className='dp-year';
@@ -2678,9 +2697,10 @@ function init(DATA){
       const qs=document.createElement('div'); qs.className='dp-quarters';
       for(let q=1;q<=qc;q++){
         const qcs=yc.filter(c=>c.quarter===q), qu=dpSum(qcs);
-        const flag=qu===0?'':qu<12?'lo':qu>18?'hi':'ok';
-        const cell=document.createElement('div'); cell.className='dp-q';
-        cell.innerHTML='<div class="dp-qhead"><span>'+(DP_QLABEL[q-1]||('Q'+q))+'</span><span class="dp-qu '+flag+'">'+dpFmt(qu)+'</span></div>';
+        const flag=dpQFlag(q,qu);
+        const isSum=q===4;
+        const cell=document.createElement('div'); cell.className='dp-q'+(isSum?' sum':'');
+        cell.innerHTML='<div class="dp-qhead"><span>'+(DP_QLABEL[q-1]||('Q'+q))+(isSum?'<span class="opt">optional</span>':'')+'</span><span class="dp-qu '+flag+'">'+dpFmt(qu)+'</span></div>';
         const body=document.createElement('div'); body.className='dp-qbody'; body.dataset.year=y; body.dataset.q=q;
         qcs.forEach(c=>body.appendChild(dpCourseEl(c)));
         const add=document.createElement('div'); add.className='dp-add';
@@ -2716,7 +2736,7 @@ function init(DATA){
   function dpUpdateSummary(){
     const total=dpSum(dpModel.courses), done=dpSum(dpModel.courses.filter(c=>c.done));
     let flags=0;
-    for(let y=1;y<=dpModel.meta.L;y++)for(let q=1;q<=dpMaxQuarter();q++){const u=dpSum(dpModel.courses.filter(c=>c.year===y&&c.quarter===q));if(u>0&&(u<12||u>18))flags++;}
+    for(let y=1;y<=dpModel.meta.L;y++)for(let q=1;q<=dpMaxQuarter();q++){const u=dpSum(dpModel.courses.filter(c=>c.year===y&&c.quarter===q));const f=dpQFlag(q,u);if(f==='lo'||f==='hi')flags++;}
     $('dpTotal').textContent=dpFmt(total);
     $('dpDone').textContent=dpFmt(done);
     $('dpRemain').textContent=dpFmt(Math.max(0,180-done));
