@@ -73,7 +73,8 @@ function main() {
   fs.writeFileSync(dataPath, JSON.stringify(data));
 
   console.log(`set: ${courses} courses, ${entries} section reports (skipped ${skipped} without code/sid)`);
-  console.log("Next: node build.js");
+  console.log("\nNext: node healthcheck.js   # reconcile — orphans / coverage / key drift");
+  console.log("      node build.js         # then re-hash data.json + rewrite index.html");
 }
 
 main();

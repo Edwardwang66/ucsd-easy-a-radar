@@ -130,4 +130,5 @@ console.log("  catalog-only rows add: " + added);
 console.log("  prerequisites added  : " + preAdded);
 console.log("  total rows           : " + d.recs.length);
 console.log("  data.json            : " + mb(fs.statSync(DATA).size));
-console.log("\nNext: node build.js");
+console.log("\nNext: node healthcheck.js   # reconcile — orphans / coverage / key drift");
+console.log("      node build.js         # then re-hash data.json + rewrite index.html");

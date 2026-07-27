@@ -159,6 +159,58 @@ returns `index.html` and serves `*.json` as static files works.
   that program's `groups` in `gradplans.json`, then re-run `node build.js`. Reference only — confirm
   with an ECE graduate advisor and the official worksheet.
 
+## Reconciling after a merge (`healthcheck.js`)
+
+Every dataset in `data.json` is joined on one course key —
+`CK(subj,num) = SUBJ + " " + NUM.replace(/[^0-9A-Z]/g,"")`, identical to `index.html` —
+plus instructor-name matching. **All the `merge-*.js` scripts are superset unions: they only
+add, never delete.** That's deliberate (a partial scrape can't regress coverage), but it means
+UCSD's course churn — courses added, retired, renumbered each term — silently rots two things
+that no merge can self-heal:
+
+- **Orphans** — a map still points at a course/instructor that no longer exists.
+- **Coverage gaps** — a newly offered course never got joined.
+
+`healthcheck.js` is the accountant for both. It is **read-only** — it never edits data, it only
+reports, so you decide what to prune.
+
+```bash
+node healthcheck.js            # human-readable report
+node healthcheck.js --strict   # exit 1 on any ERROR   (CI gate)
+node healthcheck.js --pedantic # exit 1 on ERROR or WARN
+node healthcheck.js --json     # machine-readable findings
+node healthcheck.js --all      # don't truncate the per-finding lists
+```
+
+**The reconciliation loop** — every merge script now ends by pointing here:
+
+```bash
+node merge-catalog.js ../ucsd-course-prereqs.json   # (or merge-set.js / merge-seats.js)
+node healthcheck.js        # 1. reconcile — read the findings, prune/re-map by hand
+node healthcheck.js        # 2. re-run until only expected findings remain
+node build.js              # 3. re-hash data.json + rewrite index.html
+git commit                 # 4. commit data + index.html together
+```
+
+**How to read the three severities:**
+
+| Severity | Meaning | What to do |
+|---|---|---|
+| **ERROR** | Breaks an in-app lookup, or violates the schema — a non-canonical map key, a title index out of range, a malformed `set`/`seats`/`fa` entry. | Always fix. A non-canonical key means `CK()` can *never* hit that entry. |
+| **WARN** | Churn drift — orphaned `set`/`seats`/`pre` keys, `fa` not rebuilt from the current `schedule.json`, `off`/`cur` flags disagreeing with the live schedule, `seats` key-shape regressions, offered courses with no `recs` row. | Prune orphans; re-run the relevant join. A genuinely-new course having no grade history is expected. |
+| **INFO** | Fuzzy, needs a human — probable **renumber twins** (same subject+title split across an unoffered "history" code and an offered "no-history" code), stale `alias`/`aka`/`block`/`rmpAka`/`newProf`, missing prerequisites or titles. | Review, don't automate. These have a real false-positive rate by design. |
+
+**Per-term checklist** (new quarter catalog → new `schedule.json`):
+
+1. Rebuild `schedule.json` from a fresh WebReg catalog snapshot.
+2. Re-run the current-term join (`fa` / `cur` / `newProf`) — see `schedule-instructor.js`.
+3. **Re-verify `alias`**: renames are resolved by *course overlap*, so when a professor's course
+   set changes, an old alias can start matching a same-surname stranger. `healthcheck.js` flags
+   aliases that are no longer current-term instructors; confirm each one by hand.
+4. `node merge-seats.js` / `merge-set.js` if you have fresh exports.
+5. `node healthcheck.js` → prune orphans, fill coverage gaps.
+6. `node build.js`, then commit.
+
 ## Regenerating data.json / schedule.json
 
 `data.json` is produced by joining grade JSONs, RMP professors, and the FA26 catalog. The
