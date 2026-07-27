@@ -537,6 +537,8 @@
     background:var(--accent-soft);color:var(--accent);border-radius:7px;padding:3px 9px;font-size:11.5px;font-weight:600;
     cursor:pointer;font-family:var(--sans);white-space:nowrap;line-height:1.3}
   .ge-browse:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .ge-browse-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .ge-browse-row .ge-browse{margin-top:0}
   .ge-tbl td .subj-hint{display:block;margin-top:3px;font-size:11px;color:var(--faint);font-family:var(--mono)}
   .ge-cta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:2px 18px 16px}
   .ge-cta .lab{font-size:11.5px;color:var(--muted)}
@@ -1321,28 +1323,56 @@ window.GE_REQS={
     ['UCSD Guardian · college GPA compare','https://ucsdguardian.org/2018/01/21/ucsd-writing-requirements-who-has-it-the-hardest-2/','secondary']
   ]
 };
-/* Subjects that commonly satisfy each GE area → used by the "Find courses" bridge to pre-filter
-   the rankings (multi-select) sorted by easy-A. Codes are intersected with the dataset at click
-   time, so unknown/unoffered subjects drop out. Writing sequences map to their exact subject code
-   (precise); breadth areas map to the common qualifying subjects (approximate — confirm the
-   approved list). Areas that span many subjects (open breadth, regional, PofC) intentionally omit. */
+/* Subjects that satisfy each GE area → used by the "Find courses" bridge to pre-filter the
+   rankings (multi-select) sorted by easy-A. Codes are intersected with the dataset at click
+   time and the bridge forces undergrad level, so unknown / unoffered / grad-only codes drop
+   out harmlessly. A value can be either a flat code list (one button) or {sub-area → codes}
+   (one button per sub-area, for bundled breadth like Seventh Alternatives / Eighth Breadth /
+   Sixth Modes of Inquiry). Writing sequences are exact; breadth lists are DEPARTMENT-level
+   approximations of the colleges' course-level approved lists (verified 2026-07 against each
+   college's catalog / GE pages — Sixth & Eighth from official course lists, Seventh & Warren
+   & ERC from division structure). Genuinely open or non-course areas (Marshall Disciplinary
+   Breadth = any subject outside the major; ERC/Sixth writing-portfolio; Experiential Learning;
+   Language proficiency by exam) are intentionally left without a button. Confirm the exact
+   approved list with your college + the catalog. */
 (function(){
-  var NS=['BILD','BICD','BIPN','BIBC','BIMM','BIEB','CHEM','PHYS','SIO','ESYS'];   // natural science
-  var MA=['MATH','DSC'];                                                            // math / quant
-  var AR=['MUS','VIS','TDGE','TDHT','TDMV','TDPR','TDAC','TDDE','TDDR','TDPW','DANC']; // fine arts
-  var SS=['ANTH','ANBI','ANSC','ANAR','ECON','POLI','PSYC','SOCI','SOCG','COMM','USP','LATI','LIGN','COGS','ETHN','GLBH','EDS']; // social science
-  var HU=['LTEN','LTWL','LTCS','LTWR','LTEA','LTKO','LTSP','LTFR','PHIL','HILD','HIEU','HIUS','HITO','RELI','CLAS','AAS']; // humanities
-  var STAT=['MATH','DSC','COGS','PSYC','ECON'];                                     // statistics-flavored
-  var QUANT=['MATH','DSC','PHIL','CSE'];                                            // calc/stats/logic/programming
+  // Broad UCSD academic-division groups, reused across colleges.
+  var ARTS=['MUS','VIS','ICAM','DSGN','FILM','TDAC','TDCH','TDDE','TDDM','TDDR','TDGE','TDHD','TDHT','TDMV','TDPF','TDPR','TDPW','TDTR'];
+  var HUM=['LTAF','LTAM','LTCH','LTCO','LTCS','LTEA','LTEN','LTEU','LTFR','LTGK','LTGM','LTIT','LTKO','LTLA','LTRU','LTSP','LTTH','LTWL','LTWR','PHIL','RELI','CLAS','JUDA','JWSP','HUM','MMW','HIAF','HIEA','HIEU','HIGL','HILA','HILD','HINE','HISA','HISC','HITO','HIUS','CHIN','JAPN','LIAB','LIFR','LIGM','LIHL','LIIT','LIPO','LISL','LISP','LIDS'];
+  var NATSCI=['BILD','BICD','BIPN','BIBC','BIMM','BIEB','BISP','BNFO','CHEM','PHYS','ASTR','SIO','ESYS','ENVR','NEU'];
+  var ENGR=['CSE','ECE','MAE','BENG','NANO','SE','CENG','MATS','ENG','COSE'];
+  var MATHQ=['MATH','DSC'];
+  var SOCSCI=['ANTH','ANAR','ANBI','ANSC','ECON','POLI','PSYC','SOC','SOCE','SOCG','SOCI','COGS','LIGN','LING','USP','ETHN','GLBH','EDS','COMM','INTL','HDP','HDS','CGS','AAPI','AAS','LATI','CSS','CCS'];
+  var LANG=['CHIN','JAPN','LIAB','LIFR','LIGM','LIHL','LIIT','LIPO','LISL','LISP','LIDS','LTGK','LTLA','LTKO','LTRU','JWSP'];
+  var QUANT=['MATH','DSC','PHIL','CSE'];   // calc / stats / logic / programming
+  // Eighth publishes explicit per-area approved COURSE lists; these are the prefixes present.
+  var E8_ARTS=['FILM','MUS','TDAC','TDDM','TDGE','TDHT','TDMV','VIS'];
+  var E8_HUM=['AAS','CLAS','ENVR','GSS','HIAF','HILA','HILD','HITO','HIUS','LTAF','LTAM','LTCS','LTEN','LTWL','LTWR','PHIL','RELI','CHIN','JAPN','JWSP','LIAB','LIFR','LIGM','LIHL','LIIT','LIPO','LISL','LISP','LTFR','LTGK','LTGM','LTIT','LTKO','LTLA','LTRU','LTSP'];
+  var E8_NS=['ASTR','BILD','CHEM','ENVR','ESYS','PH','PHYS','SIO'];
+  var E8_QE=['BILD','COGS','CSE','DSC','DSGN','ECON','EDS','ENG','HDS','MATH','MGT','PH','PHIL','POLI','PSYC','SOCI','USP'];
+  var E8_SS=['ANBI','ANSC','ANTH','CCS','CGS','COGS','COMM','ECON','EDS','ENVR','ETHN','GLBH','HDS','HMNR','LATI','LIGN','MGT','POLI','PSYC','SOCI','USP'];
+  // Sixth GE Requirements PDF department lists.
+  var S6_SS=['ANTH','CGS','COGS','COMM','ECON','EDS','ETHN','INTL','LATI','LIGN','MGT','POLI','PSYC','SOCI','USP'];
+  var S6_HU=['AAS','CHIN','COMM','GSS','HILD','JAPN','JWSP','MUS','PHIL','RELI','TDGE','TDHD','TDHT','VIS','LTAF','LTAM','LTCH','LTCO','LTCS','LTEA','LTEN','LTEU','LTFR','LTGK','LTGM','LTIT','LTKO','LTLA','LTRU','LTSP','LTTH','LTWL','LIAB','LIFR','LIGM','LIHL','LIIT','LIPO','LISL','LISP'];
+  var S6_NS=['ANTH','ASTR','BILD','CHEM','COGS','ENVR','ESYS','PHYS','SIO'];
+  var S6_ML=['LIGN','MATH','PHIL'];
+  var S6_IT=['BILD','CENG','COGS','CSE','CSS','DSC','ECE','MAE','NANO','SE'];
+  var S6_DATA=['BENG','CENG','COGS','CSE','ECE','ECON','HDS','MAE','MATH','MGT','NANO','POLI','PSYC','SE','SIO','SOCI'];
+  var S6_ART=['COMM','DSGN','LTWR','MUS','TDAC','TDDE','TDDM','TDDR','TDMV','TDPW','VIS'];
+  // Warren Programs of Concentration / Area Studies (division groupings).
+  var WA_HA=['CHIN','LTCH','CLAS','LTGK','LTLA','LIGM','LTGM','GSS','HIAF','HIEA','HIEU','HIGL','HILA','HILD','HINE','HISA','HISC','HITO','HIUS','INTL','LIIT','LTIT','JAPN','LTEA','JUDA','JWSP','LTAF','LTAM','LTCO','LTCS','LTEN','LTEU','LTFR','LTKO','LTRU','LTSP','LTTH','LTWL','LTWR','MUS','PHIL','RELI','TDAC','TDDE','TDDM','TDDR','TDGE','TDHD','TDHT','TDMV','TDPF','TDPR','TDPW','TDTR','VIS','FILM','ICAM','LIAB','LIDS','LIFR','LIHL','LIPO','LISL','LISP'];
+  var WA_SS=['ANTH','ANAR','ANBI','ANSC','AAS','AAPI','COGS','COMM','CGS','ECON','EDS','ETHN','GLBH','HDP','HDS','INTL','LATI','LIGN','POLI','PSYC','PH','PHB','SOC','SOCE','SOCG','SOCI','USP'];
+  // ERC Regional Specialization — union across the approved single-region lists.
+  var ERC_REG=['HIAF','HIEA','HIEU','HIGL','HILA','HILD','HINE','HISA','HISC','HITO','HIUS','LTAF','LTAM','LTCH','LTCO','LTCS','LTEA','LTEN','LTEU','LTFR','LTGK','LTGM','LTIT','LTKO','LTLA','LTRU','LTSP','LTWL','ANAR','ANTH','COMM','POLI','SOCI','SOC','PHIL','RELI','MUS','VIS','TDAC','TDHT','CLAS','LATI','JUDA','JWSP','INTL','ETHN','AAS','AAPI','LIGN'];
   window.GE_SUBJECTS={
-    revelle:{'Humanities':['HUM'],'Mathematics':MA,'Natural Science':NS,'Social Science':SS,'Fine Arts':AR},
-    muir:{'Writing':['MCWP'],'Social Sciences':SS,'Math or Nat. Science':MA.concat(NS),'Humanities / Arts / Language':HU.concat(AR)},
-    marshall:{'Core writing':['DOC'],'Natural Science':NS,'Math / Stats / Logic':MA,'Humanities & Cultural':['AAS','ETHN','HILD','LATI','LTEN','RELI','LTWL','LTCS'],'Fine Arts':AR},
-    warren:{'Writing':['WCWP'],'Ethics & Society':['PHIL','POLI'],'Formal Skills':QUANT},
-    erc:{'MMW core':['MMW'],'Natural Science':NS,'Quantitative Methods':QUANT,'Fine Arts':AR},
-    sixth:{'CAT core':['CAT'],'CAT upper-div writing':['CAT'],'Exploring Data':STAT,'Art Making':AR.concat(['LTEN','LTWL'])},
-    seventh:{'Synthesis core':['SYN']},
-    eighth:{'CCE core':['CCE']}
+    revelle:{'Humanities':['HUM'],'Mathematics':MATHQ,'Natural Science':NATSCI,'Social Science':SOCSCI,'Fine Arts':ARTS,'Language':LANG},
+    muir:{'Writing':['MCWP'],'Social Sciences':SOCSCI,'Math or Nat. Science':MATHQ.concat(NATSCI),'Humanities / Arts / Language':HUM.concat(ARTS)},
+    marshall:{'Core writing':['DOC'],'Natural Science':NATSCI,'Math / Stats / Logic':MATHQ.concat(['PHIL','CSE']),'Humanities & Cultural':['AAS','AAPI','ETHN','HILD','HIUS','LATI','LTEN','LTAM','RELI','LTWL','LTCS'],'Fine Arts':ARTS},
+    warren:{'Writing':['WCWP'],'Ethics & Society':['PHIL','POLI'],'Formal Skills':QUANT,'Depth · non-eng':{'Humanities & Arts':WA_HA,'Social Sciences':WA_SS},'Depth · eng BS':{'Humanities & Arts':WA_HA,'Social Sciences':WA_SS}},
+    erc:{'MMW core':['MMW'],'Regional Specialization':ERC_REG,'Natural Science':NATSCI,'Quantitative Methods':QUANT,'Fine Arts':ARTS,'Language':LANG},
+    sixth:{'CAT core':['CAT'],'CAT upper-div writing':['CAT'],'Modes of Inquiry':{'Social Sci':S6_SS,'Humanities':S6_HU,'Natural Sci':S6_NS,'Math/Logic':S6_ML},'IT Fluency':S6_IT,'Exploring Data':S6_DATA,'Art Making':S6_ART},
+    seventh:{'Synthesis core':['SYN'],'Alternatives':{'Arts':ARTS,'Humanities':HUM,'Nat Sci & Eng':NATSCI.concat(ENGR),'Quantitative':MATHQ,'Social Sci':SOCSCI},'High-Impact':['AIP','EAP']},
+    eighth:{'CCE core':['CCE'],'Breadth':{'Arts':E8_ARTS,'Humanities':E8_HUM,'Natural Sci':E8_NS,'Quant & Eng':E8_QE,'Social Sci':E8_SS}}
   };
 })();
 </script>
@@ -2499,14 +2529,24 @@ function init(DATA){
     el.innerHTML=geOrder.map(k=>{const c=GE.colleges[k];
       return `<button class="cbtn" data-col="${k}" aria-pressed="${k===geCollege?'true':'false'}">${esc(c.name)}<small>${esc(c.est)}</small></button>`;}).join('');
   }
+  // A GE area maps to either a flat list of subject codes (one "Find courses" button)
+  // or an object of {sub-area label → codes} (one button per sub-area, for bundled
+  // breadth like Seventh's Alternatives or Eighth's Breadth). Falsy → no button.
+  function geBrowse(map,collegeName,area){
+    if(!map) return '';
+    const btn=(subs,label,txt)=> subs&&subs.length
+      ? `<button class="ge-browse" data-subs="${esc(subs.join(','))}" data-label="${esc(label)}" title="Jump to the Fall-2026 courses for this area, ranked easy-A first">🔍 ${esc(txt)} ↗</button>`
+      : '';
+    if(Array.isArray(map)) return btn(map,collegeName+' · '+area,'Find courses');
+    const btns=Object.keys(map).map(sub=>btn(map[sub],collegeName+' · '+area+' · '+sub,sub)).filter(Boolean).join('');
+    return btns?`<div class="ge-browse-row">${btns}</div>`:'';
+  }
   function renderGeBody(){
     const el=$('geBody'), c=GE.colleges&&GE.colleges[geCollege]; if(!el||!c)return;
     const SUBJMAP=(window.GE_SUBJECTS||{})[geCollege]||{};
     const tags=c.tags.map(t=>`<span class="ge-tag ${t[0]}">${esc(t[1])}</span>`).join('');
     const rows=c.areas.map(a=>{
-      const codes=SUBJMAP[a[0]];
-      const browse=codes&&codes.length?`<button class="ge-browse" data-subs="${esc(codes.join(','))}" data-label="${esc(c.name+' · '+a[0])}" title="Jump to the offered courses for this requirement, ranked by GPA">🔍 Find courses ↗</button>`:'';
-      return `<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}${browse}</td><td>${geGradeBadge(a[3])}</td></tr>`;
+      return `<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}${geBrowse(SUBJMAP[a[0]],c.name,a[0])}</td><td>${geGradeBadge(a[3])}</td></tr>`;
     }).join('');
     el.innerHTML=`<div class="ge-card">
       <div class="ge-hd"><span class="cen">${esc(c.en)}</span><h3>${esc(c.name)} — ${esc(c.tagline)}</h3><p class="char">${esc(c.char)}</p></div>
@@ -2515,7 +2555,7 @@ function init(DATA){
         <thead><tr><th>Area</th><th>Requirement &amp; notes</th><th>Grading</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
-      <div class="ge-cta"><span class="lab">💡 Tap <b>Find courses</b> on a requirement to jump to the Fall-2026 courses that satisfy it, ranked easy-A first — then multi-select subjects to compare.</span></div>
+      <div class="ge-cta"><span class="lab">💡 Tap a <b>Find courses</b> / area button on a requirement to jump to the Fall-2026 courses that satisfy it, ranked easy-A first — then multi-select subjects to compare. Breadth lists are department-level approximations; confirm the exact approved list with your college.</span></div>
       <div class="ge-note"><span class="lab">Transfer</span>${esc(c.transfer)}</div>
     </div>`;
   }
