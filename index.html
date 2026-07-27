@@ -929,7 +929,9 @@
    .dp-course.tOTHER{border-left-color:var(--faint)}
    .dp-course.done{opacity:.5}
    .dp-course.done .cn{text-decoration:line-through}
-   .dp-course .cn{font-weight:600;flex:1;font-size:13px;line-height:1.25}
+   .dp-course .cn{font-weight:600;flex:1;font-size:13px;line-height:1.25;cursor:text;border-radius:4px;padding:1px 3px;margin:-1px -3px}
+   .dp-course .cn:hover{background:var(--accent-soft);box-shadow:inset 0 -1px 0 var(--accent-2)}
+   .dp-course .cn-edit{flex:1;min-width:0;font-weight:600;font-size:13px;line-height:1.25;padding:1px 3px;border:1px solid var(--accent-2);border-radius:4px;background:var(--surface);color:var(--ink);font-family:inherit}
    .dp-course .cu{font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
    .dp-course .ov{color:var(--gold);font-size:11px;cursor:help}
    .dp-course .gr{border:none;background:none;color:var(--accent-2);cursor:pointer;font-size:11px;font-family:var(--mono);padding:0 1px;white-space:nowrap}
@@ -957,7 +959,7 @@
      .dp-q:last-child{border-bottom:none}
      .dp-qhead{padding:9px 13px;font-size:13px}
      /* iOS zooms on inputs under 16px, which fights with page scrolling */
-     .dp-add input.nm,.dp-add input.un{font-size:16px}
+     .dp-add input.nm,.dp-add input.un,.dp-course .cn-edit{font-size:16px}
    }
    @media print{.dp-controls,.dp-toolbar,.dp-add,.dp-legend,.dp-course .del,.dp-course .gr,.dp-course input[type=checkbox],.dp-notes textarea{display:none!important}}
 
@@ -2791,16 +2793,44 @@ function init(DATA){
     el.className='dp-course t'+(c.type||'OTHER')+(c.done?' done':''); el.draggable=true;
     const subj=dpSubject(c.name);
     el.innerHTML='<input type="checkbox" '+(c.done?'checked':'')+' title="Mark completed">'
-      +'<span class="cn">'+dpEsc(c.name)+'</span>'
+      +'<span class="cn" title="Click to rename — e.g. change a requirement placeholder like “DEI” to the class you’re taking (MUS 17)">'+dpEsc(c.name)+'</span>'
       +(c.overlap?'<span class="ov" title="Counts for GE and major">★</span>':'')
       +'<span class="cu">'+dpFmt(c.units)+'u</span>'
       +(subj?'<button class="gr" title="See this course\'s grade ranking">grades↗</button>':'')
       +'<button class="del" title="Remove">✕</button>';
-    el.querySelector('input').onchange=e=>{c.done=e.target.checked;el.classList.toggle('done',c.done);dpSave();dpUpdateSummary();};
+    el.querySelector('input[type=checkbox]').onchange=e=>{c.done=e.target.checked;el.classList.toggle('done',c.done);dpSave();dpUpdateSummary();};
     el.querySelector('.del').onclick=()=>{dpModel.courses=dpModel.courses.filter(x=>x.key!==c.key);dpSave();dpRender();};
     const gr=el.querySelector('.gr'); if(gr)gr.onclick=()=>{try{goToCourses([subj],c.name);}catch(e){setView('rank');}};
+    // Inline rename: click the name to edit it in place — lets you turn an official
+    // "DEI"/"GE" placeholder into the actual class without delete-then-re-add.
+    el.querySelector('.cn').onclick=()=>dpEditName(el,c);
     el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',c.key);e.dataTransfer.effectAllowed='move';});
     return el;
+  }
+  function dpEditName(el,c){
+    const cn=el.querySelector('.cn'); if(!cn)return;
+    const inp=document.createElement('input');
+    inp.type='text'; inp.className='cn-edit'; inp.value=c.name;
+    inp.setAttribute('aria-label','Course name');
+    el.draggable=false;                       // let the caret land where clicked
+    cn.replaceWith(inp); inp.focus(); inp.select();
+    let done=false;
+    const commit=save=>{
+      if(done)return; done=true;
+      // If a same-row control (✕ / grades↗ / done checkbox) was clicked, its handler
+      // ran first; skip re-rendering (the ✕ already removed this course and re-rendered).
+      const gone=!dpModel.courses.includes(c);
+      const v=inp.value.trim();
+      if(!gone && save && v && v!==c.name){c.name=v; dpSave();}
+      if(!gone) dpRender();                    // refresh subject → grades↗ link + summary
+    };
+    inp.onkeydown=e=>{
+      if(e.key==='Enter'){e.preventDefault();commit(true);}
+      else if(e.key==='Escape'){e.preventDefault();commit(false);}
+    };
+    // Commit AFTER the click that caused the blur — a synchronous dpRender() here would
+    // destroy the clicked control before its click fires, swallowing it (blur-before-click).
+    inp.onblur=()=>setTimeout(()=>commit(true),0);
   }
   function dpUpdateSummary(){
     const total=dpSum(dpModel.courses), done=dpSum(dpModel.courses.filter(c=>c.done));
