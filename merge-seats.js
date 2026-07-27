@@ -35,6 +35,36 @@ function scraperCodeToKey(course) {
   return ck(subject, number);
 }
 
+// A course can span several TSS event packages — e.g. one lecture paired with
+// each of nine labs, every combination separately enrollable and each with its
+// own booking URL. The scraper reports them in `packages`, each carrying the
+// sections it contains. We reduce every package to its booking link plus the
+// set of meeting-time keys ("LA|W|09:00") of its sections, so the app can look
+// at the sections a student actually picked and land them on that package's
+// page instead of one shared course-level link.
+//
+// Only emitted when the packages are actually distinguishable: a single
+// package needs no key at all, and courses whose packages all meet at the same
+// times (identical signatures) can't be told apart this way — those keep the
+// course-level link and the app falls back to it.
+function sectionKey(section) {
+  if (!section || !section.type || !section.days || !section.start) return null;
+  return `${section.type}|${section.days}|${section.start}`;
+}
+
+function packageLinks(course) {
+  const packages = (course.packages || []).filter((p) => p && p.bookingUrl);
+  if (packages.length < 2) return null;
+  const out = packages.map((p) => ({
+    u: p.bookingUrl,
+    k: [...new Set((p.sections || []).map(sectionKey).filter(Boolean))].sort(),
+  })).filter((p) => p.k.length);
+  if (out.length < 2) return null;
+  const signatures = new Set(out.map((p) => p.k.join("~")));
+  if (signatures.size < 2) return null;   // indistinguishable by meeting time
+  return out;
+}
+
 function main() {
   const srcArg = process.argv[2];
   if (!srcArg) {
@@ -48,14 +78,17 @@ function main() {
 
   const before = Object.keys(data.seats || {}).length;
   const seats = { ...(data.seats || {}) };
-  let added = 0, refreshed = 0, skipped = 0;
+  let added = 0, refreshed = 0, skipped = 0, withPkgs = 0;
   for (const c of scrape.courses || []) {
     if (!c.bookingUrl) { skipped++; continue; }
     const key = scraperCodeToKey(c.course);
     if (!key) { skipped++; continue; }
     if (!seats[key]) added++;
     else if (seats[key].u !== c.bookingUrl) refreshed++;
-    seats[key] = { u: c.bookingUrl };
+    const entry = { u: c.bookingUrl };
+    const pkgs = packageLinks(c);
+    if (pkgs) { entry.p = pkgs; withPkgs++; }
+    seats[key] = entry;
   }
   data.seats = seats;
   fs.writeFileSync(dataPath, JSON.stringify(data));
@@ -64,7 +97,9 @@ function main() {
     `withLink=${(scrape.courses || []).filter((c) => c.bookingUrl).length}`);
   console.log(`seats: ${before} -> ${Object.keys(seats).length} ` +
     `(added ${added}, refreshed ${refreshed}, no-link skipped ${skipped})`);
-  console.log("Next: node build.js");
+  console.log(`per-package links: ${withPkgs} courses`);
+  console.log("\nNext: node healthcheck.js   # reconcile — orphans / coverage / key drift");
+  console.log("      node build.js         # then re-hash data.json + rewrite index.html");
 }
 
 main();
