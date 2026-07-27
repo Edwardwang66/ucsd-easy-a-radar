@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1017'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%235b8def' stroke-width='2' stroke-opacity='.55'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='none' stroke='%235b8def' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%235b8def'/%3E%3C/svg%3E">
 <!-- Start the critical dataset download during HTML parse, before the app JS runs.
-     as="fetch" with the same credentials mode as the app's fetch('data.a70608fb92.json')
+     as="fetch" with the same credentials mode as the app's fetch('data.6e3f32a66d.json')
      — i.e. NO crossorigin, since fetch() defaults to credentials:'same-origin'. Adding
      crossorigin would make the preload an anonymous CORS request, which on a cookie-gated
      origin (e.g. a protected Vercel preview) redirects cross-origin and fails outright.
      hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
-<link rel="preload" href="data.a70608fb92.json" as="fetch">
+<link rel="preload" href="data.6e3f32a66d.json" as="fetch">
 <link rel="prefetch" href="hist.520c32e21c.json" as="fetch">
 <title>Easy-A Radar — UCSD GPA-friendly courses & professor ratings</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions, RateMyProfessors ratings, a schedule builder, and a graduate degree planner covering every major.">
@@ -1898,6 +1898,27 @@ function init(DATA){
   function parseDays(s){const out=[],re=/Su|Sa|Th|Tu|M|W|F/g;let m;while((m=re.exec(s||''))!==null)out.push(DAYIDX[m[0]]);return out;}
   function parseMin(t){const m=/^(\d{1,2}):(\d{2})\s*([ap])?/i.exec(String(t||''));if(!m)return null;let h=+m[1];const mi=+m[2],ap=(m[3]||'').toLowerCase();if(ap==='p'&&h!==12)h+=12;if(ap==='a'&&h===12)h=0;return h*60+mi;}
   function activeGroups(course){const g={};for(const s of course.sec){if(s[S_CANC]||s[S_TYPE]==='FI')continue;const c=s[S_CODE]||'';if(!/^[A-Za-z]/.test(c))continue;const gl=c[0].toUpperCase();(g[gl]=g[gl]||[]).push(s);}return g;}
+  // A course with several lecture/lab combinations is several separately-enrollable
+  // TSS packages, each with its own page. The schedule and TSS number their sections
+  // differently ("A54" vs "001-005-LA"), so they're matched on what both agree about:
+  // type + meeting days + start time. seats[key].p lists each package's link and the
+  // keys of its sections; the picked sections land on the one package that contains
+  // all of them. Anything less than an unambiguous single hit — sections without a
+  // meeting time, or packages that meet at identical times — returns null so the
+  // caller falls back to the course-level link.
+  function secTimeKey(s){
+    const ty=s&&s[S_TYPE],days=s&&s[S_DAYS],mins=parseMin(s&&s[S_START]);
+    if(!ty||!days||mins==null)return null;
+    return ty+'|'+days+'|'+String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');
+  }
+  function pkgLinkFor(key,secs){
+    const entry=SEATS[key];
+    if(!entry||!entry.p||!entry.p.length||!secs||!secs.length)return null;
+    const need=secs.map(secTimeKey).filter(Boolean);
+    if(!need.length)return null;
+    const hits=entry.p.filter(p=>need.every(k=>p.k.indexOf(k)>=0));
+    return hits.length===1?hits[0].u:null;
+  }
   // Final exams: FI rows carry a date ("12/09/2026") instead of a section code, but the
   // catalog lists each group's final right after that group's sections — so attach each FI
   // to the letter group of the sections above it.
@@ -2042,8 +2063,13 @@ function init(DATA){
       return `<div class="m fin"><span class="mt">FI</span><span>${wd}${esc(s[S_DAYS]||'')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>Final exam</span></div>`;
     }).join('');
     const profs=[...new Set(secs.map(s=>s[S_INSTR]).filter(Boolean))];
-    const cli=courseLinkInfo(it.k);
-    const bookLink=`<a class="seatlink" href="${esc(cli.href)}" target="_blank" rel="noopener" title="${cli.direct?`Open ${esc(it.k)} on TSS (sign into TSS first)`:`No direct TSS link — opens the TSS launchpad to search (sign in first)`}">${cli.direct?'Course page ↗':'Find on TSS ↗'}</a>`;
+    const pkgHref=pkgLinkFor(it.k,secs);
+    const cli=pkgHref?{href:pkgHref,direct:true}:courseLinkInfo(it.k);
+    const bookLabel=pkgHref?'Section page ↗':(cli.direct?'Course page ↗':'Find on TSS ↗');
+    const bookTitle=pkgHref?`Open this exact ${Object.keys(opts).length?'section combination':'section'} of ${it.k} on TSS (sign into TSS first)`
+      :cli.direct?`Open ${it.k} on TSS (sign into TSS first)`
+      :'No direct TSS link — opens the TSS launchpad to search (sign in first)';
+    const bookLink=`<a class="seatlink" href="${esc(cli.href)}" target="_blank" rel="noopener" title="${esc(bookTitle)}">${bookLabel}</a>`;
     return `<div class="sci ${(it._conf||it._finConf)?'conf':''}" style="border-left-color:${color}">
       <div class="h"><div><div class="code">${esc(it.k)}</div><div class="ttl">${esc(course.t)}</div></div><button class="rm" data-rm="${esc(it.k)}" title="Remove">×</button></div>
       <div class="ctrls">${grpSel}${optSel}</div>
@@ -2242,7 +2268,10 @@ function init(DATA){
     schItems.forEach(it=>{
       if(seen.has(it.k))return; seen.add(it.k);
       const s=SEATS[it.k];
-      if(s&&s.u) direct.push({k:it.k,u:s.u}); else fallback.push(it.k);
+      // same link the card shows: the picked sections' own package when that's
+      // unambiguous, otherwise the course-level page
+      const u=pkgLinkFor(it.k,itemSections(it).secs)||(s&&s.u);
+      if(u) direct.push({k:it.k,u}); else fallback.push(it.k);
     });
     return {direct,fallback};
   }
@@ -3219,7 +3248,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 (async function boot(){
   try{
     let data=window.__DATA__;
-    if(!data){const res=await fetch('data.a70608fb92.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
+    if(!data){const res=await fetch('data.6e3f32a66d.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
     init(data);
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
