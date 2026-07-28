@@ -537,6 +537,7 @@
     background:var(--accent-soft);color:var(--accent);border-radius:7px;padding:3px 9px;font-size:11.5px;font-weight:600;
     cursor:pointer;font-family:var(--sans);white-space:nowrap;line-height:1.3}
   .ge-browse:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .ge-browse:not(.exact){border-style:dashed}   /* subject-level approximation (no exact list published) */
   .ge-browse-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .ge-browse-row .ge-browse{margin-top:0}
   .ge-tbl td .subj-hint{display:block;margin-top:3px;font-size:11px;color:var(--faint);font-family:var(--mono)}
@@ -1401,14 +1402,15 @@ function init(DATA){
   const RI=new Map(); R.forEach((r,i)=>RI.set(r,i));
   const expanded=new Set();
   const LETTERS=[['gA','A','var(--gA)'],['gB','B','var(--gB)'],['gC','C','var(--gC)'],['gD','D','var(--gD)'],['gF','F','var(--gF)'],['gW','W','var(--gW)']];
-  const state={q:'',subjects:new Set(),subjLabel:'',prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60,time:null};
+  const state={q:'',subjects:new Set(),subjLabel:'',courseSet:null,courseLabel:'',prof:'',level:'ug',offered:true,curonly:false,sort:'g',minoff:1,limit:60,time:null};
   const PAGE=60;
   const $=id=>document.getElementById(id);
 
-  const set=new Set(); const subjCount={};
-  for(const r of R){ set.add(r[C.s]); subjCount[r[C.s]]=(subjCount[r[C.s]]||0)+1; }
+  const set=new Set(); const subjCount={}; const courseKeySet=new Set();
+  for(const r of R){ set.add(r[C.s]); subjCount[r[C.s]]=(subjCount[r[C.s]]||0)+1; courseKeySet.add(r[C.s]+' '+r[C.c]); }
   const subs=[...set].sort();
   const subjSet=set;   // fast membership test for the GE→rankings bridge
+  const geCourseCount=set=>{let k=0;set&&set.forEach(c=>{if(courseKeySet.has(c))k++;});return k;};   // whitelist ∩ dataset
   $('schedcount').textContent=(DATA.meta&&(DATA.meta.catalogCourses||DATA.meta.schedCodes)||1778).toLocaleString();
   // #curcount is filled by fillFa26Rows() below, which runs after first paint.
 
@@ -1495,6 +1497,7 @@ function init(DATA){
       }
       if(state.curonly && r[C.cur]!==1) continue;
       if(state.subjects.size && !state.subjects.has(r[C.s])) continue;
+      if(state.courseSet && !state.courseSet.has(r[C.s]+' '+r[C.c])) continue;   // exact approved-course whitelist (GE bridge)
       if(state.prof && r[C.i]!==state.prof) continue;
       if(!levelOk(r[C.lv])) continue;
       if(r[C.src]===0 && r[C.n]<state.minoff) continue;   // min-times filter only gates real grade rows
@@ -1800,6 +1803,14 @@ function init(DATA){
   // ---- multi-select subjects ----
   function renderSubjChips(){
     const el=$('subjChips'); if(!el)return;
+    if(state.courseSet){   // exact approved-course whitelist from a GE requirement
+      const nc=geCourseCount(state.courseSet);
+      el.hidden=false;
+      el.innerHTML=`<span class="sc sc-group" title="Exact approved-course list — ${nc} of them are in this dataset">🎓 ${esc(state.courseLabel||'Approved courses')}<span class="sc-n">${nc} course${nc===1?'':'s'}</span><button data-rmsubj="*" aria-label="Clear requirement filter">×</button></span>`
+        +`<span class="sc-hint">Exact course list for this requirement</span>`;
+      $('subjectCombo').classList.add('has-value');
+      return;
+    }
     const n=state.subjects.size;
     if(!n){el.hidden=true;el.innerHTML='';$('subjectCombo').classList.remove('has-value');return;}
     el.hidden=false;
@@ -1820,26 +1831,46 @@ function init(DATA){
     isSelected(v){return state.subjects.has(v);},
     selectedCount(){return state.subjects.size;},
     getItems(f){const q=(f||'').trim().toLowerCase();let list=subs;if(q){const s1=[],s2=[];for(const s of subs){const sl=s.toLowerCase();if(sl.startsWith(q))s1.push(s);else if(sl.includes(q))s2.push(s);}list=s1.concat(s2);}return list.slice(0,120).map(s=>({v:s,label:s,cnt:subjCount[s]||0}));},
-    onToggle(v){if(state.subjects.has(v))state.subjects.delete(v);else state.subjects.add(v);state.subjLabel='';applySubjects();},
-    onClearAll(){state.subjects.clear();state.subjLabel='';applySubjects();}
+    onToggle(v){state.courseSet=null;state.courseLabel='';if(state.subjects.has(v))state.subjects.delete(v);else state.subjects.add(v);state.subjLabel='';applySubjects();},
+    onClearAll(){state.subjects.clear();state.subjLabel='';state.courseSet=null;state.courseLabel='';applySubjects();}
   });
   $('subjectInput').placeholder='Add subjects ('+subs.length+')';
   $('subjChips').addEventListener('click',e=>{
     const rm=e.target.closest('[data-rmsubj]');
-    if(rm){ if(rm.dataset.rmsubj==='*') state.subjects.clear(); else state.subjects.delete(rm.dataset.rmsubj); state.subjLabel=''; applySubjects(); return; }
-    if(e.target.closest('#subjClearAll')){state.subjects.clear();state.subjLabel='';applySubjects();}
+    if(rm){ if(rm.dataset.rmsubj==='*'){state.subjects.clear();state.courseSet=null;state.courseLabel='';} else state.subjects.delete(rm.dataset.rmsubj); state.subjLabel=''; applySubjects(); return; }
+    if(e.target.closest('#subjClearAll')){state.subjects.clear();state.subjLabel='';state.courseSet=null;state.courseLabel='';applySubjects();}
   });
-  // jump from a GE requirement into the rankings, pre-filtered to the subjects that satisfy it
-  function goToCourses(codes,label){
-    codes=(codes||[]).map(c=>c.trim()).filter(Boolean);
-    const set=new Set(codes.filter(c=>subjSet.has(c)));
+  // Shared UI reset for both GE→rankings jumps: clear query, default sort/level/offered.
+  function geJumpReset(){
     state.q=''; $('q').value='';
-    if(set.size){ state.subjects=set; state.subjLabel=(label&&set.size>1)?label:''; }  // >1 subject → show one summary pill
-    else { state.subjects=new Set(); state.subjLabel=''; if(codes.length){state.q=codes[0].toLowerCase(); $('q').value=codes[0];} } // subject absent from data → fall back to a code search
     state.offered=true; state.sort='g'; state.level='ug'; state.limit=PAGE;
     $('sort').value='g';
     document.querySelectorAll('#levels .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.lv==='ug'?'true':'false'));
     $('offered').setAttribute('aria-pressed','true');
+  }
+  // jump from a GE requirement into the rankings, pre-filtered to the subjects that satisfy it
+  function goToCourses(codes,label){
+    codes=(codes||[]).map(c=>c.trim()).filter(Boolean);
+    const set=new Set(codes.filter(c=>subjSet.has(c)));
+    state.courseSet=null; state.courseLabel='';   // leaving course-whitelist mode
+    geJumpReset();
+    if(set.size){ state.subjects=set; state.subjLabel=(label&&set.size>1)?label:''; }  // >1 subject → show one summary pill
+    else { state.subjects=new Set(); state.subjLabel=''; if(codes.length){state.q=codes[0].toLowerCase(); $('q').value=codes[0];} } // subject absent from data → fall back to a code search
+    setView('rank'); renderSubjChips();
+    document.querySelector('.toolbar').scrollIntoView({block:'start'});
+    render();
+    return set.size;
+  }
+  // jump from a GE requirement into the rankings, pre-filtered to an EXACT approved-course
+  // whitelist (course-number level). Codes are "SUBJ NUM"; intersected with the dataset.
+  function goToCoursesByCode(codes,label){
+    const norm=c=>String(c).trim().toUpperCase().replace(/\s+/g,' ');
+    const set=new Set((codes||[]).map(norm).filter(Boolean));
+    state.subjects=new Set(); state.subjLabel='';   // leaving subject mode
+    geJumpReset();
+    state.courseSet=set.size?set:null;
+    state.courseLabel=set.size?(label||''):'';
+    if(!set.size && codes&&codes.length){state.q=norm(codes[0]).toLowerCase();$('q').value=codes[0];}
     setView('rank'); renderSubjChips();
     document.querySelector('.toolbar').scrollIntoView({block:'start'});
     render();
@@ -2613,6 +2644,14 @@ function init(DATA){
   // conf: 'high' = 3-vote adversarially verified; 'catalog' = pulled direct from
   // the official catalog page (single authoritative source, not triple-verified).
   const GE=(window.GE_REQS)||{};
+  // Exact approved-course lists (course-number level) load lazily when the GE tab opens.
+  let GE_COURSES=null, geCoursesPromise=null;
+  function ensureGeCourses(){
+    if(geCoursesPromise) return geCoursesPromise;
+    geCoursesPromise=fetch('ge-courses.32db06a14d.json').then(r=>r.ok?r.json():null)
+      .then(j=>{GE_COURSES=(j&&j.colleges)||{};}).catch(()=>{GE_COURSES={};});
+    return geCoursesPromise;
+  }
   const GE_KEY='easyA_college_v1';
   const geOrder=['revelle','muir','marshall','warren','erc','sixth','seventh','eighth'];
   let geCollege=(()=>{try{const c=localStorage.getItem(GE_KEY);return geOrder.includes(c)?c:'revelle';}catch(e){return 'revelle';}})();
@@ -2627,24 +2666,32 @@ function init(DATA){
     el.innerHTML=geOrder.map(k=>{const c=GE.colleges[k];
       return `<button class="cbtn" data-col="${k}" aria-pressed="${k===geCollege?'true':'false'}">${esc(c.name)}<small>${esc(c.est)}</small></button>`;}).join('');
   }
-  // A GE area maps to either a flat list of subject codes (one "Find courses" button)
-  // or an object of {sub-area label → codes} (one button per sub-area, for bundled
-  // breadth like Seventh's Alternatives or Eighth's Breadth). Falsy → no button.
-  function geBrowse(map,collegeName,area){
-    if(!map) return '';
-    const btn=(subs,label,txt)=> subs&&subs.length
-      ? `<button class="ge-browse" data-subs="${esc(subs.join(','))}" data-label="${esc(label)}" title="Jump to the Fall-2026 courses for this area, ranked easy-A first">🔍 ${esc(txt)} ↗</button>`
-      : '';
-    if(Array.isArray(map)) return btn(map,collegeName+' · '+area,'Find courses');
-    const btns=Object.keys(map).map(sub=>btn(map[sub],collegeName+' · '+area+' · '+sub,sub)).filter(Boolean).join('');
+  // Per GE area, build the "Find courses" button(s). Prefer an EXACT approved-course
+  // list (course-number level, from ge-courses.json → data-codes) and fall back to the
+  // subject-prefix approximation (data-subs, dashed button). A value is either a flat
+  // list (one button) or {sub-area → list} (one button each, for bundled breadth like
+  // Seventh Alternatives / Eighth Breadth / Sixth Modes of Inquiry). Falsy → no button.
+  function geBrowse(area,collegeName){
+    const cMap=(GE_COURSES&&GE_COURSES[geCollege])||{};
+    const sMap=(window.GE_SUBJECTS||{})[geCollege]||{};
+    const c=cMap[area], s=sMap[area];
+    if(!c&&!s) return '';
+    const btn=(codes,subs,label,txt)=>{
+      if(codes&&codes.length) return `<button class="ge-browse exact" data-codes="${esc(codes.join('|'))}" data-label="${esc(label)}" title="Exact approved-course list for this requirement, ranked easy-A first">🔍 ${esc(txt)} ↗</button>`;
+      if(subs&&subs.length) return `<button class="ge-browse" data-subs="${esc(subs.join(','))}" data-label="${esc(label)}" title="Courses in the subjects that commonly satisfy this area (approximate — no exact list published), ranked easy-A first">🔍 ${esc(txt)} ↗</button>`;
+      return '';
+    };
+    const nested=(c&&!Array.isArray(c))||(s&&!Array.isArray(s));
+    if(!nested) return btn(Array.isArray(c)?c:null,Array.isArray(s)?s:null,collegeName+' · '+area,'Find courses');
+    const keys=[...new Set([].concat(c&&!Array.isArray(c)?Object.keys(c):[], s&&!Array.isArray(s)?Object.keys(s):[]))];
+    const btns=keys.map(k=>btn(c&&!Array.isArray(c)?c[k]:null, s&&!Array.isArray(s)?s[k]:null, collegeName+' · '+area+' · '+k, k)).filter(Boolean).join('');
     return btns?`<div class="ge-browse-row">${btns}</div>`:'';
   }
   function renderGeBody(){
     const el=$('geBody'), c=GE.colleges&&GE.colleges[geCollege]; if(!el||!c)return;
-    const SUBJMAP=(window.GE_SUBJECTS||{})[geCollege]||{};
     const tags=c.tags.map(t=>`<span class="ge-tag ${t[0]}">${esc(t[1])}</span>`).join('');
     const rows=c.areas.map(a=>{
-      return `<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}${geBrowse(SUBJMAP[a[0]],c.name,a[0])}</td><td>${geGradeBadge(a[3])}</td></tr>`;
+      return `<tr><td>${esc(a[0])}${a[1]?`<span class="u">${esc(a[1])}</span>`:''}</td><td>${esc(a[2])}${geBrowse(a[0],c.name)}</td><td>${geGradeBadge(a[3])}</td></tr>`;
     }).join('');
     el.innerHTML=`<div class="ge-card">
       <div class="ge-hd"><span class="cen">${esc(c.en)}</span><h3>${esc(c.name)} — ${esc(c.tagline)}</h3><p class="char">${esc(c.char)}</p></div>
@@ -2653,7 +2700,7 @@ function init(DATA){
         <thead><tr><th>Area</th><th>Requirement &amp; notes</th><th>Grading</th></tr></thead>
         <tbody>${rows}</tbody>
       </table></div>
-      <div class="ge-cta"><span class="lab">💡 Tap a <b>Find courses</b> / area button on a requirement to jump to the Fall-2026 courses that satisfy it, ranked easy-A first — then multi-select subjects to compare. Breadth lists are department-level approximations; confirm the exact approved list with your college.</span></div>
+      <div class="ge-cta"><span class="lab">💡 Tap a <b>Find courses</b> / area button on a requirement to jump to the courses that satisfy it, ranked easy-A first. <b>Solid</b> buttons use the college's <b>exact approved-course list</b>; <b>dashed</b> ones are a subject-level approximation where no official list is published. Always confirm with your college + the catalog.</span></div>
       <div class="ge-note"><span class="lab">Transfer</span>${esc(c.transfer)}</div>
     </div>`;
   }
@@ -2686,7 +2733,11 @@ function init(DATA){
     renderGePicker(); renderGeBody(); renderGeUni(); renderGeSrc();
   }
   $('gePicker').addEventListener('click',e=>{const b=e.target.closest('.cbtn');if(b)setCollege(b.dataset.col);});
-  $('geBody').addEventListener('click',e=>{const b=e.target.closest('.ge-browse');if(b)goToCourses(b.dataset.subs.split(','),b.dataset.label||'');});
+  $('geBody').addEventListener('click',e=>{
+    const b=e.target.closest('.ge-browse'); if(!b)return;
+    if(b.dataset.codes) goToCoursesByCode(b.dataset.codes.split('|'),b.dataset.label||'');
+    else goToCourses((b.dataset.subs||'').split(','),b.dataset.label||'');
+  });
 
   let curView='rank';
   function setView(v){
@@ -2700,7 +2751,7 @@ function init(DATA){
     $('tab-planner').setAttribute('aria-selected',v==='planner'?'true':'false');
     $('plannerView').classList.toggle('active',v==='planner');
     if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The Fall 2026 catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
-    if(v==='ge') renderGE();
+    if(v==='ge') ensureGeCourses().then(renderGE);
     if(v==='planner') initPlanner();
   }
   $('tab-rank').addEventListener('click',()=>setView('rank'));
