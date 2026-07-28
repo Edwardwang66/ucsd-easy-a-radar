@@ -39,8 +39,14 @@ test('exact FA26 name wins even when historical aliases use a different surname'
   assert.equal(helper.sameInstructorName('Bailey Choi-Vanos', 'Bailey Choi-Vanos'), true);
   assert.equal(helper.preferredGroupForInstructor(groups, 'Bailey Choi-Vanos'), 'B');
 
+  // The row's schedule button picks its instructor through faMatchesName, which
+  // must try the exact catalog name before falling back to surname/initial keys.
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  assert.match(html, /preferredInstructor=[^;]*ScheduleInstructor\.sameInstructorName/);
+  assert.match(html, /preferredInstructor=[^;]*faMatchesName/);
+  assert.match(
+    html,
+    /function faMatchesName\([\s\S]{0,300}?ScheduleInstructor\.sameInstructorName\(faName,gradeName\)\) return true;[\s\S]{0,200}?catKeysJS/,
+  );
 });
 
 test('instructor choices identify every ECON 1 section group', () => {
