@@ -11,13 +11,21 @@
       .filter(Boolean))];
   }
 
+  // Comparing catalog names against grade-history names is done tens of thousands of
+  // times at startup over a few thousand distinct names, and NFD normalisation is the
+  // expensive part \u2014 so cache it. Pure function of the string; the name set is bounded.
+  const normCache = new Map();
+  function normalize(value) {
+    const s = String(value || '');
+    let v = normCache.get(s);
+    if (v === undefined) {
+      v = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+      normCache.set(s, v);
+    }
+    return v;
+  }
+
   function sameInstructorName(a, b) {
-    const normalize = (value) => String(value || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .toLowerCase();
     const left = normalize(a);
     return !!left && left === normalize(b);
   }
