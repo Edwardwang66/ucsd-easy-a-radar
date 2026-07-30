@@ -513,6 +513,36 @@
   .ge-src li{font-size:11.5px;line-height:1.4}
   .ge-src .disc{margin:10px 0 0;padding-top:9px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.55}
 
+  /* ============ Minors (Degree-Planner-style worksheet) ============ */
+  #minorView{display:none}
+  #minorView.active{display:block}
+  .mn-raw{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);margin:14px 0 0}
+  .mn-raw>summary{padding:12px 16px;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px}
+  .mn-raw>summary::-webkit-details-marker{display:none}
+  .mn-raw>summary .chev{color:var(--faint);transition:transform .15s}
+  .mn-raw[open]>summary .chev{transform:rotate(90deg)}
+  .mn-raw>summary .sub{font-weight:400;color:var(--muted);font-size:12px}
+  .mn-grp{padding:10px 16px 4px;border-top:1px solid var(--line)}
+  .mn-grp h4{margin:0 0 7px;font-size:12.5px;color:var(--ink)}
+  .mn-grp h4 .xt{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);font-weight:600;margin-left:7px}
+  .mn-items{margin:0 0 8px;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+  .mn-items li{font-size:12px;color:var(--muted);line-height:1.55;padding-left:10px;border-left:2px solid var(--line)}
+  .mn-items li.hl{border-left-color:var(--accent);color:var(--ink)}
+  .mn-neg{font-size:11px;color:var(--faint);margin-left:5px}
+  .gp-course .off{color:var(--gA);font-size:10px;font-family:var(--mono);white-space:nowrap}
+  .gp-opt .off{color:var(--gA);font-size:10px;font-family:var(--mono)}
+  /* width:100%/min-width:0 make the available size definite — otherwise auto-fill counts
+     tracks against max-content inside the flex column and the grid outgrows the bucket */
+  .gp-optwrap.mn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:6px;
+    align-content:start;width:100%;min-width:0;box-sizing:border-box}
+  .gp-optwrap.mn-grid .gp-optlabel,.gp-optwrap.mn-grid .mn-more{grid-column:1/-1}
+  /* let a card shrink inside its track — .gp-opt's own min-widths would otherwise
+     push the auto-fill tracks past the container and overflow the bucket */
+  .gp-optwrap.mn-grid .gp-opt{min-width:0}
+  .gp-optwrap.mn-grid .gp-opt .ct{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .mn-more{border:0;background:transparent;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;
+    font-family:var(--sans);padding:4px 2px;flex-basis:100%;text-align:left}
+
   /* ---- multi-select subject chips (Rankings) ---- */
   .subj-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:-2px}
   .subj-chips .sc{display:inline-flex;align-items:center;gap:5px;background:var(--accent-soft);color:var(--accent);
@@ -654,6 +684,7 @@
       <span>My Schedule</span><span class="cnt" id="schedTabCnt" hidden>0</span>
     </button>
     <button class="viewtab" id="tab-ge" role="tab" aria-selected="false">Grad &amp; GE Requirements</button>
+    <button class="viewtab" id="tab-minor" role="tab" aria-selected="false">Minors</button>
     <button class="viewtab" id="tab-planner" role="tab" aria-selected="false">Degree Planner</button>
   </div>
 
@@ -857,6 +888,55 @@
    <div class="ge-src" id="geSrc"></div>
  </div><!-- /geView -->
 
+ <div id="minorView" role="tabpanel" aria-label="Undergraduate minors">
+   <p class="ge-intro">All <b id="mnTotal">112</b> UC San Diego undergraduate minors as a <b>worksheet</b>: fill each requirement bucket,
+     track units, and open any course's <b>grade ranking</b>. Most minors are seven courses / twenty-eight units with at least five
+     upper-division — cheap if you pick courses you were taking anyway. Requirements come from the <b>General Catalog</b>.</p>
+
+   <div class="dp-controls">
+     <div class="dp-field gp-combo" style="min-width:215px"><label>Department</label>
+       <input id="mnDeptInput" type="text" placeholder="All departments" autocomplete="off" role="combobox"
+              aria-autocomplete="list" aria-expanded="false" aria-controls="mnDeptList">
+       <div id="mnDeptList" class="gp-combo-list" role="listbox" hidden></div></div>
+     <div class="dp-field gp-combo" style="flex:1;min-width:260px"><label>Minor / ISIS code</label>
+       <input id="mnPickInput" type="text" placeholder="Search a minor, ISIS code or subject — data, M070, LTEN…" autocomplete="off"
+              role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="mnPickList">
+       <div id="mnPickList" class="gp-combo-list" role="listbox" hidden></div></div>
+     <button class="dp-btn" id="mnLoad" disabled>Load Worksheet</button>
+   </div>
+
+   <div id="mnEmpty" class="dp-empty">Loading minor data…</div>
+
+   <div id="mnApp" hidden>
+     <div class="dp-toolbar">
+       <button class="dp-btn ghost sm" id="mnReset">↺ Reset worksheet</button>
+       <button class="dp-btn ghost sm" id="mnRank" title="Open the rankings filtered to every course this minor names">⌕ Rank every course</button>
+       <span class="sp"></span>
+       <button class="dp-btn ghost sm" id="mnPrint">⎙ Print</button>
+     </div>
+     <div id="mnTitle" style="font-size:16px;font-weight:700;margin:6px 0 1px"></div>
+     <div id="mnSub" style="color:var(--muted);font-size:12.5px;margin-bottom:8px"></div>
+     <div id="mnStub" class="gp-stub" hidden></div>
+     <div class="dp-summary">
+       <div class="dp-stat"><div class="k">Planned</div><div class="v"><span id="mnTotalU">0</span> <small>units</small></div>
+         <div class="dp-bar"><span id="mnBar" style="width:0%"></span></div></div>
+       <div class="dp-stat"><div class="k">Completed</div><div class="v"><span id="mnDone">0</span> <small>units</small></div></div>
+       <div class="dp-stat"><div class="k" id="mnRemainK">Remaining to 28</div><div class="v"><span id="mnRemain">28</span> <small>units</small></div></div>
+       <div class="dp-stat"><div class="k">Upper-division</div><div class="v" id="mnUD">0</div>
+         <div style="font-size:11px;color:var(--muted);margin-top:3px" id="mnUDNeed">usually ≥5 courses</div></div>
+     </div>
+     <div class="gp-groups" id="mnGroups"></div>
+     <div class="gp-rules" id="mnRules"></div>
+     <details class="mn-raw" id="mnRaw">
+       <summary><span class="chev">›</span><span>Catalog text, verbatim <span class="sub">— what the General Catalog actually prints</span></span></summary>
+       <div id="mnRawBody"></div>
+     </details>
+     <div class="dp-notes"><label>My notes</label>
+       <textarea id="mnNotes" placeholder="Which electives you'll pick, petitions to file, double-count limits your college allows…"></textarea></div>
+     <p class="dp-src" id="mnSrc"></p>
+   </div>
+ </div><!-- /minorView -->
+
  <div id="plannerView" role="tabpanel" aria-label="Degree planner">
    <style>
    #plannerView{display:none}
@@ -896,7 +976,7 @@
    .dp-toolbar .sp{flex:1}
    .dp-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin:12px 0}
    .dp-stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow)}
-   .dp-stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+   .dp-stat .k{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
    .dp-stat .v{font-size:23px;font-weight:700;margin-top:3px;font-family:var(--mono)}
    .dp-stat .v small{font-size:12px;color:var(--muted);font-family:var(--sans);font-weight:500}
    .dp-bar{height:7px;border-radius:5px;background:var(--surface-2);overflow:hidden;margin-top:8px;border:1px solid var(--line)}
@@ -2739,6 +2819,334 @@ function init(DATA){
     else goToCourses((b.dataset.subs||'').split(','),b.dataset.label||'');
   });
 
+  // ================= Minors — a worksheet, in the Degree Planner idiom =================
+  // minors.json = Blink's minor registry (which minors exist, with ISIS/TSS codes) joined
+  // to each minor's General Catalog requirement section, plus a derived `work` block:
+  //   {units, n, buckets:[{name, kind, n, units, rule, courses:[code]}], rules:[]}
+  // Buckets render exactly like the graduate planner's requirement categories. The verbatim
+  // catalog text stays available in a collapsed block, so summarising never hides anything.
+  // `status` says how firmly the catalog ties that section to this minor:
+  //   exact | shared (one section covers several of a department's minors) |
+  //   page (the whole program page is this minor) | nodetail (no course list published).
+  let MIN=null, MINMETA={}, minPromise=null;
+  const MW_KEY='easyA_minorWS_v1', UNIT=4;      // UCSD's standard course is four units
+  let mwM=null, mwWS=null, mwKey=0;
+  let mwStore=(()=>{try{return JSON.parse(localStorage.getItem(MW_KEY))||{};}catch(e){return {};}})();
+  function mwSaveStore(){try{localStorage.setItem(MW_KEY,JSON.stringify(mwStore));}catch(e){}}
+  function mwSave(){ if(mwM){mwStore.sel=mwM.tss;mwStore['ws:'+mwM.tss]=mwWS;} mwSaveStore(); }
+  function ensureMinors(){
+    if(minPromise) return minPromise;
+    minPromise=fetch('minors.67b07766f2.json').then(r=>r.ok?r.json():null)
+      .then(j=>{MIN=(j&&j.minors)||[];MINMETA=(j&&j.meta)||{};}).catch(()=>{MIN=[];});
+    return minPromise;
+  }
+  const CTITLE=new Map();                       // "SUBJ NUM" -> title, from the rankings data
+  for(const r of R){ const k=r[C.s]+' '+r[C.c]; if(!CTITLE.has(k)&&r[C.t]>=0) CTITLE.set(k,T[r[C.t]]||''); }
+  const mwNum=c=>{const m=String(c||'').match(/^[A-Z]+\s*(\d+)/);return m?+m[1]:0;};
+  const mwUD=c=>mwNum(c)>=100&&mwNum(c)<200;
+  const mwFa=c=>!!(DATA.fa&&DATA.fa[c]);
+  const mwTitle=c=>CTITLE.get(c)||'';
+  const mwFmt=n=>(Math.round(n*10)/10).toString().replace(/\.0$/,'');
+
+  // ---- pickers: type-to-search comboboxes, same behaviour as the planner's
+  // "Research Area / ISIS Code" box (arrow keys, Enter picks, Esc restores).
+  let mwDept='', mwSel='';
+  function mnCombo(cfg){
+    const inp=$(cfg.input), list=$(cfg.list);
+    let matches=[], active=-1;
+    const close=()=>{list.hidden=true;inp.setAttribute('aria-expanded','false');active=-1;};
+    const sync=()=>{inp.value=cfg.label();};
+    function hl(){
+      const els=[...list.querySelectorAll('.gp-combo-item')];
+      els.forEach((el,i)=>el.classList.toggle('active',i===active));
+      if(active>=0&&els[active]) els[active].scrollIntoView({block:'nearest'});
+    }
+    function pick(k){ cfg.onPick(k); close(); sync(); }
+    function render(q){
+      const query=(q||'').trim().toLowerCase(), toks=query?query.split(/\s+/):[];
+      matches=cfg.items().filter(x=>toks.every(t=>x.hay.indexOf(t)>=0));
+      if(query&&cfg.rank) matches.sort((a,b)=>cfg.rank(a,query)-cfg.rank(b,query)||a.name.localeCompare(b.name));
+      if(!query) matches=matches.filter(x=>!x.off);     // no query: stay in the chosen scope
+      const total=matches.length; matches=matches.slice(0,150);
+      if(!matches.length){
+        list.innerHTML='<div class="gp-combo-empty">'+esc(cfg.empty)+'</div>';
+        list.hidden=false; inp.setAttribute('aria-expanded','true'); active=-1; return;
+      }
+      let divided=false;
+      list.innerHTML=matches.map((x,i)=>{
+        // a match outside the chosen department is still shown — just below a divider
+        const head=(x.off&&!divided)?(divided=true,'<div class="gp-combo-group">Other departments</div>'):'';
+        return head+'<div class="gp-combo-item" role="option" data-k="'+esc(x.key)+'" data-i="'+i+'">'
+        +'<div class="top">'+(x.code?'<span class="cd">'+esc(x.code)+'</span>':'')
+        +'<span class="nm">'+esc(x.name)+'</span>'+(x.tag?'<span class="ws">'+esc(x.tag)+'</span>':'')+'</div>'
+        +(x.sub?'<div class="dp">'+esc(x.sub)+'</div>':'')+'</div>';}).join('')
+        +(total>matches.length?'<div class="gp-combo-empty">+'+(total-matches.length)+' more — keep typing to narrow…</div>':'');
+      active=0; list.hidden=false; inp.setAttribute('aria-expanded','true');
+      [...list.querySelectorAll('.gp-combo-item')].forEach(el=>{el.onmousedown=e=>{e.preventDefault();pick(el.dataset.k);};});
+      hl();
+    }
+    inp.addEventListener('focus',()=>{inp.select();render('');});
+    inp.addEventListener('input',()=>render(inp.value));
+    inp.addEventListener('blur',()=>setTimeout(()=>{close();sync();},140));
+    inp.addEventListener('keydown',e=>{
+      if(list.hidden&&(e.key==='ArrowDown'||e.key==='Enter')){render('');return;}
+      if(e.key==='ArrowDown'){e.preventDefault();active=Math.min(active+1,matches.length-1);hl();}
+      else if(e.key==='ArrowUp'){e.preventDefault();active=Math.max(active-1,0);hl();}
+      else if(e.key==='Enter'){if(active>=0&&matches[active]){e.preventDefault();pick(matches[active].key);}}
+      else if(e.key==='Escape'){close();sync();}
+    });
+    return {render:render,sync:sync,close:close};
+  }
+  const mnDeptBox=mnCombo({
+    input:'mnDeptInput', list:'mnDeptList', empty:'No department matches.',
+    label:()=>mwDept,
+    items:()=>[{key:'',name:'All departments',hay:'all departments',sub:(MIN||[]).length+' minors'}].concat(
+      [...new Set((MIN||[]).map(m=>m.admin))].sort().map(d=>({
+        key:d, name:d, hay:d.toLowerCase(),
+        sub:(MIN||[]).filter(m=>m.admin===d).length+' minors'}))),
+    onPick:k=>{ mwDept=k; if(mwSel){const m=(MIN||[]).find(x=>x.tss===mwSel);
+                  if(k&&m&&m.admin!==k){mwSel='';mnPickBox.sync();$('mnLoad').disabled=true;}} }
+  });
+  const mnPickBox=mnCombo({
+    input:'mnPickInput', list:'mnPickList', empty:'No minor matches — try “data”, “M070”, “LTEN”.',
+    label:()=>{const m=(MIN||[]).find(x=>x.tss===mwSel);return m?m.name+' — '+m.code:'';},
+    items:()=>(MIN||[]).slice()
+      .sort((a,b)=>a.name.localeCompare(b.name)).map(m=>{
+        const n=(m.codes||[]).filter(c=>courseKeySet.has(c)).length;
+        // How much of this minor is each subject? Lets a search for "LTEN" rank
+        // Literatures in English above every minor that merely lists one LTEN course.
+        const cnt={}, tot=(m.codes||[]).length||1;
+        (m.codes||[]).forEach(c=>{const sj=c.split(' ')[0];cnt[sj]=(cnt[sj]||0)+1;});
+        const share={}; Object.keys(cnt).forEach(sj=>{share[sj.toLowerCase()]=cnt[sj]/tot;});
+        return {key:m.tss, code:m.code, name:m.name, sub:m.admin+(n?' · '+n+' courses named':''),
+                tag:m.status==='nodetail'?'no list':(m.status==='shared'?'shared':''),
+                share:share, off:!!(mwDept&&m.admin!==mwDept),
+                hay:(m.name+' '+m.code+' '+m.tss+' '+m.admin+' '+(m.subs||[]).join(' ')).toLowerCase()};}),
+    rank:(x,q)=>{
+      const n=x.name.toLowerCase(), c=(x.code||'').toLowerCase();
+      let r;
+      if(n.indexOf(q)===0||c===q) r=0;
+      else if(n.indexOf(q)>=0) r=1;
+      else if(c.indexOf(q)>=0) r=2;
+      else r=3-(x.share[q]||0);        // subject-only hit: biggest share of the minor first
+      return r+(x.off?10:0);           // the chosen department still comes first
+    },
+    onPick:k=>{ const m=(MIN||[]).find(x=>x.tss===k); if(!m)return;
+                mwSel=k; mwDept=m.admin; mnDeptBox.sync();     // reflect where it lives
+                $('mnLoad').disabled=false; mwLoad(k); }
+  });
+  // ---- model
+  function mwSeed(m){
+    // Required buckets whose list *is* the requirement start filled in, like the grad
+    // worksheet's core courses; pick/free buckets start empty for the student to choose.
+    const c=[];
+    (m.work&&m.work.buckets||[]).forEach((b,i)=>{
+      // Only pre-fill when the catalog's list IS the requirement — a stated quota the
+      // candidates exactly meet. A "required" bucket with 25 options is a choice, not a
+      // checklist, and seeding it would claim 100 planned units out of nowhere.
+      if(b.kind!=='required'||!b.courses.length||!b.n) return;
+      if(b.courses.length>b.n) return;
+      b.courses.forEach(code=>c.push({k:++mwKey,b:i,code:code,title:mwTitle(code),units:UNIT,quarter:'',done:false}));
+    });
+    return {c:c,notes:''};
+  }
+  function mwLoad(tss,fresh){
+    const m=(MIN||[]).find(x=>x.tss===tss); if(!m) return;
+    mwM=m;
+    const saved=!fresh&&mwStore['ws:'+tss];
+    mwWS=saved&&saved.c?saved:mwSeed(m);
+    mwWS.c.forEach(x=>{if(!x.k)x.k=++mwKey;});
+    $('mnNotes').value=mwWS.notes||'';
+    mwSave(); mwRender();
+  }
+  function mwAdd(bi,code,title,units){
+    mwWS.c.push({k:++mwKey,b:bi,code:code,title:title||mwTitle(code),units:isNaN(units)?UNIT:units,quarter:'',done:false});
+    mwSave(); mwRender();
+  }
+  function mwGoToCourse(code){
+    goToCoursesByCode([code],code);
+    state.offered=false; $('offered').setAttribute('aria-pressed','false');   // history, not just this term
+    state.level='all';
+    document.querySelectorAll('#levels .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.lv==='all'?'true':'false'));
+    render();
+  }
+  // ---- render
+  function mwRender(){
+    if(!mwM) return;
+    const m=mwM, w=m.work||{buckets:[],rules:[]};
+    $('mnEmpty').hidden=true; $('mnApp').hidden=false;
+    $('mnTitle').textContent=m.name+' minor';
+    const codes=(m.codes||[]).filter(c=>courseKeySet.has(c));
+    $('mnSub').innerHTML=esc(m.admin)+' · ISIS '+esc(m.code)+' · '+esc(m.tss)
+      +(w.n?' · '+w.n+' courses':'')+(w.units?' / '+w.units+' units':'')
+      +' · <a href="'+esc(m.url||'https://catalog.ucsd.edu/')+'" target="_blank" rel="noopener" style="color:var(--accent-2)">catalog entry ↗</a>'
+      +(m.site?' · <a href="'+esc(m.site)+'" target="_blank" rel="noopener" style="color:var(--accent-2)">department requirements ↗</a>':'');
+    $('mnRank').hidden=!codes.length;
+    $('mnRank').textContent='⌕ Rank all '+codes.length+' courses';
+    // One-line provenance note, in the planner's stub style.
+    const stub=$('mnStub');
+    const hl=(m.groups||[]).reduce((k,g)=>k+g.items.filter(it=>it.hl).length,0);
+    if(m.status==='shared'){
+      stub.hidden=false;
+      stub.innerHTML='The catalog describes <b>'+esc(m.dept)+'</b>&rsquo;s minors together under &ldquo;'+esc(m.head)
+        +'&rdquo;, so these buckets are drawn from a section covering <b>more than this minor</b>'
+        +(hl?' ('+hl+' line'+(hl===1?'':'s')+' name'+(hl===1?'s':'')+' it — see the catalog text below)':
+             ' — and <b>no line in it names '+esc(m.name)+'</b>')+'. Confirm with the department.';
+    } else if(m.status==='nodetail'){
+      stub.hidden=false;
+      stub.innerHTML='<b>The General Catalog publishes no course list for this minor.</b> There is nothing to fill in here — use the '
+        +(m.site?'<a href="'+esc(m.site)+'" target="_blank" rel="noopener">department requirements page</a>':'department page')
+        +', and add the courses it lists with the box in each bucket.';
+    } else if(m.status==='page'){
+      stub.hidden=false;
+      stub.innerHTML='This minor has its own catalog page; the buckets below are read off that whole page.';
+    } else stub.hidden=true;
+
+    const host=$('mnGroups'); host.innerHTML='';
+    (w.buckets||[]).forEach((b,i)=>host.appendChild(mwBucketEl(b,i)));
+    if(!(w.buckets||[]).length){
+      const d=document.createElement('div'); d.className='gp-group';
+      d.innerHTML='<div class="gp-ghead"><div class="gp-gname">Your courses</div></div>';
+      host.appendChild(d);
+      d.appendChild(mwBucketBody({name:'Your courses',kind:'free',n:w.n||null,units:w.units||null,rule:'',courses:[]},0));
+    }
+    mwRules(w); mwRaw(); mwSummary();
+  }
+  function mwBucketEl(b,i){
+    const wrap=document.createElement('div'); wrap.className='gp-group';
+    const mine=mwWS.c.filter(c=>c.b===i), u=mine.reduce((s,c)=>s+(+c.units||0),0);
+    const flag=b.units?(u>=b.units?'ok':'lo'):'ok';
+    const kindLbl={required:'required',pick:'pick',free:'your choice'}[b.kind]||'';
+    const kindCls={required:'req',pick:'pick',free:'free'}[b.kind]||'';
+    wrap.innerHTML='<div class="gp-ghead"><div class="gp-gname">'+esc(b.name)
+      +(kindLbl?'<span class="kind '+kindCls+'">'+kindLbl+'</span>':'')+'</div>'
+      +'<div class="gp-gu '+flag+'">'+mwFmt(u)+(b.units?' / '+b.units:'')+' units'
+      +(b.n?' <span style="color:var(--faint)">('+mine.length+'/'+b.n+' courses)</span>':'')+'</div></div>'
+      +'<div class="gp-gbar"><span class="'+(b.units&&u>=b.units?'done':'')+'" style="width:'
+      +(b.units?Math.min(100,u/b.units*100):(u>0?100:0))+'%"></span></div>'
+      +(function(){
+          let r=b.rule||''; if(!r) return '';
+          const bare=r.replace(/^(?:\d{1,2}|[A-Za-z])[.):]\s*/,'');
+          if(bare.toLowerCase().indexOf(b.name.toLowerCase())===0)
+            r=bare.slice(b.name.length).replace(/^[\s:.,-]+/,'').replace(/^\([^()]*\)\s*/,'');   // the quota is already in the header
+          return r?'<div class="gp-grule">'+esc(r)+'</div>':'';
+        })();
+    wrap.appendChild(mwBucketBody(b,i));
+    return wrap;
+  }
+  function mwBucketBody(b,i){
+    const body=document.createElement('div'); body.className='gp-gbody';
+    mwWS.c.filter(c=>c.b===i).forEach(c=>body.appendChild(mwCourseEl(c)));
+    const have=new Set(mwWS.c.filter(c=>c.b===i).map(c=>c.code));
+    const opts=(b.courses||[]).filter(c=>!have.has(c));
+    if(opts.length){
+      const ow=document.createElement('div'); ow.className='gp-optwrap'+(opts.length>6?' mn-grid':'');
+      ow.innerHTML='<div class="gp-optlabel">'+(b.kind==='required'?'Required by the catalog — add':'Add from the catalog list')
+        +' <span style="text-transform:none;font-weight:400">('+opts.length+')</span></div>';
+      const show=opts.slice(0,12);
+      show.forEach(code=>ow.appendChild(mwOptEl(code,i)));
+      if(opts.length>show.length){
+        const more=document.createElement('button'); more.className='mn-more'; more.type='button';
+        more.textContent='▾ Show '+(opts.length-show.length)+' more';
+        more.onclick=()=>{more.remove();opts.slice(12).forEach(code=>ow.appendChild(mwOptEl(code,i)));};
+        ow.appendChild(more);
+      }
+      body.appendChild(ow);
+    }
+    const add=document.createElement('div'); add.className='gp-add';
+    add.innerHTML='<input class="cd" placeholder="LTWL 155"><input class="tl" placeholder="Title (optional)"><input class="un" type="number" min="0" step="0.5" value="4">';
+    const btn=document.createElement('button'); btn.textContent='+ add';
+    btn.onclick=()=>{const cd=add.querySelector('.cd').value.trim().toUpperCase().replace(/\s+/g,' ');
+      if(!cd)return; mwAdd(i,cd,add.querySelector('.tl').value.trim(),parseFloat(add.querySelector('.un').value));};
+    add.appendChild(btn); body.appendChild(add);
+    return body;
+  }
+  function mwOptEl(code,bi){
+    const el=document.createElement('div'); el.className='gp-opt';
+    el.innerHTML='<span class="cc">'+esc(code)+'</span><span class="ct">'+esc(mwTitle(code)||'')+'</span>'
+      +(mwFa(code)?'<span class="off" title="Runs in Fall 2026">offered</span>':'')
+      +'<span class="plus">+ add</span>';
+    el.onclick=()=>mwAdd(bi,code,mwTitle(code),UNIT);
+    return el;
+  }
+  function mwCourseEl(c){
+    const el=document.createElement('div'); el.className='gp-course'+(c.done?' done':'');
+    el.innerHTML='<input type="checkbox" '+(c.done?'checked':'')+' title="Mark completed">'
+      +'<span class="cc">'+esc(c.code)+'</span>'
+      +'<span class="ct">'+esc(c.title||mwTitle(c.code)||'')+'</span>'
+      +(mwFa(c.code)?'<span class="off" title="Runs in Fall 2026">offered</span>':'')
+      +'<input class="qt" placeholder="term" maxlength="5" value="'+esc(c.quarter||'')+'" title="Term you’ll take it">'
+      +'<span class="cu">'+mwFmt(c.units)+'u</span>'
+      +'<button class="gr" title="See this course’s grade ranking">grades↗</button>'
+      +'<button class="del" title="Remove">✕</button>';
+    el.querySelector('input[type=checkbox]').onchange=e=>{c.done=e.target.checked;el.classList.toggle('done',c.done);mwSave();mwSummary();};
+    el.querySelector('.qt').onchange=e=>{c.quarter=e.target.value.trim().toUpperCase();e.target.value=c.quarter;mwSave();};
+    el.querySelector('.del').onclick=()=>{mwWS.c=mwWS.c.filter(x=>x.k!==c.k);mwSave();mwRender();};
+    el.querySelector('.gr').onclick=()=>mwGoToCourse(c.code);
+    return el;
+  }
+  function mwSummary(){
+    const w=mwM.work||{}, target=w.units||28;
+    const planned=mwWS.c.reduce((s,c)=>s+(+c.units||0),0);
+    const done=mwWS.c.filter(c=>c.done).reduce((s,c)=>s+(+c.units||0),0);
+    const ud=mwWS.c.filter(c=>mwUD(c.code)).length;
+    $('mnTotalU').textContent=mwFmt(planned);
+    $('mnBar').style.width=Math.min(100,planned/target*100)+'%';
+    $('mnDone').textContent=mwFmt(done);
+    $('mnRemainK').textContent='Remaining to '+target;
+    $('mnRemain').textContent=mwFmt(Math.max(0,target-planned));
+    $('mnUD').textContent=ud+' / '+mwWS.c.length;
+    $('mnUDNeed').textContent=mwWS.c.length?'courses numbered 100–199':'usually ≥5 courses';
+  }
+  function mwRules(w){
+    const m=mwM, out=[];
+    if(w.n||w.units) out.push('<li><b>Total:</b> '+(w.n?w.n+' courses':'')+(w.n&&w.units?' / ':'')+(w.units?w.units+' units':'')
+      +(m.sum?' — the catalog says &ldquo;'+esc(m.sum)+'&rdquo;.':'')+'</li>');
+    (w.rules||[]).slice(0,14).forEach(r=>out.push('<li>'+esc(r)+'</li>'));
+    const dsub=(m.dsubs||[]).filter(s=>subjSet.has(s));
+    if(dsub.length) out.push('<li><b>Subjects:</b> '+esc(dsub.join(', '))
+      +' <button class="dp-btn ghost sm" id="mnSubs" style="margin-left:4px">Rank every course in them ↗</button></li>');
+    out.push('<li>Buckets and unit quotas are <b>read off the catalog text</b> below — a starting point, not an audit. '
+      +'Your college also caps how many courses may double-count with your major.</li>');
+    $('mnRules').innerHTML='<h4>Rules — '+esc(m.name)+' minor</h4><ul>'+out.join('')+'</ul>';
+    const sb=$('mnSubs'); if(sb) sb.onclick=()=>goToCourses(dsub,m.name+' minor · '+m.dept);
+  }
+  function mwRaw(){
+    const m=mwM;
+    $('mnRawBody').innerHTML=(m.groups||[]).map(g=>{
+      const items=g.items.map(it=>{
+        const neg=(it.neg&&it.neg.length)?' <span class="mn-neg">(excluded: '+esc(it.neg.join(', '))+')</span>':'';
+        const code=(it.k&&it.c&&it.c.length===1)?'<b style="font-family:var(--mono)">'+esc(it.c[0])+'</b> ':'';
+        return '<li'+(it.hl?' class="hl"':'')+'>'+code+esc(it.t)+neg+'</li>';
+      }).join('');
+      return '<div class="mn-grp">'+(g.h?'<h4>'+esc(g.h)+(g.extra?'<span class="xt">elsewhere on the page</span>':'')+'</h4>':'')
+        +'<ul class="mn-items">'+items+'</ul></div>';
+    }).join('')||'<div class="mn-grp"><ul class="mn-items"><li>The catalog prints no requirement text for this minor.</li></ul></div>';
+    $('mnSrc').innerHTML='Minor registry from <a href="https://blink.ucsd.edu/instructors/academic-info/majors/minor-codes.html" target="_blank" rel="noopener">Blink</a>, '
+      +'requirements from the <a href="'+esc(m.url||'https://catalog.ucsd.edu/')+'" target="_blank" rel="noopener">General Catalog</a>, built '+esc(MINMETA.date||'')+'. '
+      +'A reference tool, not official advice — confirm every course and unit rule with the department and your college before you declare. '
+      +'<a href="https://students.ucsd.edu/academics/advising/majors-minors/declare-minor.html" target="_blank" rel="noopener">How to declare ↗</a>';
+  }
+  let minInit=false;
+  function renderMinors(){
+    if(minInit) return; minInit=true;
+    if(!MIN||!MIN.length){$('mnEmpty').textContent='Minor data unavailable (minors.json failed to load).';return;}
+    $('mnTotal').textContent=String(MIN.length);
+    $('mnEmpty').textContent='Start typing a minor above — “data”, “music”, “M070”, “LTEN” — or pick a department first.';
+    const want=mwStore.sel&&MIN.find(m=>m.tss===mwStore.sel);
+    if(want){ mwSel=want.tss; mwDept=want.admin; $('mnLoad').disabled=false; mwLoad(want.tss); }
+    mnDeptBox.sync(); mnPickBox.sync();
+  }
+  $('mnLoad').addEventListener('click',()=>{ if(mwSel) mwLoad(mwSel); });
+  $('mnReset').addEventListener('click',()=>{if(mwM&&confirm('Clear your picks for the '+mwM.name+' minor and start from the catalog list?')) mwLoad(mwM.tss,true);});
+  $('mnRank').addEventListener('click',()=>{
+    const codes=(mwM.codes||[]).filter(c=>courseKeySet.has(c)); if(!codes.length)return;
+    goToCoursesByCode(codes,mwM.name+' minor');
+    state.offered=false; $('offered').setAttribute('aria-pressed','false'); render();
+  });
+  $('mnPrint').addEventListener('click',()=>window.print());
+  $('mnNotes').addEventListener('input',e=>{if(mwWS){mwWS.notes=e.target.value;mwSave();}});
+
   let curView='rank';
   function setView(v){
     curView=v;
@@ -2748,15 +3156,19 @@ function init(DATA){
     $('rankView').classList.toggle('hidden',v!=='rank');
     $('scheduleView').classList.toggle('active',v==='sched');
     $('geView').classList.toggle('active',v==='ge');
+    $('tab-minor').setAttribute('aria-selected',v==='minor'?'true':'false');
+    $('minorView').classList.toggle('active',v==='minor');
     $('tab-planner').setAttribute('aria-selected',v==='planner'?'true':'false');
     $('plannerView').classList.toggle('active',v==='planner');
     if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The Fall 2026 catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
     if(v==='ge') ensureGeCourses().then(renderGE);
+    if(v==='minor') ensureMinors().then(renderMinors);
     if(v==='planner') initPlanner();
   }
   $('tab-rank').addEventListener('click',()=>setView('rank'));
   $('tab-sched').addEventListener('click',()=>setView('sched'));
   $('tab-ge').addEventListener('click',()=>setView('ge'));
+  $('tab-minor').addEventListener('click',()=>setView('minor'));
   $('tab-planner').addEventListener('click',()=>setView('planner'));
 
   /* ===================== Degree Planner ===================== */

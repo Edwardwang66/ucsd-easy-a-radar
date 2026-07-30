@@ -10,10 +10,11 @@ A single-page tool that ranks UCSD courses by how GPA-friendly they've been, fro
 
 This is a **static site** (no build step). Three files matter:
 
-- `index.html` — the app (fetches `data.json`, and `schedule.json` / `plans.json` / `gradplans.json` on demand)
+- `index.html` — the app (fetches `data.json`, and `schedule.json` / `plans.json` / `gradplans.json` / `minors.json` / `ge-courses.json` on demand)
 - `data.json` — the ranking dataset (grades × professors × RMP, + FA26 current instructors)
 - `schedule.json` — the Fall 2026 section catalog (times, rooms, instructors, building coords) used by the schedule builder
 - `plans.json` — UCSD official undergraduate academic plans (2022–2026), used by the Degree Planner's **Undergraduate** mode
+- `minors.json` — all 112 UCSD undergraduate minors with their General Catalog requirements, used by the **Minors** tab
 - `gradplans.json` — graduate catalog for the Degree Planner's **Graduate** mode: all 11 UCSD grad schools and 51 departments, with full course-level worksheets for the 13 ECE research areas and a verified degree-type + official-requirements overview for every other department
 
 **Option A — Vercel CLI**
@@ -83,7 +84,7 @@ web server. No build, no Node, no config.
 
 **What to upload:** everything except the dev-only files. Ship these —
 ```
-index.html  data.json  schedule.json  hist.json  plans.json  gradplans.json  schedule-instructor.js  vercel.json
+index.html  data.json  schedule.json  hist.json  plans.json  gradplans.json  minors.json  ge-courses.json  schedule-instructor.js  vercel.json
 ```
 and skip `README.md`, `.git*`, `api/`, `tests/`, `.vercel/`, `node_modules/`. (`vercel.json`
 only sets cache headers; harmless to include or drop on other hosts.)
@@ -138,6 +139,26 @@ returns `index.html` and serves `*.json` as static files works.
   and department-corroborated.
 - **Grad backfill** — 200+ courses with no grade data are filled from professors' RMP course
   history (`RMP only` rows); those scores are the professor's overall rating, not course-specific.
+- **Minors** — all **112** undergraduate minors (Blink's minor-code registry) joined to the requirement
+  text the **General Catalog** publishes for each one, in `minors.json`, and presented as a **worksheet in the
+  same shape as the Degree Planner's graduate mode**: pick department → minor, and the catalog prose is rendered
+  as requirement **buckets** with unit quotas, a units/completed/remaining summary, checkboxes, per-term boxes
+  and a `grades↗` link on every course row (progress persists in `localStorage`; Reset and Print in the toolbar).
+  Buckets, quotas and candidate course lists are *derived* from the catalog text — a line that states its own
+  quota ("Lower-division: Four courses (sixteen units): CSE 8B or CSE 11, …") becomes a bucket, the lines under
+  it supply the candidates, a `required` bucket starts pre-filled when its list exactly meets a stated quota,
+  and everything else becomes a **Rules** list. Both pickers are type-to-search boxes (name, ISIS code, TSS code
+  or subject prefix — "LTEN" ranks Literatures in English first), with out-of-department matches under a divider.
+  Course codes are validated against the real course catalog, so a minor code (`CS26`) or major code (`MA30`)
+  can never masquerade as a course, and sentences that *exclude* courses ("MATH 195–199 are not acceptable for
+  the minor") are parsed as exclusions, not requirements. Because the catalog doesn't publish one section per
+  minor, each minor states how firmly its section belongs to it: **87 `exact`** (a heading names it),
+  **19 `shared`** (one section covers several of the department's minors — Anthropology's five, ECE's four,
+  Linguistics' three, the Literature and Visual Arts umbrellas — flagged with a banner naming the section, and
+  saying so outright when *no* line in it names this minor), **5 `page`** (standalone minor programs) and
+  **1 `nodetail`** (Psychology, whose list lives only on the department site, which is linked instead). The
+  verbatim catalog text sits in a collapsed **Catalog text** block, so summarising never hides anything.
+  Regenerate with `minor-scraper/` (see its README); reference only — confirm with your college and the department.
 - **Degree Planner** — two modes. **Undergraduate** loads UCSD's official college academic plans
   (2022–2026, from `plans.json`) as an editable quarter-by-quarter grid. **Graduate** (from
   `gradplans.json`) covers the whole UCSD graduate catalog by **school → department**: 11 schools
