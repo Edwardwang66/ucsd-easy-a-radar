@@ -983,6 +983,12 @@
    .dp-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#1F9D6B)}
    .dp-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 2px 2px}
    .dp-legend .lg{display:flex;align-items:center;gap:5px}
+   .dp-minors{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+   .dp-minors .mchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#0E8F8F;
+     border:1px solid color-mix(in srgb,#0E8F8F 45%,transparent);background:color-mix(in srgb,#0E8F8F 8%,transparent);
+     border-radius:20px;padding:2px 5px 2px 10px}
+   .dp-minors .mchip .mx{border:0;background:none;cursor:pointer;color:inherit;font-size:13px;line-height:1;padding:2px 5px;border-radius:50%}
+   .dp-minors .mchip .mx:hover{background:color-mix(in srgb,#0E8F8F 18%,transparent)}
    .dp-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
    .dp-years{display:flex;flex-direction:column;gap:14px;margin-top:8px}
    .dp-year{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
@@ -1005,8 +1011,11 @@
    .dp-qbody{padding:5px 9px 9px;flex:1;display:flex;flex-direction:column;gap:6px}
    .dp-qbody.drag{background:var(--accent-soft);outline:2px dashed var(--accent);outline-offset:-4px}
    .dp-course{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent-2);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;cursor:grab}
-   .dp-course.tGE{border-left-color:#7A4FC0}
-   .dp-course.tELECTIVE{border-left-color:#0E8F8F}
+   /* plans.json types its courses COLLEGE (college GE) / DEPARTMENT (major) — the class
+      is built as t+type, so these selectors must use the data's vocabulary, not ours.
+      DEPARTMENT stays on the default accent border above. */
+   .dp-course.tCOLLEGE,.dp-course.tGE{border-left-color:#7A4FC0}
+   .dp-course.tMINOR{border-left-color:#0E8F8F}
    .dp-course.tOTHER{border-left-color:var(--faint)}
    .dp-course.done{opacity:.5}
    .dp-course.done .cn{text-decoration:line-through}
@@ -1151,6 +1160,11 @@
      <div class="dp-toolbar">
        <button class="dp-btn ghost sm" id="dpReset">↺ Reset to official</button>
        <button class="dp-btn ghost sm" id="dpSummer" aria-pressed="false" title="Show a Summer session column each year — drag or add courses to catch up, lighten a heavy term, or graduate early">☀ Summer terms</button>
+       <button class="dp-btn ghost sm" id="dpMinorBtn" title="Plan a minor alongside your major — drops its requirements into the lightest quarters as renameable placeholder courses">◆ Add minor</button>
+       <div class="dp-field gp-combo" id="dpMinorField" hidden style="flex:1;min-width:240px;max-width:340px">
+         <input id="dpMinorInput" type="text" placeholder="Search a minor, ISIS code or subject…" autocomplete="off"
+                role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dpMinorList" aria-label="Add a minor to this plan">
+         <div id="dpMinorList" class="gp-combo-list" role="listbox" hidden></div></div>
        <span class="sp"></span>
        <button class="dp-btn ghost sm" id="dpImport">⭱ Import</button>
        <button class="dp-btn ghost sm" id="dpExport">⭳ Save to file</button>
@@ -1159,6 +1173,7 @@
      </div>
      <div id="dpTitle" style="font-size:16px;font-weight:700;margin:6px 0 1px"></div>
      <div id="dpSub" style="color:var(--muted);font-size:12.5px;margin-bottom:8px"></div>
+     <div id="dpMinorChips" class="dp-minors" hidden></div>
      <div class="dp-summary">
        <div class="dp-stat"><div class="k">Total Planned</div><div class="v"><span id="dpTotal">0</span> <small>units</small></div></div>
        <div class="dp-stat"><div class="k">Completed</div><div class="v"><span id="dpDone">0</span> <small>units</small></div>
@@ -1170,8 +1185,8 @@
      <div class="dp-legend">
        <span class="lg"><span class="dp-dot" style="background:var(--accent-2)"></span>Department / Major</span>
        <span class="lg"><span class="dp-dot" style="background:#7A4FC0"></span>College GE</span>
-       <span class="lg"><span class="dp-dot" style="background:#0E8F8F"></span>Elective</span>
-       <span class="lg"><span class="dp-dot" style="background:var(--faint)"></span>Other</span>
+       <span class="lg"><span class="dp-dot" style="background:#0E8F8F"></span>Minor</span>
+       <span class="lg"><span class="dp-dot" style="background:var(--faint)"></span>Added by you</span>
        <span class="lg"><span class="ov" style="color:var(--gold)">★</span> counts for GE &amp; major</span>
        <span class="lg">drag courses between quarters · ☑ mark done · <span style="font-family:var(--mono)">grades↗</span> jumps to its ranking</span>
      </div>
@@ -1720,6 +1735,11 @@ function init(DATA){
     // course, not to this row, so say "this course" (a bare "FA26: …" under every
     // past instructor read as though all of them were teaching it this fall, #65).
     else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');const tip=`${instrShort(r[C.i]||'')||'This professor'} is not teaching ${r[C.s]} ${r[C.c]} in Fall 2026 — it is taught by ${ord.join(', ')}. This row is their past grade history for the course.`;nowLine=`<span class="now" style="color:var(--muted)" title="${esc(tip)}"><span class="dotnow" style="background:var(--muted)"></span>This course in FA26: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
+    // Offered course with NO instructor in the WebReg catalog at all (key absent from the
+    // fa map): fillFa26Rows() never visits it and the branch above can't fire, so its
+    // RMP-backfill row showed the RMP professor + "Offered" as if they taught it (#65's
+    // last gap). Say what the schedule actually says: nobody is assigned yet.
+    else if(isRmp&&r[C.off]) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Instructor to be announced this term</span>';
     const g=r[C.g];
     const gpaCell=isNew2?'<span class="firstx" title="No grade data for this course">0×</span>'
                  :(isTBA||isCat)?'<span class="na">—</span>'
@@ -3214,6 +3234,8 @@ function init(DATA){
       $('dpImport').onclick=()=>$('dpFile').click();
       $('dpFile').onchange=dpImport;
       $('dpPrint').onclick=()=>window.print();
+      $('dpMinorBtn').onclick=()=>{const f=$('dpMinorField');if(!f.hidden){f.hidden=true;return;}
+        ensureMinors().then(()=>{f.hidden=false;$('dpMinorInput').value='';$('dpMinorInput').focus();});};
       $('dpNotes').oninput=()=>{if(dpModel){dpModel.notes=$('dpNotes').value;dpSave();}};
       const mi=$('dpMajorInput');
       mi.oninput=()=>{dpMajorCode='';dpResetType();dpFilterMajors(mi.value);dpOpenDrop();};
@@ -3346,6 +3368,7 @@ function init(DATA){
       row.appendChild(qs); host.appendChild(row);
     }
     dpUpdateSummary();
+    dpRenderMinorChips();
   }
   function dpCourseEl(c){
     const el=document.createElement('div');
@@ -3390,6 +3413,66 @@ function init(DATA){
     // Commit AFTER the click that caused the blur — a synchronous dpRender() here would
     // destroy the clicked control before its click fires, swallowing it (blur-before-click).
     inp.onblur=()=>setTimeout(()=>commit(true),0);
+  }
+  // ---- plan a minor alongside the major: drop its requirements into the grid as
+  // MINOR-typed cards. Real codes where the catalog's required list IS the requirement;
+  // renameable placeholders for pick-N buckets (click the name → the class you chose).
+  const dpMinorBox=mnCombo({
+    input:'dpMinorInput', list:'dpMinorList', empty:'No minor matches — try “data”, “M070”, “LTEN”.',
+    label:()=>'',
+    items:()=>(MIN||[]).slice().sort((a,b)=>a.name.localeCompare(b.name)).map(m=>{
+      const added=!!(dpModel&&dpModel.meta.minors&&dpModel.meta.minors.some(x=>x.tss===m.tss));
+      return {key:m.tss, code:m.code, name:m.name,
+              sub:m.admin+(m.work&&m.work.n?' · '+m.work.n+' courses / '+m.work.units+' units':''),
+              tag:added?'added':(m.status==='nodetail'?'no list':''),
+              hay:(m.name+' '+m.code+' '+m.tss+' '+m.admin+' '+(m.subs||[]).join(' ')).toLowerCase()};}),
+    onPick:k=>{$('dpMinorField').hidden=true;dpAddMinor(k);}
+  });
+  function dpAddMinor(tss){
+    if(!dpModel) return;
+    const m=(MIN||[]).find(x=>x.tss===tss); if(!m) return;
+    const meta=dpModel.meta; meta.minors=meta.minors||[];
+    if(meta.minors.some(x=>x.tss===tss)){dpRenderMinorChips();return;}
+    const cards=[], w=m.work||{};
+    (w.buckets||[]).forEach(b=>{
+      const per=(b.units&&b.n)?b.units/b.n:UNIT;
+      if(b.kind==='required'&&b.n&&b.courses.length&&b.courses.length<=b.n)
+        b.courses.forEach(code=>cards.push({name:code,units:per}));
+      else if(b.n){
+        const word=(b.name||'course').trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z-]/g,'')||'course';
+        for(let i=1;i<=b.n;i++)cards.push({name:m.code+' '+word+' '+i+'/'+b.n,units:per});
+      }
+    });
+    if(!cards.length){const n=w.n||7;for(let i=1;i<=n;i++)cards.push({name:m.code+' minor course '+i+'/'+n,units:UNIT});}
+    // Place each card into the lightest regular quarter from year 2 on — minors are
+    // rarely started in year 1, and every card stays draggable like any other.
+    const L=meta.L||4, y0=L>=3?2:1, load={};   // 4-year plans: start minors in year 2; short transfer plans: anywhere
+    dpModel.courses.forEach(c=>{load[c.year+'.'+c.quarter]=(load[c.year+'.'+c.quarter]||0)+(+c.units||0);});
+    cards.forEach(cd=>{
+      let best=[y0,1],bu=Infinity;
+      for(let y=y0;y<=L;y++)for(let q=1;q<=3;q++){const u=load[y+'.'+q]||0;if(u<bu){bu=u;best=[y,q];}}
+      load[best[0]+'.'+best[1]]=bu+cd.units;
+      dpModel.courses.push({key:'c'+Math.random().toString(36).slice(2,8),name:cd.name,units:cd.units,
+        type:'MINOR',year:best[0],quarter:best[1],overlap:false,done:false,minor:tss});
+    });
+    meta.minors.push({tss:tss,code:m.code,name:m.name});
+    dpSave(); dpRender();
+  }
+  function dpRemoveMinor(tss){
+    if(!dpModel) return;
+    dpModel.courses=dpModel.courses.filter(c=>c.minor!==tss);
+    dpModel.meta.minors=(dpModel.meta.minors||[]).filter(x=>x.tss!==tss);
+    dpSave(); dpRender();
+  }
+  function dpRenderMinorChips(){
+    const host=$('dpMinorChips'); if(!host) return;
+    const list=(dpModel&&dpModel.meta.minors)||[];
+    host.hidden=!list.length;
+    host.innerHTML=list.map(x=>{
+      const n=dpModel.courses.filter(c=>c.minor===x.tss).length;
+      return '<span class="mchip">◆ '+dpEsc(x.name)+' · '+dpEsc(x.code)+' <small>('+n+' courses)</small>'
+        +'<button class="mx" data-tss="'+dpEsc(x.tss)+'" title="Remove this minor and its courses from the plan">✕</button></span>';}).join('');
+    host.querySelectorAll('.mx').forEach(b=>b.onclick=()=>dpRemoveMinor(b.dataset.tss));
   }
   function dpUpdateSummary(){
     const total=dpSum(dpModel.courses), done=dpSum(dpModel.courses.filter(c=>c.done));
