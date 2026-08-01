@@ -1720,6 +1720,11 @@ function init(DATA){
     // course, not to this row, so say "this course" (a bare "FA26: …" under every
     // past instructor read as though all of them were teaching it this fall, #65).
     else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');const tip=`${instrShort(r[C.i]||'')||'This professor'} is not teaching ${r[C.s]} ${r[C.c]} in Fall 2026 — it is taught by ${ord.join(', ')}. This row is their past grade history for the course.`;nowLine=`<span class="now" style="color:var(--muted)" title="${esc(tip)}"><span class="dotnow" style="background:var(--muted)"></span>This course in FA26: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
+    // Offered course with NO instructor in the WebReg catalog at all (key absent from the
+    // fa map): fillFa26Rows() never visits it and the branch above can't fire, so its
+    // RMP-backfill row showed the RMP professor + "Offered" as if they taught it (#65's
+    // last gap). Say what the schedule actually says: nobody is assigned yet.
+    else if(isRmp&&r[C.off]) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Instructor to be announced this term</span>';
     const g=r[C.g];
     const gpaCell=isNew2?'<span class="firstx" title="No grade data for this course">0×</span>'
                  :(isTBA||isCat)?'<span class="na">—</span>'
