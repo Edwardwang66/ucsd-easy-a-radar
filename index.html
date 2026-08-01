@@ -1005,8 +1005,11 @@
    .dp-qbody{padding:5px 9px 9px;flex:1;display:flex;flex-direction:column;gap:6px}
    .dp-qbody.drag{background:var(--accent-soft);outline:2px dashed var(--accent);outline-offset:-4px}
    .dp-course{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent-2);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;cursor:grab}
-   .dp-course.tGE{border-left-color:#7A4FC0}
-   .dp-course.tELECTIVE{border-left-color:#0E8F8F}
+   /* plans.json types its courses COLLEGE (college GE) / DEPARTMENT (major) — the class
+      is built as t+type, so these selectors must use the data's vocabulary, not ours.
+      DEPARTMENT stays on the default accent border above. */
+   .dp-course.tCOLLEGE,.dp-course.tGE{border-left-color:#7A4FC0}
+   .dp-course.tMINOR{border-left-color:#0E8F8F}
    .dp-course.tOTHER{border-left-color:var(--faint)}
    .dp-course.done{opacity:.5}
    .dp-course.done .cn{text-decoration:line-through}
@@ -1170,8 +1173,8 @@
      <div class="dp-legend">
        <span class="lg"><span class="dp-dot" style="background:var(--accent-2)"></span>Department / Major</span>
        <span class="lg"><span class="dp-dot" style="background:#7A4FC0"></span>College GE</span>
-       <span class="lg"><span class="dp-dot" style="background:#0E8F8F"></span>Elective</span>
-       <span class="lg"><span class="dp-dot" style="background:var(--faint)"></span>Other</span>
+       <span class="lg"><span class="dp-dot" style="background:#0E8F8F"></span>Minor</span>
+       <span class="lg"><span class="dp-dot" style="background:var(--faint)"></span>Added by you</span>
        <span class="lg"><span class="ov" style="color:var(--gold)">★</span> counts for GE &amp; major</span>
        <span class="lg">drag courses between quarters · ☑ mark done · <span style="font-family:var(--mono)">grades↗</span> jumps to its ranking</span>
      </div>
