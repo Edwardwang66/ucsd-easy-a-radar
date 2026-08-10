@@ -12,14 +12,21 @@
 // the original pipeline's name matching missed.
 //
 // Matching is deliberately strict, because the failure mode is silently
-// attributing someone else's ratings. A surname match alone is not enough:
-// "Romero, Sally Ann Dominick" and "Anthony Romero" share a surname and a
-// first initial and are different people. So a candidate must also share a
-// given name — the same token, or a 4+ character prefix of one ("Erin
-// Truesdell Hill" / "Hill, Erin Truesdell"). Anything with more than one
-// surviving candidate is left alone rather than guessed at.
+// attributing someone else's ratings — "Xiao Wang" teaches Chinese and has 24
+// ratings; "Xiaolong Wang" teaches CSE and has one.
 //
-// Skips rows that already have a rating, so re-running is a no-op. Zero deps.
+// Both sides are normalised to "given … surname" order, and how much of the
+// tail is the surname is decided by how much of it the two names share. That
+// matters for compound surnames: taking only the last word makes "Juan Pablo
+// Pardo Guerra" and "Sebastian Pardo Guerra" agree on "Pardo" as if it were a
+// given name. Sharing that tail is necessary but not sufficient — the names
+// must also share a given name outright, so those two are correctly kept
+// apart while "Juan Pardo Guerra" matches.
+//
+// Candidates are then scored (an identical name beats a partial one, a longer
+// shared surname beats a shorter one) and only a single best candidate is
+// accepted; a tie is left for a human. Skips rows that already have a rating,
+// so re-running is a no-op. Zero dependencies.
 "use strict";
 
 const fs = require("fs");
@@ -27,34 +34,55 @@ const path = require("path");
 
 const ROOT = __dirname;
 const DATA = path.join(ROOT, "data.json");
-const MIN_PREFIX = 4;
 
 const deacc = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "");
 const alnum = (s) => deacc(s).toLowerCase().replace(/[^a-z0-9]/g, "");
 
-// "Hill, Erin Truesdell" and "Erin Truesdell Hill" -> same surname + tokens.
-function splitName(name) {
+// "Hill, Erin Truesdell" and "Erin Truesdell Hill" both -> [erin, truesdell, hill]
+function tokens(name) {
   const n = deacc(name).replace(/\s+/g, " ").trim();
-  if (!n) return null;
+  if (!n) return [];
   if (n.includes(",")) {
     const i = n.indexOf(",");
-    return { surname: alnum(n.slice(0, i)), given: n.slice(i + 1).trim().split(" ").map(alnum).filter(Boolean) };
+    const surname = n.slice(0, i).trim().split(" ").map(alnum).filter(Boolean);
+    const given = n.slice(i + 1).trim().split(" ").map(alnum).filter(Boolean);
+    return [...given, ...surname];
   }
-  const parts = n.split(" ").filter(Boolean);
-  if (parts.length < 2) return null;
-  return { surname: alnum(parts[parts.length - 1]), given: parts.slice(0, -1).map(alnum).filter(Boolean) };
+  return n.split(" ").map(alnum).filter(Boolean);
 }
 
-function givenNamesAgree(a, b) {
-  for (const x of a) {
-    for (const y of b) {
-      if (x === y && x.length >= 2) return true;
-      const shorter = x.length <= y.length ? x : y;
-      const longer = shorter === x ? y : x;
-      if (shorter.length >= MIN_PREFIX && longer.startsWith(shorter)) return true;
+// How much of the two names' tails is the same surname. Compared as joined
+// text, not word by word, because the same surname gets written apart or
+// together on either side — "De Sa" / "Desa", "Mc Kenzie" / "McKenzie",
+// "Dauber Griffin" / "Dauber-Griffin". Returns the largest match found.
+function sharedTail(a, b) {
+  let best = null;
+  for (let ka = 1; ka <= a.length; ka++) {
+    const tailA = a.slice(a.length - ka).join("");
+    for (let kb = 1; kb <= b.length; kb++) {
+      if (tailA !== b.slice(b.length - kb).join("")) continue;
+      if (!best || ka + kb > best.ka + best.kb) best = { ka, kb };
     }
   }
-  return false;
+  return best;
+}
+
+// 0 = not the same person. Higher = better evidence.
+function score(a, b) {
+  if (!a.length || !b.length) return 0;
+  const tail = sharedTail(a, b);
+  if (!tail) return 0;                                   // no surname in common
+  const givenA = a.slice(0, a.length - tail.ka);
+  const givenB = b.slice(0, b.length - tail.kb);
+  const depth = Math.min(tail.ka, tail.kb);
+  if (!givenA.length && !givenB.length) return 1000 + depth;   // the very same name
+  // One side is the whole of the other plus extra given names: "Alexander
+  // Niema Moshiri" is the Niema Moshiri who also has ratings.
+  if (!givenA.length || !givenB.length) return 500 + depth;
+  let common = 0;
+  for (const x of givenA) if (givenB.includes(x)) common++;
+  if (!common) return 0;                                 // same surname, different person
+  return depth * 10 + common;
 }
 
 function main() {
@@ -70,12 +98,23 @@ function main() {
   const C = {};
   data.cols.forEach((c, i) => (C[c] = i));
 
+  // Indexed under every way the tail could be read as a surname — "Virginia
+  // Desa" under "desa", "De Sa, Virginia" under "sa" and "desa" — so the two
+  // spellings of one surname still meet.
   const bySurname = new Map();
+  const surnameKeys = (t) => {
+    const keys = [];
+    for (let k = 1; k <= Math.min(3, t.length); k++) keys.push(t.slice(t.length - k).join(""));
+    return keys;
+  };
   for (const p of profs) {
-    const parsed = splitName(p.name);
-    if (!parsed || !parsed.surname) continue;
-    if (!bySurname.has(parsed.surname)) bySurname.set(parsed.surname, []);
-    bySurname.get(parsed.surname).push({ ...p, parsed });
+    const t = tokens(p.name);
+    if (t.length < 2) continue;
+    const entry = { ...p, tokens: t };
+    for (const key of surnameKeys(t)) {
+      if (!bySurname.has(key)) bySurname.set(key, []);
+      bySurname.get(key).push(entry);
+    }
   }
 
   const stats = { filled: 0, ambiguous: 0, noCandidate: 0, alreadyRated: 0, noInstructor: 0, mergedDuplicate: 0 };
@@ -85,32 +124,35 @@ function main() {
   for (const r of data.recs) {
     if (!r[C.i]) { stats.noInstructor++; continue; }
     if (r[C.rid] != null) { stats.alreadyRated++; continue; }
-    const parsed = splitName(r[C.i]);
-    if (!parsed) { stats.noCandidate++; continue; }
-    const hits = (bySurname.get(parsed.surname) || [])
-      .filter((p) => givenNamesAgree(parsed.given, p.parsed.given));
-    if (!hits.length) { stats.noCandidate++; continue; }
-    // Several candidates are usually one professor with duplicate RMP profiles
-    // ("Michael Davidson" twice, "David Danks" / "David  Danks"). When every
-    // candidate spells out the same full name, take the profile carrying the
-    // ratings. When they don't — "Sebastian Pardo Guerra" vs "Juan Pardo
-    // Guerra" — they're different people and nothing is safe to pick.
-    const ids = new Set(hits.map((p) => String(p.legacyId)));
-    const fullNames = new Set(hits.map((p) => alnum(p.name)));
-    if (ids.size > 1 && fullNames.size === 1) {
-      hits.sort((a, b) => (b.numRatings || 0) - (a.numRatings || 0));
-      ids.clear();
-      ids.add(String(hits[0].legacyId));
+    const rowTokens = tokens(r[C.i]);
+    if (rowTokens.length < 2) { stats.noCandidate++; continue; }
+    const candidates = new Set();
+    for (const key of surnameKeys(rowTokens)) {
+      for (const p of bySurname.get(key) || []) candidates.add(p);
+    }
+    const scored = [...candidates]
+      .map((p) => ({ p, s: score(rowTokens, p.tokens) }))
+      .filter((x) => x.s > 0)
+      .sort((x, y) => y.s - x.s);
+    if (!scored.length) { stats.noCandidate++; continue; }
+    const best = scored[0].s;
+    let top = scored.filter((x) => x.s === best);
+    // A tie is usually one professor with duplicate RMP profiles ("Michael
+    // Davidson" twice, "David Danks" / "David  Danks"). When the tied names
+    // spell out the same person, take the profile carrying the ratings.
+    if (top.length > 1 && new Set(top.map((x) => alnum(x.p.name))).size === 1) {
+      top.sort((x, y) => (y.p.numRatings || 0) - (x.p.numRatings || 0));
+      top = [top[0]];
       stats.mergedDuplicate++;
     }
-    if (ids.size > 1) {
+    if (new Set(top.map((x) => String(x.p.legacyId))).size > 1) {
       stats.ambiguous++;
       if (ambiguousSamples.length < 8) {
-        ambiguousSamples.push(`${r[C.s]} ${r[C.c]} · ${r[C.i]} -> ${hits.map((p) => p.name).join(" / ")}`);
+        ambiguousSamples.push(`${r[C.s]} ${r[C.c]} · ${r[C.i]} -> ${top.map((x) => x.p.name).join(" / ")}`);
       }
       continue;
     }
-    const p = hits[0];
+    const p = top[0].p;
     if (!dry) {
       r[C.rq] = p.quality ?? null;
       r[C.rd] = p.difficulty ?? null;
