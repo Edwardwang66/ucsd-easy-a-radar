@@ -58,10 +58,14 @@ function packageLinks(course) {
   const out = packages.map((p) => ({
     u: p.bookingUrl,
     k: [...new Set((p.sections || []).map(sectionKey).filter(Boolean))].sort(),
-  })).filter((p) => p.k.length);
+    // Special-topics packages can meet at the very same times (ECE 285's two
+    // 12:30 lectures are different topics) — the instructor is what tells
+    // them apart, so carry each package's instructors for the app to match.
+    i: [...new Set((p.sections || []).map((s) => s && s.instructor).filter(Boolean))].sort(),
+  })).filter((p) => p.k.length || p.i.length);
   if (out.length < 2) return null;
-  const signatures = new Set(out.map((p) => p.k.join("~")));
-  if (signatures.size < 2) return null;   // indistinguishable by meeting time
+  const signatures = new Set(out.map((p) => p.k.join("~") + "§" + p.i.join("~")));
+  if (signatures.size < 2) return null;   // indistinguishable by time or instructor
   return out;
 }
 

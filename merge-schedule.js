@@ -57,34 +57,44 @@ function to24(t) {
 }
 const timeKey = (type, days, start) => `${type}|${days}|${start}`;
 
-// Name keys shared with the app's linker: surname × each given-name initial,
-// so "Cheng, Hsiao-Bing" and "Hsiao-Bing Cheng" resolve to the same person.
+// Compound-surname-aware person matching (same approach as merge-rmp.js):
+// both names are normalised to "given … surname" order and the surname is
+// however much of the tail the two actually share, compared as joined text.
+// Taking just the last word created 53 duplicate rows — "Soosai Raj, Adalbert
+// Geral" vs "Adalbert Gerald Soosai Raj" never matched on surname "raj" vs
+// "soosai raj". Sharing the tail is necessary but not sufficient: the names
+// must also share a given name, unless one is wholly contained in the other.
 const deacc = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "");
-const squash = (s) => deacc(s).replace(/\s+/g, " ").trim();
-function nameKeys(name) {
-  const n = squash(name);
+const alnum = (s) => deacc(s).toLowerCase().replace(/[^a-z0-9]/g, "");
+function nameTokens(name) {
+  const n = deacc(name).replace(/\s+/g, " ").trim();
   if (!n) return [];
-  let last, given;
   if (n.includes(",")) {
     const i = n.indexOf(",");
-    last = n.slice(0, i).trim().toLowerCase();
-    given = n.slice(i + 1).trim().split(" ");
-  } else {
-    const p = n.split(" ");
-    if (p.length < 2) return [];
-    last = p[p.length - 1].toLowerCase();
-    given = p.slice(0, -1);
+    const surname = n.slice(0, i).trim().split(" ").map(alnum).filter(Boolean);
+    const given = n.slice(i + 1).trim().split(" ").map(alnum).filter(Boolean);
+    return [...given, ...surname];
   }
-  const initials = given.filter((t) => t && /[a-z]/i.test(t[0])).map((t) => t[0].toLowerCase());
-  const surnames = [...new Set([last, last.replace(/[^a-z0-9]/g, "")])];
-  const out = [];
-  for (const s of surnames) for (const i of initials) out.push(s + "|" + i);
-  return out;
+  return n.split(" ").map(alnum).filter(Boolean);
 }
-const sameName = (a, b) => {
-  const ak = nameKeys(a), bk = nameKeys(b);
-  return ak.some((k) => bk.includes(k));
-};
+function sameName(a, b) {
+  const ta = nameTokens(a), tb = nameTokens(b);
+  if (!ta.length || !tb.length) return false;
+  let best = null;
+  for (let ka = 1; ka <= ta.length; ka++) {
+    const tail = ta.slice(ta.length - ka).join("");
+    for (let kb = 1; kb <= tb.length; kb++) {
+      if (tail === tb.slice(tb.length - kb).join("") && (!best || ka + kb > best[0] + best[1])) {
+        best = [ka, kb];
+      }
+    }
+  }
+  if (!best) return false;
+  const ga = ta.slice(0, ta.length - best[0]);
+  const gb = tb.slice(0, tb.length - best[1]);
+  if (!ga.length || !gb.length) return true;     // one name contains the other
+  return ga.some((x) => gb.includes(x));
+}
 
 function main() {
   const src = process.argv[2];
@@ -112,7 +122,7 @@ function main() {
   }
 
   const stats = { filled: 0, corrected: 0, faAdded: 0, curSet: 0, rowsAdded: 0, newProf: 0,
-    skipUmbrella: 0, skipNamesake: 0 };
+    skipUmbrella: 0, skipNamesake: 0, skipIncompleteCourse: 0 };
   const review = [];
   const samples = { filled: [], corrected: [], rows: [] };
 
@@ -120,6 +130,19 @@ function main() {
   for (const [key, course] of Object.entries(sched.courses)) {
     const secs = tss.get(key);
     if (!secs) continue;
+
+    // If the schedule lists more sections of some type than TSS knows about,
+    // the scrape is missing modules for this course (special-topics courses
+    // are several modules, and a lost module once turned ECE 285's Yang Zheng
+    // into Parinaz Naghizadeh). Incomplete evidence — leave instructors alone.
+    const tssTypeCount = {};
+    for (const s of secs) if (s.type) tssTypeCount[s.type] = (tssTypeCount[s.type] || 0) + 1;
+    const schedTypeCount = {};
+    for (const x of course.sec) if (x[S_TYPE] !== "FI") schedTypeCount[x[S_TYPE]] = (schedTypeCount[x[S_TYPE]] || 0) + 1;
+    if (Object.entries(schedTypeCount).some(([t, n]) => (tssTypeCount[t] || 0) < n)) {
+      stats.skipIncompleteCourse++;
+      continue;
+    }
 
     // TSS group ("001") -> its instructor, and a lookup by meeting time
     const byTime = new Map();
@@ -245,9 +268,13 @@ function main() {
       // Same surname, different first initial: nearly always one person under
       // two name forms ("Libby Butler" / "Butler, Elizabeth Annette"), which
       // belongs in `aka`, not in a second row. Collect for review instead.
-      const surnames = new Set(nameKeys(n).map((k) => k.split("|")[0]));
-      const namesake = rows.find((r) =>
-        r[C.i] && nameKeys(r[C.i]).some((k) => surnames.has(k.split("|")[0])));
+      const tn = nameTokens(n);
+      const lastWord = tn[tn.length - 1] || "";
+      const namesake = rows.find((r) => {
+        if (!r[C.i]) return false;
+        const tr = nameTokens(r[C.i]);
+        return tr.includes(lastWord) || tn.includes(tr[tr.length - 1] || "");
+      });
       if (namesake) {
         stats.skipNamesake++;
         if (review.length < 40) review.push(`${key}: TSS "${n}" vs recs "${namesake[C.i]}"`);
@@ -292,6 +319,7 @@ function main() {
   console.log(`  recs rows added (src=2, 0x)      : ${stats.rowsAdded}`);
   console.log(`  newProf added                    : ${stats.newProf}`);
   console.log(`  skipped (umbrella research course): ${stats.skipUmbrella}`);
+  console.log(`  skipped (TSS missing sections)     : ${stats.skipIncompleteCourse} course(s)`);
   console.log(`  skipped (same surname, review aka): ${stats.skipNamesake}`);
   for (const [label, list] of Object.entries(samples)) {
     if (list.length) console.log(`  e.g. ${label}: ` + list.join(" | "));
