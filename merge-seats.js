@@ -102,8 +102,9 @@ function main() {
   console.log(`seats: ${before} -> ${Object.keys(seats).length} ` +
     `(added ${added}, refreshed ${refreshed}, no-link skipped ${skipped})`);
   console.log(`per-package links: ${withPkgs} courses`);
-  console.log("\nNext: node healthcheck.js   # reconcile — orphans / coverage / key drift");
-  console.log("      node build.js         # then re-hash data.json + rewrite index.html");
+  console.log("\nNext: node align-packages.js  # re-align packages to schedule sections (seminar/special-topics links)");
+  console.log("      node healthcheck.js     # reconcile — orphans / coverage / key drift");
+  console.log("      node build.js           # then re-hash data.json + rewrite index.html");
 }
 
 main();

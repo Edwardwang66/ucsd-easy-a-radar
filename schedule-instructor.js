@@ -3,6 +3,7 @@
   if (typeof module === 'object' && module.exports) module.exports = api;
   root.ScheduleInstructor = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  const CODE_INDEX = 0;
   const INSTRUCTOR_INDEX = 7;
 
   function instructorsForGroup(sections) {
@@ -32,11 +33,15 @@
 
   function instructorGroupChoices(groups) {
     return Object.keys(groups || {}).sort().map((group) => {
-      const instructors = instructorsForGroup(groups[group]);
+      const sections = groups[group] || [];
+      const instructors = instructorsForGroup(sections);
+      // No instructor names (AWP-style seminars): label with the real section
+      // code ("Section A81"), not just the group letter.
+      const code = sections[0] && String(sections[0][CODE_INDEX] || '');
       return {
         group,
         instructors,
-        label: instructors.length ? instructors.join(', ') + ' · ' + group : 'Section ' + group,
+        label: instructors.length ? instructors.join(', ') + ' · ' + group : 'Section ' + (code || group),
       };
     });
   }

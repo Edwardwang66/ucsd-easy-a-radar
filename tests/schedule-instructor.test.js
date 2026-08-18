@@ -12,13 +12,16 @@ const S_CODE = 0;
 const S_TYPE = 1;
 const S_CANC = 10;
 
+// Mirror of index.html's activeGroups: group by the EXACT first character of
+// the section code — WebReg group letters run past 'Z' into ASCII punctuation
+// and lowercase on very large courses, so 'a81' is a different group from 'A81'.
 function activeGroups(course) {
   const groups = {};
   for (const section of course.sec) {
     if (section[S_CANC] || section[S_TYPE] === 'FI') continue;
     const code = section[S_CODE] || '';
-    if (!/^[A-Za-z]/.test(code)) continue;
-    const group = code[0].toUpperCase();
+    const group = code.charAt(0);
+    if (!group || /[0-9]/.test(group)) continue;
     (groups[group] = groups[group] || []).push(section);
   }
   return groups;
@@ -67,6 +70,29 @@ test('button state distinguishes the selected professor from an available switch
   assert.equal(helper.instructorChoiceState(false, groups, '', 'Yinlin Dai'), 'add');
   assert.equal(helper.instructorChoiceState(true, groups, 'A', 'Yinlin Dai'), 'switch');
   assert.equal(helper.instructorChoiceState(true, groups, 'C', 'Yinlin Dai'), 'added');
+});
+
+test('AWP 3 seminar groups stay distinct past Z (no case-insensitive merging)', () => {
+  const groups = activeGroups(schedule.courses['AWP 3']);
+  const keys = Object.keys(groups);
+  // WebReg's group letters continue past 'Z' into ASCII — every seminar is its
+  // own group, and 'a81' must NOT be folded into group 'A'.
+  assert.ok(keys.length >= 60, `expected 60+ AWP 3 groups, got ${keys.length}`);
+  assert.ok(keys.includes('A') && keys.includes('a'), 'uppercase and lowercase are separate groups');
+  assert.notDeepEqual(groups['A'], groups['a']);
+  for (const sections of Object.values(groups)) assert.equal(sections.length, 1);
+
+  // index.html must use the same exact-first-character grouping.
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(html, /function activeGroups\(course\)\{[^\n]*charAt\(0\);if\(!gl\|\|\/\[0-9\]\/\.test\(gl\)\)continue;/);
+});
+
+test('instructor-less groups are labelled with their real section code', () => {
+  const groups = activeGroups(schedule.courses['AWP 3']);
+  const choices = helper.instructorGroupChoices(groups);
+  const a = choices.find((c) => c.group === 'A');
+  assert.deepEqual(a.instructors, []);
+  assert.equal(a.label, 'Section A81');
 });
 
 test('changing the schedule dropdown refreshes professor-row button states', () => {

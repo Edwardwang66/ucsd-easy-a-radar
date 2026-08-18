@@ -229,8 +229,12 @@ git commit                 # 4. commit data + index.html together
    set changes, an old alias can start matching a same-surname stranger. `healthcheck.js` flags
    aliases that are no longer current-term instructors; confirm each one by hand.
 4. `node merge-seats.js` / `merge-set.js` if you have fresh exports.
-5. `node healthcheck.js` → prune orphans, fill coverage gaps.
-6. `node build.js`, then commit.
+5. `node align-packages.js` — re-align TSS seat packages to schedule sections, so seminar /
+   special-topics courses (AWP, MCWP/WCWP, ECE 285-style topics) link each section group to its
+   OWN package page instead of the first group's. Both a seats refresh and a schedule refresh
+   invalidate the alignment, so run it after either.
+6. `node healthcheck.js` → prune orphans, fill coverage gaps.
+7. `node build.js`, then commit.
 
 ## Regenerating data.json / schedule.json
 
