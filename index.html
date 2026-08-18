@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1017'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%235b8def' stroke-width='2' stroke-opacity='.55'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='none' stroke='%235b8def' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%235b8def'/%3E%3C/svg%3E">
 <!-- Start the critical dataset download during HTML parse, before the app JS runs.
-     as="fetch" with the same credentials mode as the app's fetch('data.d728c55d54.json')
+     as="fetch" with the same credentials mode as the app's fetch('data.89b2fc6a6d.json')
      — i.e. NO crossorigin, since fetch() defaults to credentials:'same-origin'. Adding
      crossorigin would make the preload an anonymous CORS request, which on a cookie-gated
      origin (e.g. a protected Vercel preview) redirects cross-origin and fails outright.
      hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
-<link rel="preload" href="data.d728c55d54.json" as="fetch">
+<link rel="preload" href="data.89b2fc6a6d.json" as="fetch">
 <link rel="prefetch" href="hist.520c32e21c.json" as="fetch">
 <title>Easy-A Radar — UCSD GPA-friendly courses & professor ratings</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions, RateMyProfessors ratings, a schedule builder, and a graduate degree planner covering every major.">
@@ -1534,7 +1534,20 @@ function init(DATA){
   function courseLinkInfo(key){ const s=SEATS[key]; return s&&s.u ? {href:s.u,direct:true} : {href:TSS_HOME,direct:false}; }
   function seatLink(r){
     if(!r[C.off]) return '';
-    const {href,direct}=courseLinkInfo(CK(r[C.s],r[C.c]));
+    const key=CK(r[C.s],r[C.c]);
+    const entry=SEATS[key];
+    // Aligned multi-section course (seats[key].x): each section group is its own
+    // TSS package under its own instructor, and the course-level link is just the
+    // FIRST group's package — following it from another professor's row lands on
+    // the wrong section (#71: ECE 285's three topics, AWP/MCWP/WCWP seminars).
+    // Link this row's instructor to their own package; when we can't tell which
+    // package is theirs, open the launchpad instead of someone else's section.
+    if(entry&&entry.x){
+      const mine=r[C.i]?(entry.p||[]).filter(p=>p.i&&p.i.some(n=>faMatchesName(n,r[C.i]))):[];
+      if(mine.length) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s own section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
+      return `<a class="seatlink" href="${TSS_HOME}" target="_blank" rel="noopener" title="Each section of this course has its own TSS page and we can’t tell which one belongs to this row — opens the TSS launchpad to search (sign in first)">Find on TSS ↗</a>`;
+    }
+    const {href,direct}=courseLinkInfo(key);
     const label=direct?'Course page ↗':'Find on TSS ↗';
     const title=direct?'Open this course on TSS — sign into TSS first so the link lands on the course page'
                       :'No direct TSS link for this course yet — opens the TSS launchpad to search (sign in first)';
@@ -2156,7 +2169,11 @@ function init(DATA){
   const S_CODE=0,S_TYPE=1,S_DAYS=2,S_START=3,S_END=4,S_BLD=5,S_ROOM=6,S_INSTR=7,S_CANC=10;
   function parseDays(s){const out=[],re=/Su|Sa|Th|Tu|M|W|F/g;let m;while((m=re.exec(s||''))!==null)out.push(DAYIDX[m[0]]);return out;}
   function parseMin(t){const m=/^(\d{1,2}):(\d{2})\s*([ap])?/i.exec(String(t||''));if(!m)return null;let h=+m[1];const mi=+m[2],ap=(m[3]||'').toLowerCase();if(ap==='p'&&h!==12)h+=12;if(ap==='a'&&h===12)h=0;return h*60+mi;}
-  function activeGroups(course){const g={};for(const s of course.sec){if(s[S_CANC]||s[S_TYPE]==='FI')continue;const c=s[S_CODE]||'';if(!/^[A-Za-z]/.test(c))continue;const gl=c[0].toUpperCase();(g[gl]=g[gl]||[]).push(s);}return g;}
+  // Group sections by the exact first character of the section code. WebReg's
+  // group letters run past 'Z' into ASCII ('[' … '`', then lowercase) on very
+  // large courses (AWP 3 has 60+ seminar groups), so 'a81' is NOT group 'A' and
+  // punctuation-coded groups are real; only date-coded rows (finals) are skipped.
+  function activeGroups(course){const g={};for(const s of course.sec){if(s[S_CANC]||s[S_TYPE]==='FI')continue;const c=s[S_CODE]||'';const gl=c.charAt(0);if(!gl||/[0-9]/.test(gl))continue;(g[gl]=g[gl]||[]).push(s);}return g;}
   // A course with several lecture/lab combinations is several separately-enrollable
   // TSS packages, each with its own page. The schedule and TSS number their sections
   // differently ("A54" vs "001-005-LA"), so they're matched on what both agree about:
@@ -2165,6 +2182,15 @@ function init(DATA){
   // all of them. Anything less than an unambiguous single hit — sections without a
   // meeting time, or packages that meet at identical times — returns null so the
   // caller falls back to the course-level link.
+  //
+  // Aligned courses (seats[key].x, written by align-packages.js) are the seminar /
+  // special-topics shape where every section group is its own package and several
+  // groups can meet at identical times under different instructors (AWP 3's 60+
+  // seminars, ECE 285's two TuTh 12:30 topics). For those, time keys alone would
+  // send a student to another instructor's section, so only a package whose
+  // aligned section codes (p.s) cover the picked sections is trusted — anything
+  // else returns null and the caller must NOT fall back to the course-level link
+  // (that link is just the first group's package, i.e. someone else's section).
   function secTimeKey(s){
     const ty=s&&s[S_TYPE],days=s&&s[S_DAYS],mins=parseMin(s&&s[S_START]);
     if(!ty||!days||mins==null)return null;
@@ -2173,6 +2199,12 @@ function init(DATA){
   function pkgLinkFor(key,secs){
     const entry=SEATS[key];
     if(!entry||!entry.p||!entry.p.length||!secs||!secs.length)return null;
+    if(entry.x){
+      const codes=secs.map(s=>s&&s[S_CODE]).filter(Boolean);
+      if(!codes.length)return null;
+      const hit=entry.p.filter(p=>p.s&&p.s.length&&codes.every(c=>p.s.indexOf(c)>=0));
+      return hit.length===1?hit[0].u:null;
+    }
     const need=secs.map(secTimeKey).filter(Boolean);
     if(!need.length)return null;
     let hits=entry.p.filter(p=>need.every(k=>p.k.indexOf(k)>=0));
@@ -2192,6 +2224,19 @@ function init(DATA){
     }
     return hits.length===1?hits[0].u:null;
   }
+  // The booking link for an item's PICKED sections. On an aligned course
+  // (seats[k].x) a group whose own package we couldn't identify gets the TSS
+  // launchpad, not the course-level link — that link is just one group's
+  // package, i.e. a different instructor's section.
+  function bookingFor(it){
+    const {secs,groups}=itemSections(it);
+    const pkg=pkgLinkFor(it.k,secs);
+    if(pkg)return{href:pkg,direct:true,pkg:true};
+    const entry=SEATS[it.k];
+    if(entry&&entry.x&&Object.keys(groups).length>1)return{href:TSS_HOME,direct:false,pkg:false};
+    const cli=courseLinkInfo(it.k);
+    return{href:cli.href,direct:cli.direct,pkg:false};
+  }
   // Final exams: FI rows carry a date ("12/09/2026") instead of a section code, but the
   // catalog lists each group's final right after that group's sections — so attach each FI
   // to the letter group of the sections above it.
@@ -2199,7 +2244,8 @@ function init(DATA){
     const all=[]; let cur='';
     for(const s of course.sec){
       const c=s[S_CODE]||'';
-      if(/^[A-Za-z]/.test(c)){cur=c[0].toUpperCase();continue;}
+      const ch=c.charAt(0);
+      if(ch&&!/[0-9]/.test(ch)){cur=ch;continue;}   // same group key as activeGroups
       if(s[S_TYPE]==='FI'&&!s[S_CANC]) all.push({gl:cur,s});
     }
     let mine=all.filter(f=>f.gl===gl);
@@ -2336,13 +2382,12 @@ function init(DATA){
       return `<div class="m fin"><span class="mt">FI</span><span>${wd}${esc(s[S_DAYS]||'')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>Final exam</span></div>`;
     }).join('');
     const profs=[...new Set(secs.map(s=>s[S_INSTR]).filter(Boolean))];
-    const pkgHref=pkgLinkFor(it.k,secs);
-    const cli=pkgHref?{href:pkgHref,direct:true}:courseLinkInfo(it.k);
-    const bookLabel=pkgHref?'Section page ↗':(cli.direct?'Course page ↗':'Find on TSS ↗');
-    const bookTitle=pkgHref?`Open this exact ${Object.keys(opts).length?'section combination':'section'} of ${it.k} on TSS (sign into TSS first)`
-      :cli.direct?`Open ${it.k} on TSS (sign into TSS first)`
-      :'No direct TSS link — opens the TSS launchpad to search (sign in first)';
-    const bookLink=`<a class="seatlink" href="${esc(cli.href)}" target="_blank" rel="noopener" title="${esc(bookTitle)}">${bookLabel}</a>`;
+    const link=bookingFor(it);
+    const bookLabel=link.pkg?'Section page ↗':(link.direct?'Course page ↗':'Find on TSS ↗');
+    const bookTitle=link.pkg?`Open this exact ${Object.keys(opts).length?'section combination':'section'} of ${it.k} on TSS (sign into TSS first)`
+      :link.direct?`Open ${it.k} on TSS (sign into TSS first)`
+      :'No direct link to this exact section — opens the TSS launchpad to search (sign in first)';
+    const bookLink=`<a class="seatlink" href="${esc(link.href)}" target="_blank" rel="noopener" title="${esc(bookTitle)}">${bookLabel}</a>`;
     return `<div class="sci ${(it._conf||it._finConf)?'conf':''}" style="border-left-color:${color}">
       <div class="h"><div><div class="code">${esc(it.k)}</div><div class="ttl">${esc(course.t)}</div></div><button class="rm" data-rm="${esc(it.k)}" title="Remove">×</button></div>
       <div class="ctrls">${grpSel}${optSel}</div>
@@ -2540,11 +2585,12 @@ function init(DATA){
     const seen=new Set(),direct=[],fallback=[];
     schItems.forEach(it=>{
       if(seen.has(it.k))return; seen.add(it.k);
-      const s=SEATS[it.k];
       // same link the card shows: the picked sections' own package when that's
-      // unambiguous, otherwise the course-level page
-      const u=pkgLinkFor(it.k,itemSections(it).secs)||(s&&s.u);
-      if(u) direct.push({k:it.k,u}); else fallback.push(it.k);
+      // unambiguous, otherwise the course-level page — and for aligned courses
+      // with an unidentified section, the launchpad (search there), never
+      // another instructor's package.
+      const b=bookingFor(it);
+      if(b.direct) direct.push({k:it.k,u:b.href}); else fallback.push(it.k);
     });
     return {direct,fallback};
   }
@@ -3981,7 +4027,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 (async function boot(){
   try{
     let data=window.__DATA__;
-    if(!data){const res=await fetch('data.d728c55d54.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
+    if(!data){const res=await fetch('data.89b2fc6a6d.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
     init(data);
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';

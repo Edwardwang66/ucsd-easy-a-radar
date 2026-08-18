@@ -330,7 +330,7 @@ function main() {
     if (review.length > 20) console.log(`    … and ${review.length - 20} more`);
   }
   if (dry) console.log("\nNothing written. Re-run without --dry-run to apply.");
-  else console.log("\nNext: node healthcheck.js && node build.js");
+  else console.log("\nNext: node align-packages.js && node healthcheck.js && node build.js");
 }
 
 main();
