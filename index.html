@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1017'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%235b8def' stroke-width='2' stroke-opacity='.55'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='none' stroke='%235b8def' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%235b8def'/%3E%3C/svg%3E">
 <!-- Start the critical dataset download during HTML parse, before the app JS runs.
-     as="fetch" with the same credentials mode as the app's fetch('data.89b2fc6a6d.json')
+     as="fetch" with the same credentials mode as the app's fetch('data.9a5173026d.json')
      — i.e. NO crossorigin, since fetch() defaults to credentials:'same-origin'. Adding
      crossorigin would make the preload an anonymous CORS request, which on a cookie-gated
      origin (e.g. a protected Vercel preview) redirects cross-origin and fails outright.
      hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
-<link rel="preload" href="data.89b2fc6a6d.json" as="fetch">
-<link rel="prefetch" href="hist.520c32e21c.json" as="fetch">
+<link rel="preload" href="data.9a5173026d.json" as="fetch">
+<link rel="prefetch" href="hist.b6f84b79d5.json" as="fetch">
 <title>Easy-A Radar — UCSD GPA-friendly courses & professor ratings</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions, RateMyProfessors ratings, a schedule builder, and a graduate degree planner covering every major.">
 <meta name="theme-color" content="#0b1017">
@@ -1484,6 +1484,14 @@ function gpaColor(g){
 function diffColor(d){if(d==null)return 'var(--neutral)';const t=clamp((d-1.6)/(4.2-1.6),0,1);return mix('#2E9E63','#C63F37',t);}
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function instrShort(i){if(!i)return '—';if(i.indexOf(',')<0)return i;const [l,r]=i.split(',');const first=(r||'').trim().split(/\s+/)[0]||'';return (first+' '+l.trim()).trim();}
+// Data files ship packed as {"gz": base64(gzip)} — build.js packs them at hash time so
+// the raw JSON isn't casually readable at its URL. Unwrap transparently; plain JSON
+// (and a null from a tolerant loader) passes straight through.
+async function unGz(j){
+  if(!j||!j.gz) return j;
+  const bytes=Uint8Array.from(atob(j.gz),c=>c.charCodeAt(0));
+  return JSON.parse(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
+}
 
 function init(DATA){
   const C={}; DATA.cols.forEach((c,i)=>C[c]=i);
@@ -2157,7 +2165,7 @@ function init(DATA){
   function ensureSched(){
     if(SCHED) return Promise.resolve(SCHED);
     if(schPromise) return schPromise;
-    schPromise=fetch('schedule.99632bef22.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{SCHED=j;return j;});
+    schPromise=fetch('schedule.5b9f661ab3.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(unGz).then(j=>{SCHED=j;return j;});
     return schPromise;
   }
   const CAL_COLORS=['#0E63AC','#1F9D6B','#B9700E','#7A4FC0','#C0392B','#0E8F8F','#B0357A','#5B7A0E','#2C5FA8','#A15C2B'];
@@ -2398,7 +2406,7 @@ function init(DATA){
   function ensureWalk(){
     if(WALK) return Promise.resolve(WALK);
     if(walkPromise) return walkPromise;
-    walkPromise=fetch('walkbike.965ef1e4c6.json').then(r=>r.ok?r.json():null).then(j=>{
+    walkPromise=fetch('walkbike.1c6930f6f3.json').then(r=>r.ok?r.json():null).then(unGz).then(j=>{
       if(j) j._idx=Object.fromEntries(j.names.map((n,i)=>[n,i]));
       WALK=j; return j;
     }).catch(()=>null);
@@ -2804,7 +2812,7 @@ function init(DATA){
   let GE_COURSES=null, geCoursesPromise=null;
   function ensureGeCourses(){
     if(geCoursesPromise) return geCoursesPromise;
-    geCoursesPromise=fetch('ge-courses.32db06a14d.json').then(r=>r.ok?r.json():null)
+    geCoursesPromise=fetch('ge-courses.c1d827884c.json').then(r=>r.ok?r.json():null).then(unGz)
       .then(j=>{GE_COURSES=(j&&j.colleges)||{};}).catch(()=>{GE_COURSES={};});
     return geCoursesPromise;
   }
@@ -2912,7 +2920,7 @@ function init(DATA){
   function mwSave(){ if(mwM){mwStore.sel=mwM.tss;mwStore['ws:'+mwM.tss]=mwWS;} mwSaveStore(); }
   function ensureMinors(){
     if(minPromise) return minPromise;
-    minPromise=fetch('minors.67b07766f2.json').then(r=>r.ok?r.json():null)
+    minPromise=fetch('minors.968b3c1045.json').then(r=>r.ok?r.json():null).then(unGz)
       .then(j=>{MIN=(j&&j.minors)||[];MINMETA=(j&&j.meta)||{};}).catch(()=>{MIN=[];});
     return minPromise;
   }
@@ -3586,7 +3594,7 @@ function init(DATA){
   function gpEnsureData(){
     if(gpDB) return Promise.resolve(gpDB);
     if(gpPromise) return gpPromise;
-    gpPromise=fetch('gradplans.145376c0c1.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{gpDB=j;return j;});
+    gpPromise=fetch('gradplans.708cc80386.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(unGz).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
   function gpProgLabel(p){
@@ -4003,7 +4011,7 @@ function init(DATA){
 
   // lazily load per-term history in the background (≈40% of the data, only needed on row expand)
   if(!histReady){
-    fetch('hist.520c32e21c.json').then(r=>r.ok?r.json():null).then(hd=>{
+    fetch('hist.b6f84b79d5.json').then(r=>r.ok?r.json():null).then(unGz).then(hd=>{
       if(!hd) return;
       H=hd.hist||hd; histReady=true;
       if(expanded.size) rerenderShown(); // fill any already-open detail panels
@@ -4023,7 +4031,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 (async function boot(){
   try{
     let data=window.__DATA__;
-    if(!data){const res=await fetch('data.89b2fc6a6d.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
+    if(!data){const res=await fetch('data.9a5173026d.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await unGz(await res.json());}
     init(data);
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
