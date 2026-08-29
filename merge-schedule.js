@@ -144,12 +144,16 @@ function main() {
       continue;
     }
 
-    // TSS group ("001") -> its instructor, and a lookup by meeting time
+    // TSS group ("001") -> its instructor(s), and a lookup by meeting time
     const byTime = new Map();
     const groupInstr = new Map();
+    const groupAll = new Map();          // g -> Set of every instructor in the group
     for (const s of secs) {
       const g = String(s.sectionCode || "").split("-")[0];
-      if (s.instructor && !groupInstr.has(g)) groupInstr.set(g, s.instructor);
+      if (s.instructor) {
+        if (!groupInstr.has(g)) groupInstr.set(g, s.instructor);
+        (groupAll.get(g) || groupAll.set(g, new Set()).get(g)).add(s.instructor);
+      }
       if (s.days && s.start && s.instructor) {
         const k = timeKey(s.type, s.days, s.start);
         const prev = byTime.get(k);
@@ -199,11 +203,20 @@ function main() {
         if (!dry) x[S_INSTR] = want;
         stats.filled++;
         if (samples.filled.length < 5) samples.filled.push(`${key} ${x[S_CODE]} -> ${want}`);
-      } else if (exact && !sameName(cur, exact)) {
-        const want = exact;
-        if (!dry) x[S_INSTR] = want;
-        stats.corrected++;
-        if (samples.corrected.length < 8) samples.corrected.push(`${key} ${x[S_CODE]}: ${cur} -> ${want}`);
+      } else {
+        // A correction needs evidence that can't be read two ways: the exact
+        // meeting time, or — when times collide across groups (four groups all
+        // run a Th 5:00p discussion) — an unambiguously-mapped TSS group that
+        // has exactly ONE instructor, so every section in it is that person.
+        const g = letterToGroup.get(String(x[S_CODE] || "")[0]);
+        const groupSole = g && groupAll.get(g) && groupAll.get(g).size === 1
+          ? groupInstr.get(g) : null;
+        const want = exact || groupSole;
+        if (want && !sameName(cur, want)) {
+          if (!dry) x[S_INSTR] = want;
+          stats.corrected++;
+          if (samples.corrected.length < 8) samples.corrected.push(`${key} ${x[S_CODE]}: ${cur} -> ${want}`);
+        }
       }
     }
   }
