@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1017'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%235b8def' stroke-width='2' stroke-opacity='.55'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='none' stroke='%235b8def' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%235b8def'/%3E%3C/svg%3E">
 <!-- Start the critical dataset download during HTML parse, before the app JS runs.
-     as="fetch" with the same credentials mode as the app's fetch('data.d728c55d54.json')
+     as="fetch" with the same credentials mode as the app's fetch('data.3cd115c03d.json')
      — i.e. NO crossorigin, since fetch() defaults to credentials:'same-origin'. Adding
      crossorigin would make the preload an anonymous CORS request, which on a cookie-gated
      origin (e.g. a protected Vercel preview) redirects cross-origin and fails outright.
      hist.json is prefetched at low priority; the app lazy-loads it right after first paint. -->
-<link rel="preload" href="data.d728c55d54.json" as="fetch">
+<link rel="preload" href="data.3cd115c03d.json" as="fetch">
 <link rel="prefetch" href="hist.520c32e21c.json" as="fetch">
 <title>Easy-A Radar — UCSD GPA-friendly courses & professor ratings</title>
 <meta name="description" content="Find UCSD's most GPA-friendly courses and professors — real 2015–2026 grade distributions, RateMyProfessors ratings, a schedule builder, and a graduate degree planner covering every major.">
@@ -2148,7 +2148,7 @@ function init(DATA){
   function ensureSched(){
     if(SCHED) return Promise.resolve(SCHED);
     if(schPromise) return schPromise;
-    schPromise=fetch('schedule.99632bef22.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{SCHED=j;return j;});
+    schPromise=fetch('schedule.479be75e21.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{SCHED=j;return j;});
     return schPromise;
   }
   const CAL_COLORS=['#0E63AC','#1F9D6B','#B9700E','#7A4FC0','#C0392B','#0E8F8F','#B0357A','#5B7A0E','#2C5FA8','#A15C2B'];
@@ -2176,19 +2176,18 @@ function init(DATA){
     const need=secs.map(secTimeKey).filter(Boolean);
     if(!need.length)return null;
     let hits=entry.p.filter(p=>need.every(k=>p.k.indexOf(k)>=0));
-    if(hits.length>1){
-      // Special-topics packages can meet at identical times (ECE 285's two
-      // TuTh 12:30 lectures are different topics) — narrow by the picked
-      // sections' instructor, matched with the same name keys the RMP linker
-      // uses so "Yang Zheng" and "Zheng, Yang" agree.
-      const picked=secs.map(s=>s&&s[S_INSTR]).filter(Boolean).map(ourKeysJS).filter(ks=>ks.length);
-      if(picked.length){
-        const narrowed=hits.filter(p=>p.i&&p.i.some(n=>{
-          const nk=ourKeysJS(n);
-          return picked.some(ks=>ks.some(a=>nk.some(b=>keyEq(a,b))));
-        }));
-        if(narrowed.length) hits=narrowed;
-      }
+    // The meeting time alone can lie: special-topics packages meet at identical
+    // times (ECE 285 ran two TuTh 12:30 lectures), and a topic TSS doesn't list
+    // (Yang Zheng's) time-matches another topic's package. So when both sides
+    // know their instructors, a package must share one with the picked sections
+    // — matched with the RMP linker's name keys so "Yang Zheng" and
+    // "Zheng, Yang" agree.
+    const picked=secs.map(s=>s&&s[S_INSTR]).filter(Boolean).map(ourKeysJS).filter(ks=>ks.length);
+    if(picked.length){
+      hits=hits.filter(p=>!p.i||!p.i.length||p.i.some(n=>{
+        const nk=ourKeysJS(n);
+        return picked.some(ks=>ks.some(a=>nk.some(b=>keyEq(a,b))));
+      }));
     }
     return hits.length===1?hits[0].u:null;
   }
@@ -3981,7 +3980,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 (async function boot(){
   try{
     let data=window.__DATA__;
-    if(!data){const res=await fetch('data.d728c55d54.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
+    if(!data){const res=await fetch('data.3cd115c03d.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();}
     init(data);
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
