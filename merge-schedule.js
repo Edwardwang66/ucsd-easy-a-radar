@@ -137,8 +137,18 @@ function main() {
     // into Parinaz Naghizadeh). Incomplete evidence — leave instructors alone.
     const tssTypeCount = {};
     for (const s of secs) if (s.type) tssTypeCount[s.type] = (tssTypeCount[s.type] || 0) + 1;
+    // Count distinct section codes, not rows — a section can list several
+    // meeting rows (PHYS 4C's A00 lecture also meets Friday 8am), and counting
+    // rows made one two-meeting lecture look like a lecture TSS lost.
     const schedTypeCount = {};
-    for (const x of course.sec) if (x[S_TYPE] !== "FI") schedTypeCount[x[S_TYPE]] = (schedTypeCount[x[S_TYPE]] || 0) + 1;
+    const seenSection = new Set();
+    for (const x of course.sec) {
+      if (x[S_TYPE] === "FI") continue;
+      const id = `${x[S_CODE]}|${x[S_TYPE]}`;
+      if (seenSection.has(id)) continue;
+      seenSection.add(id);
+      schedTypeCount[x[S_TYPE]] = (schedTypeCount[x[S_TYPE]] || 0) + 1;
+    }
     if (Object.entries(schedTypeCount).some(([t, n]) => (tssTypeCount[t] || 0) < n)) {
       stats.skipIncompleteCourse++;
       continue;
