@@ -237,11 +237,16 @@ for (const [name, map, ownKeys] of [
     orphans);
 }
 
-// W2  fa is rebuilt from schedule each term → an fa key not in schedule means a stale rebuild
+// W2  fa comes from schedule.json OR the TSS scrape (sync-current.js covers med-school
+// and late-added courses schedule.json lacks). A key backed by neither — not in the
+// schedule and with no cur=1 row in recs — is a stale leftover from a previous term.
 if (sched) {
-  const staleFa = Object.keys(fa).map((k) => canonicalOf(k) || k).filter((k) => !schedKeys.has(k));
+  const curKeys = new Set();
+  if (C.cur != null) recs.forEach((r) => { if (Array.isArray(r) && r[C.cur] === 1) curKeys.add(CK(r[C.s], r[C.c])); });
+  const staleFa = Object.keys(fa).map((k) => canonicalOf(k) || k)
+    .filter((k) => !schedKeys.has(k) && !curKeys.has(k));
   if (staleFa.length) add("WARN", "stale-fa",
-    `${staleFa.length} \`fa\` key(s) aren't in the current schedule.json (${sched.termName || sched.term || "?"}). fa should be rebuilt from schedule each term — re-run schedule-instructor.js.`,
+    `${staleFa.length} \`fa\` key(s) aren't in the current schedule.json (${sched.termName || sched.term || "?"}) and have no cur=1 row backing them — stale leftovers; re-run sync-current.js with a fresh TSS scrape.`,
     staleFa);
 }
 
