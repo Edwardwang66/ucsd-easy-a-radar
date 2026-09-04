@@ -66,34 +66,127 @@ const timeKey = (type, days, start) => `${type}|${days}|${start}`;
 // must also share a given name, unless one is wholly contained in the other.
 const deacc = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "");
 const alnum = (s) => deacc(s).toLowerCase().replace(/[^a-z0-9]/g, "");
-function nameTokens(name) {
-  const n = deacc(name).replace(/\s+/g, " ").trim();
-  if (!n) return [];
+// Generational suffixes carry no identity ("Heath Jr., Robert Wendell" is Robert Heath).
+const SUFFIX = new Set(["jr", "sr", "ii", "iii", "iv"]);
+// Common English short forms. Only consulted when the surname already matches
+// inside one course, so a wrong entry here cannot merge two departments' Smiths.
+const NICK = [
+  ["libby", "elizabeth"], ["liz", "elizabeth"], ["beth", "elizabeth"], ["tim", "timothy"],
+  ["joe", "joseph"], ["leo", "leonard"], ["chris", "christopher"], ["christo", "christopher"],
+  ["cindy", "cynthia"], ["ash", "ashley"], ["geoff", "geoffrey"], ["jeff", "jeffrey"],
+  ["tom", "thomas"], ["pam", "pamela"], ["peggy", "margaret"], ["meg", "margaret"], ["maggie", "margaret"],
+  ["gwen", "gwendolyn"], ["ken", "kenneth"], ["marty", "martin"], ["dan", "daniel"], ["danny", "daniel"],
+  ["allie", "alexandra"], ["alex", "alexander"], ["alex", "alexandra"], ["julie", "julianne"], ["julie", "julia"],
+  ["claire", "clara"], ["mike", "michael"], ["bill", "william"], ["will", "william"], ["bob", "robert"], ["rob", "robert"],
+  ["dave", "david"], ["steve", "steven"], ["steve", "stephen"], ["matt", "matthew"], ["nick", "nicholas"],
+  ["greg", "gregory"], ["andy", "andrew"], ["drew", "andrew"], ["tony", "anthony"], ["jim", "james"], ["jon", "jonathan"],
+  ["jen", "jennifer"], ["jenny", "jennifer"], ["kate", "katherine"], ["katie", "katherine"], ["kathy", "kathleen"],
+  ["sue", "susan"], ["becky", "rebecca"], ["ben", "benjamin"], ["sam", "samuel"], ["sam", "samantha"], ["ted", "theodore"],
+  ["ed", "edward"], ["eddie", "edward"], ["fred", "frederick"], ["fred", "fredric"], ["rick", "richard"], ["rich", "richard"],
+  ["ron", "ronald"], ["don", "donald"], ["doug", "douglas"], ["ray", "raymond"], ["larry", "lawrence"], ["jerry", "gerald"],
+  ["jack", "john"], ["hank", "henry"], ["patty", "patricia"], ["pat", "patricia"], ["pat", "patrick"], ["nate", "nathan"],
+  ["nate", "nathaniel"], ["zach", "zachary"], ["josh", "joshua"], ["terry", "terrence"], ["vicky", "victoria"],
+  ["mandy", "amanda"], ["abby", "abigail"], ["burt", "burritt"],
+];
+const NICKSET = new Set(NICK.map(([a, b]) => a + "|" + b).concat(NICK.map(([a, b]) => b + "|" + a)));
+function nameParts(name) {
+  const n = deacc(name).replace(/\s+/g, " ").trim().toLowerCase();
+  if (!n) return { given: [], sur: [], rawGiven: [] };
+  let given, sur;
   if (n.includes(",")) {
     const i = n.indexOf(",");
-    const surname = n.slice(0, i).trim().split(" ").map(alnum).filter(Boolean);
-    const given = n.slice(i + 1).trim().split(" ").map(alnum).filter(Boolean);
-    return [...given, ...surname];
+    sur = n.slice(0, i).trim().split(" ");
+    given = n.slice(i + 1).trim().split(" ");
+  } else {
+    const ws = n.split(" ");
+    sur = ws.slice(-1);
+    given = ws.slice(0, -1);
   }
-  return n.split(" ").map(alnum).filter(Boolean);
+  const clean = (arr) => arr.map((w) => [alnum(w), w]).filter(([t]) => t && !SUFFIX.has(t));
+  const g = clean(given), su = clean(sur);
+  return { given: g.map(([t]) => t), rawGiven: g.map(([, w]) => w), sur: su.map(([t]) => t) };
+}
+function nameTokens(name) {
+  const p = nameParts(name);
+  return [...p.given, ...p.sur];
+}
+// Two given-name tokens denote the same person's given name when equal, a known
+// short form, or a truncation ("Ratnesh"/"Ratneshwar", "Ricard"/"Ricardo" — grade
+// exports clip long names; "Ping"/"Ping-Hui" — a hyphenated name written short).
+function givenEq(x, y, rawX, rawY) {
+  if (x === y) return true;
+  if (x.length < 3 || y.length < 3) return false;
+  if (NICKSET.has(x + "|" + y)) return true;
+  const [s, l, rawL] = x.length <= y.length ? [x, y, rawY] : [y, x, rawX];
+  if (!l.startsWith(s)) return false;
+  if (s.length >= 5) return true;
+  if (l.length - s.length <= 1) return true;
+  return !!rawL && rawL.startsWith(s + "-");
+}
+// A hyphenated surname is often written with only one half elsewhere
+// ("Zoumas-Morse, Christine E." in grade data vs TSS "Christine Zoumas"), so
+// also try each half in the surname position. Given-name hyphens (Hsiao-Bing)
+// are left alone — only the surname slot is expanded.
+function nameVariants(name) {
+  const n = deacc(name).replace(/\s+/g, " ").trim();
+  const out = [n];
+  if (!n) return out;
+  if (n.includes(",")) {
+    const i = n.indexOf(",");
+    const sur = n.slice(0, i).trim(), giv = n.slice(i + 1).trim();
+    for (const w of sur.split(" ")) {
+      if (!w.includes("-")) continue;
+      for (const part of w.split("-").filter(Boolean)) out.push(`${sur.replace(w, part)}, ${giv}`);
+    }
+  } else {
+    const ws = n.split(" ");
+    const last = ws[ws.length - 1];
+    if (last.includes("-")) for (const part of last.split("-").filter(Boolean)) out.push([...ws.slice(0, -1), part].join(" "));
+  }
+  return out;
 }
 function sameName(a, b) {
-  const ta = nameTokens(a), tb = nameTokens(b);
+  const va = nameVariants(a), vb = nameVariants(b);
+  return va.some((x) => vb.some((y) => sameNameCore(x, y)));
+}
+// The pre-nickname rule: identical surname tail + an identical given token. Used
+// to tell "merely reordered" matches from ones worth surfacing as an `aka`.
+function sameNameStrict(a, b) {
+  const va = nameVariants(a), vb = nameVariants(b);
+  return va.some((x) => vb.some((y) => sameNameCore(x, y, true)));
+}
+function sameNameCore(a, b, strict) {
+  const pa = nameParts(a), pb = nameParts(b);
+  const ta = [...pa.given, ...pa.sur], tb = [...pb.given, ...pb.sur];
   if (!ta.length || !tb.length) return false;
+  const eq = strict ? (x, y) => x === y : (x, y, i, j) => givenEq(x, y, pa.rawGiven[i], pb.rawGiven[j]);
+  // 1. Longest shared joined surname tail, then a shared given name.
   let best = null;
   for (let ka = 1; ka <= ta.length; ka++) {
     const tail = ta.slice(ta.length - ka).join("");
     for (let kb = 1; kb <= tb.length; kb++) {
-      if (tail === tb.slice(tb.length - kb).join("") && (!best || ka + kb > best[0] + best[1])) {
-        best = [ka, kb];
-      }
+      if (tail === tb.slice(tb.length - kb).join("") && (!best || ka + kb > best[0] + best[1])) best = [ka, kb];
     }
   }
-  if (!best) return false;
-  const ga = ta.slice(0, ta.length - best[0]);
-  const gb = tb.slice(0, tb.length - best[1]);
-  if (!ga.length || !gb.length) return true;     // one name contains the other
-  return ga.some((x) => gb.includes(x));
+  if (best) {
+    const ga = ta.slice(0, ta.length - best[0]);
+    const gb = tb.slice(0, tb.length - best[1]);
+    if (!ga.length || !gb.length) return true;     // one name contains the other
+    if (ga.some((x, i) => gb.some((y, j) => eq(x, y, i, j)))) return true;
+  }
+  if (strict) return false;
+  // 2. Same tokens, different order ("Farinaz, Koushanfar" — surname/given swapped in an export).
+  if (ta.length === tb.length && [...ta].sort().join("|") === [...tb].sort().join("|")) return true;
+  // 3. Compound surname written short: every surname token of the shorter name is
+  //    among the longer name's surname tokens, and a full given name agrees
+  //    ("Parinaz Naghizadeh" ⊂ "Naghizadeh Ardabili, Parinaz").
+  const contains = (s, l) => {
+    if (!s.sur.length || !s.sur.every((t) => l.sur.includes(t))) return false;
+    const sg = s.given.map((t, i) => [t, s.rawGiven[i]]).filter(([t]) => t.length > 1);
+    if (!sg.length) return false;
+    return sg.every(([t, raw]) => l.given.some((u, j) => givenEq(t, u, raw, l.rawGiven[j])));
+  };
+  return contains(pa, pb) || contains(pb, pa);
 }
 
 function main() {
