@@ -336,9 +336,11 @@ if (sched) {
     `${staleAlias.length} \`alias\` key(s) are no longer a current-term instructor (not in fa). If they've stopped teaching the alias is dead weight; review before pruning.`,
     staleAlias);
 
-  const staleAka = Object.keys(aka).filter((k) => !faNames.has(k) && !faNamesNorm.has(normName(k)));
+  // aka is keyed by a recs row's spelling (index.html looks up AKA[row instructor]);
+  // an entry whose key is neither a row instructor nor a current fa name is orphaned.
+  const staleAka = Object.keys(aka).filter((k) => !recsInstr.has(k) && !faNames.has(k) && !faNamesNorm.has(normName(k)));
   if (staleAka.length) add("INFO", "stale-aka",
-    `${staleAka.length} \`aka\` display name(s) aren't in the current fa set — review.`, staleAka);
+    `${staleAka.length} \`aka\` key(s) match neither a recs instructor nor a current fa name — orphaned; review.`, staleAka);
 
   const staleBlock = block
     .filter((p) => Array.isArray(p) && p.length === 2)
