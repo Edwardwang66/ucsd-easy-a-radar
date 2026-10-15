@@ -11,7 +11,9 @@
 // rankings. TSS is the live source and now carries every section's instructor,
 // so this reconciles four places against it:
 //
-//   schedule.json  section instructors (fills blanks, corrects changes)
+//   schedule.json  section instructors (fills blanks, corrects changes) and
+//                  meeting rooms (building + room, so a mid-term room change
+//                  reaches "My Schedule" — issue #79)
 //   data.fa        this term's instructor list per course — drives the "FA26"
 //                  line and the ✓ match on ranking rows
 //   data.recs      cur=1 for a professor teaching the course now; a src=2 row
@@ -32,7 +34,9 @@ const ROOT = __dirname;
 const DATA = path.join(ROOT, "data.json");
 const SCHED = path.join(ROOT, "schedule.json");
 
-const S_CODE = 0, S_TYPE = 1, S_DAYS = 2, S_START = 3, S_INSTR = 7;
+const S_CODE = 0, S_TYPE = 1, S_DAYS = 2, S_START = 3, S_BLD = 5, S_ROOM = 6, S_INSTR = 7;
+// schedule.json marks a remote section with this building name and no room.
+const REMOTE = "RCLAS";
 
 // Independent study / research / internship course numbers — 198, 199, 298,
 // 299, 500 and their lettered variants.
@@ -214,10 +218,35 @@ function main() {
     if (secs.size) tss.set(key, [...secs.values()]);
   }
 
-  const stats = { filled: 0, corrected: 0, faAdded: 0, curSet: 0, rowsAdded: 0, newProf: 0,
+  // TSS truncates building names at 40 characters ("Computer Science and
+  // Engineering Buildin"), while schedule.json (and its `buildings` map, which
+  // the campus map and walk times key on) carries the full name. Resolve a TSS
+  // name to the one schedule name it is a prefix of; anything unresolvable
+  // ("Price Center" vs "Price Center East") leaves the row's location alone.
+  const bldNames = new Set(Object.keys(sched.buildings || {}));
+  for (const c of Object.values(sched.courses)) for (const x of c.sec) if (x[S_BLD]) bldNames.add(x[S_BLD]);
+  const bldCache = new Map();
+  const resolveBuilding = (b) => {
+    if (!b) return null;
+    if (bldNames.has(b)) return b;
+    if (bldCache.has(b)) return bldCache.get(b);
+    const hits = b.length >= 40 ? [...bldNames].filter((n) => n.startsWith(b)) : [];
+    const out = hits.length === 1 ? hits[0] : null;
+    bldCache.set(b, out);
+    return out;
+  };
+  // What schedule.json should say for a TSS section's location, or null when
+  // TSS carries nothing usable (no mode and no building).
+  const wantLocation = (t) => {
+    if (t.mode === "Live Online") return { bld: REMOTE, room: "" };
+    const bld = resolveBuilding(t.building);
+    return bld ? { bld, room: String(t.room || "") } : null;
+  };
+
+  const stats = { filled: 0, corrected: 0, locFixed: 0, faAdded: 0, curSet: 0, rowsAdded: 0, newProf: 0,
     skipUmbrella: 0, skipNamesake: 0, skipIncompleteCourse: 0 };
   const review = [];
-  const samples = { filled: [], corrected: [], rows: [] };
+  const samples = { filled: [], corrected: [], loc: [], rows: [] };
 
   // ---- 1. schedule.json instructors ----
   for (const [key, course] of Object.entries(sched.courses)) {
@@ -294,6 +323,20 @@ function main() {
     for (const x of course.sec) {
       if (x[S_TYPE] === "FI") continue;
       const st = to24(x[S_START]);
+      // Room: the one TSS section meeting at exactly this type + days + start.
+      // Two discussions at the same hour in different rooms stay ambiguous and
+      // are left alone, same rule as the instructor mapping above.
+      const locHits = (st && x[S_DAYS])
+        ? secs.filter((s) => s.days === x[S_DAYS] && s.start === st && s.type === x[S_TYPE]) : [];
+      const loc = locHits.length === 1 ? wantLocation(locHits[0]) : null;
+      if (loc) {
+        const curB = String(x[S_BLD] || ""), curR = String(x[S_ROOM] || "");
+        if (curB !== loc.bld || curR !== loc.room) {
+          if (!dry) { x[S_BLD] = loc.bld; x[S_ROOM] = loc.room; }
+          stats.locFixed++;
+          if (samples.loc.length < 8) samples.loc.push(`${key} ${x[S_CODE]}: ${curB} ${curR} -> ${loc.bld} ${loc.room}`.replace(/\s+/g, " "));
+        }
+      }
       const exact = (st && x[S_DAYS]) ? byTime.get(timeKey(x[S_TYPE], x[S_DAYS], st)) : undefined;
       const viaGroup = groupInstr.get(letterToGroup.get(String(x[S_CODE] || "")[0]));
       const cur = String(x[S_INSTR] || "").trim();
@@ -430,6 +473,7 @@ function main() {
   console.log(`${dry ? "[dry run] would change" : "changed"}:`);
   console.log(`  schedule.json instructors filled : ${stats.filled}`);
   console.log(`  schedule.json instructors fixed  : ${stats.corrected}`);
+  console.log(`  schedule.json rooms updated      : ${stats.locFixed}`);
   console.log(`  data.fa names added              : ${stats.faAdded}`);
   console.log(`  recs rows marked teaching-now    : ${stats.curSet}`);
   console.log(`  recs rows added (src=2, 0x)      : ${stats.rowsAdded}`);
