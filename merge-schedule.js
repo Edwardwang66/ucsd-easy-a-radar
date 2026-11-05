@@ -381,7 +381,14 @@ function main() {
   const titleOf = (key) => {
     const rows = rowsByCourse.get(key) || [];
     const withTitle = rows.find((r) => r[C.t] >= 0);
-    return withTitle ? withTitle[C.t] : -1;
+    if (withTitle) return withTitle[C.t];
+    // A course new to the rankings has no row to borrow a title from; the schedule
+    // carries the catalog title, so use that rather than shipping an untitled row.
+    const t = sched.courses[key] && sched.courses[key].t;
+    if (!t) return -1;
+    let i = data.titles.indexOf(t);
+    if (i < 0) { if (dry) return -1; i = data.titles.length; data.titles.push(t); }
+    return i;
   };
   const fa = data.fa || (data.fa = {});
   const newProf = new Set(data.newProf || []);

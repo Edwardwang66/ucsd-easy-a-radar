@@ -221,14 +221,29 @@ git commit                 # 4. commit data + index.html together
 | **WARN** | Churn drift — orphaned `set`/`seats`/`pre` keys, `fa` not rebuilt from the current `schedule.json`, `off`/`cur` flags disagreeing with the live schedule, `seats` key-shape regressions, offered courses with no `recs` row. | Prune orphans; re-run the relevant join. A genuinely-new course having no grade history is expected. |
 | **INFO** | Fuzzy, needs a human — probable **renumber twins** (same subject+title split across an unoffered "history" code and an offered "no-history" code), stale `alias`/`aka`/`block`/`rmpAka`/`newProf`, missing prerequisites or titles. | Review, don't automate. These have a real false-positive rate by design. |
 
-**Per-term checklist** (new quarter catalog → new `schedule.json`):
+**Per-term checklist** (new quarter → `new-term.js`):
 
-1. Rebuild `schedule.json` from a fresh WebReg catalog snapshot.
-2. Re-run the current-term join (`fa` / `cur` / `newProf`) — see `schedule-instructor.js`.
+0. **Add the quarter to `TERMS` in `index.html`** (code, name, instruction start/end, first day
+   of finals, holidays — from the official academic calendar on blink.ucsd.edu). Every
+   term-specific label, the finals-week grid, the `.ics` export's dates and the saved-schedule
+   key read that table; `TERM_CODE` is the only switch.
+1. Scrape the quarter's Schedule of Classes out of TSS (the raw SAP module dump:
+   `{term, modules[{CourseAbbr, _sections[], _schedule[], _instructor[]}]}`) and run
+   `node new-term.js soc_<year>_<period>.json` (`--dry-run` first). It rebuilds `schedule.json`
+   (WebReg-style section codes, meeting rows, final-exam rows parsed from each section's
+   `Sched` text, buildings resolved to the coordinates map), resets `data.json`'s term-derived
+   state (`off`, `cur`, `fa`, `newProf`, `seats`; drops last term's src=2 / src=3 rows, adds
+   src=3 rows for offered courses with no instructor and src=4 catalog rows for courses no
+   longer offered), flips `TERM_CODE`, and writes `ucsd-seats-<year>-<period>.json` for the
+   steps below.
+2. `node merge-schedule.js ucsd-seats-<year>-<period>.json` — this term's `fa` / `cur` /
+   `newProf` and a src=2 row per instructor with no grade history on the course.
 3. **Re-verify `alias`**: renames are resolved by *course overlap*, so when a professor's course
    set changes, an old alias can start matching a same-surname stranger. `healthcheck.js` flags
    aliases that are no longer current-term instructors; confirm each one by hand.
-4. `node merge-seats.js` / `merge-set.js` if you have fresh exports.
+4. `node merge-seats.js ucsd-seats-<year>-<period>.json` (course-page links for the new term;
+   `merge-set.js` only if you have a fresh evaluations export), then
+   `node sync-current.js ucsd-seats-<year>-<period>.json`.
 5. `node align-packages.js` — re-align TSS seat packages to schedule sections, so seminar /
    special-topics courses (AWP, MCWP/WCWP, ECE 285-style topics) link each section group to its
    OWN package page instead of the first group's. Both a seats refresh and a schedule refresh
@@ -238,12 +253,16 @@ git commit                 # 4. commit data + index.html together
 
 ## Regenerating data.json / schedule.json
 
-`data.json` is produced by joining grade JSONs, RMP professors, and the FA26 catalog. The
-current-term instructor columns (`fa` map + `cur` flag) and `schedule.json` are both derived from the
-[WebReg Course Planner](https://github.com/SahirSSharma/WebReg-Course-Planner) `data/catalog.json`
-and `data/buildings.json` (MIT-licensed, © Sahir Sharma) Huge Thanks. To refresh, pull a newer catalog snapshot
-and re-run the join. The schemas (`cols` / `titles` / `recs` / `fa` / `alias` / `newProf`, and
-`secCols` / `courses` / `buildings`) are self-describing.
+`data.json` is produced by joining grade JSONs, RMP professors, and the term's catalog. Since
+Winter 2027 the current-term instructor columns (`fa` map + `cur` flag) and `schedule.json` are
+rebuilt each quarter by `new-term.js` from a scrape of UCSD's own Schedule of Classes in TSS
+(see the per-term checklist above). The building coordinates in `schedule.json` and the
+walk/bike matrix in `walkbike.json` were seeded from the
+[WebReg Course Planner](https://github.com/SahirSSharma/WebReg-Course-Planner)
+`data/buildings.json` (MIT-licensed, © Sahir Sharma) — huge thanks — and the Fall 2026 term was
+built entirely on its `data/catalog.json` snapshot. The schemas (`cols` / `titles` / `recs` /
+`fa` / `alias` / `newProf`, and `secCols` / `courses` / `buildings`) are self-describing.
 
-Credit: Fall 2026 section + instructor + building data comes from the **WebReg Course Planner** by
-Sahir Sharma — this project joins it with historical grade distributions and RateMyProfessors.
+A building that first appears in a new term has no coordinates and no walk/bike row until
+`schedule.json`'s `buildings` map and `walkbike.json` are regenerated (offline OSRM step); the
+app simply shows no distance for it. `new-term.js` lists them.
