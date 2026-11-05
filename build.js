@@ -24,12 +24,22 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const zlib = require("zlib");
 
 const ROOT = __dirname;
 const ASSETS = ["data.json", "hist.json", "schedule.json", "plans.json", "gradplans.json", "walkbike.json", "ge-courses.json", "minors.json"];
 
 function shortHash(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex").slice(0, 10);
+}
+// Ship every data file packed as {"gz": base64(gzip)} — same wrapper plans.json has
+// always used — so the served JSON isn't casually readable at its URL. The page's
+// unGz() helper unwraps transparently (deterrence, not encryption: the browser still
+// has to decode it). Sources in the repo stay plain — the pipeline scripts read them.
+function pack(bytes) {
+  if (bytes.slice(0, 6).toString() === '{"gz":') return bytes;  // packed at source
+  const gz = zlib.gzipSync(bytes, { level: 9 });
+  return Buffer.from('{"gz":"' + gz.toString("base64") + '"}');
 }
 function reEsc(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -46,7 +56,7 @@ function main() {
     if (!fs.existsSync(src)) {
       throw new Error(`build.js: source data file missing: ${asset}`);
     }
-    const bytes = fs.readFileSync(src);
+    const bytes = pack(fs.readFileSync(src));
     const hashed = `${base}.${shortHash(bytes)}${ext}`;   // data.<hash>.json
 
     // (Re)write the current hashed copy.
