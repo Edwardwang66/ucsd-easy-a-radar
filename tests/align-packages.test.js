@@ -5,8 +5,14 @@ const path = require('node:path');
 
 const root = path.join(__dirname, '..');
 const align = require(path.join(root, 'align-packages.js'));
-const data = JSON.parse(fs.readFileSync(path.join(root, 'data.json'), 'utf8'));
-const schedule = JSON.parse(fs.readFileSync(path.join(root, 'schedule.json'), 'utf8'));
+// A frozen FA26 slice, not the live data.json / schedule.json: the data-backed tests
+// below pin facts about specific courses (ECE 285's three lecture topics, AWP 3's 66
+// seminar sections) that change every quarter. The aligner's behaviour is what's
+// under test, not this term's data. The fixture holds `data.seats` and
+// `schedule.courses` for every FA26 course the aligner linked sections for.
+const fixture = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'align.fa26.json'), 'utf8'));
+const data = fixture.data;
+const schedule = fixture.schedule;
 
 // sec columns: [code, type, days, start, end, building, room, instructor, avail, limit, cancelled]
 function sec(code, type, days, start, instructor) {
