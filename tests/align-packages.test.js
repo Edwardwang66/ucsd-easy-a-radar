@@ -115,13 +115,17 @@ test('ECE 285: every topic links to its own instructor’s package (#71)', () =>
   assert.ok(!entry.p.some((p) => p.s && p.s.includes('C00')));
 });
 
-test('AWP 3: all 66 seminar sections map to 66 distinct package pages', () => {
+test('AWP 3: every seminar package maps to its own distinct section page', () => {
+  // The count itself drifts with TSS (66 seminars in Sep 2026, 64 by Oct after
+  // two waitlist-only sections were pulled), so pin the shape, not the number:
+  // every package aligned, no two sharing a URL or a schedule section.
   const entry = data.seats['AWP 3'];
   assert.equal(entry.x, 1);
   const annotated = entry.p.filter((p) => p.s);
-  assert.equal(annotated.length, 66);
-  assert.equal(new Set(annotated.map((p) => p.u)).size, 66);
-  assert.equal(new Set(annotated.map((p) => p.s[0])).size, 66);
+  assert.ok(annotated.length >= 50, `only ${annotated.length} AWP 3 packages aligned`);
+  assert.equal(annotated.length, entry.p.length);
+  assert.equal(new Set(annotated.map((p) => p.u)).size, annotated.length);
+  assert.equal(new Set(annotated.map((p) => p.s[0])).size, annotated.length);
 });
 
 test('shipped annotations are consistent with the schedule', () => {
