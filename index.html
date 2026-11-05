@@ -733,8 +733,8 @@
       <button class="toggle" id="offered" aria-pressed="true">
         <span class="sw"></span><span>Offered this term only</span>
       </button>
-      <button class="toggle" id="curonly" aria-pressed="false" title="Only rows whose professor is teaching this course in Fall 2026">
-        <span class="sw"></span><span>Teaching FA26 only</span>
+      <button class="toggle" id="curonly" aria-pressed="false" title="Only rows whose professor is teaching this course in Fall 2026" data-ttl="Only rows whose professor is teaching this course in {term}">
+        <span class="sw"></span><span>Teaching <span class="t-code">FA26</span> only</span>
       </button>
       <div class="sortwrap">
         <span>Taught ≥</span>
@@ -745,7 +745,7 @@
       </div>
       <div class="timewrap" id="timeWrap">
         <button class="timebtn" id="timeBtn" type="button" aria-haspopup="true" aria-expanded="false"
-          title="Only show courses whose Fall 2026 sections fit inside your chosen meeting times">
+          title="Only show courses whose Fall 2026 sections fit inside your chosen meeting times" data-ttl="Only show courses whose {term} sections fit inside your chosen meeting times">
           <span aria-hidden="true">🕐</span><span id="timeLbl">Any time</span><span class="tclr" id="timeClear" role="button" aria-label="Clear time filter" hidden>×</span>
         </button>
         <div class="time-pop" id="timePop" hidden>
@@ -787,7 +787,7 @@
   </div>
 
   <div class="note" role="note">
-    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b>Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Every Fall-2026 course appears, even ones with no grade history: an instructor with no grade data for a course is marked <span class="firstx">0×</span>, and courses with no assigned instructor yet (or research/independent-study courses) are tagged <span class="firstx">TBA</span> — all sorted last. Use the <b>Teaching FA26 only</b> toggle to see just the professors on the schedule this term.
+    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b class="t-name">Fall 2026</b> offerings we now list <b>this term's actual instructor(s)</b> from the live WebReg catalog — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Every <span class="t-name">Fall 2026</span> course appears, even ones with no grade history: an instructor with no grade data for a course is marked <span class="firstx">0×</span>, and courses with no assigned instructor yet (or research/independent-study courses) are tagged <span class="firstx">TBA</span> — all sorted last. Use the <b>Teaching <span class="t-code">FA26</span> only</b> toggle to see just the professors on the schedule this term.
   </div>
 
   <div class="legend">
@@ -821,7 +821,7 @@
 
  <div id="scheduleView" role="tabpanel" aria-label="My schedule">
    <div class="sched-empty" id="schedEmpty">
-     <div class="big">Build your Fall 2026 schedule</div>
+     <div class="big">Build your <span class="t-name">Fall 2026</span> schedule</div>
      <div>Go to <b>Rankings</b>, find courses you like, and hit <b>+ Schedule</b> on any offered row.<br>
        Pick your sections here and see them laid out on a weekly calendar and campus map.</div>
    </div>
@@ -834,7 +834,7 @@
            Open all course pages <span id="openAllCnt"></span>
          </button>
          <span class="exp-hint">Two things first: <b>(1)</b> sign into <a href="https://tss.ucsd.edu/fiori" target="_blank" rel="noopener">TSS</a> so links land on the course (otherwise the login redirect drops the link and you land on the TSS home); <b>(2) allow pop-ups for this site</b> — this opens one tab per course, and browsers block that by default. <b>In Chrome/Edge:</b> click the blocked-pop-ups icon at the right end of the address bar → <b>“Always allow pop-ups”</b>, then click the button again. Courses without a direct link open the TSS launchpad to search.</span>
-         <button class="exp-btn" id="exportIcs" title="Download an .ics calendar file of your Fall 2026 classes">
+         <button class="exp-btn" id="exportIcs" title="Download an .ics calendar file of your Fall 2026 classes" data-ttl="Download an .ics calendar file of your {term} classes">
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
            Export to Calendar (.ics)
          </button>
@@ -849,7 +849,7 @@
            <button type="button" class="cal-tab" id="calTabFinals">Finals week · Dec 5–12</button>
          </div>
          <div class="cal" id="cal"></div>
-         <div class="cal-note">Times from the live WebReg FA26 catalog. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn. Instruction runs <b>Sep 24 – Dec 4</b> (weeks 1–10, official UCSD calendar); switch to <b>Finals week</b> to see your exams laid out on <b>Dec 5–12</b>. Both go into the calendar export.</div>
+         <div class="cal-note">Times from the live <span class="t-code">FA26</span> catalog. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn. Instruction runs <b class="t-instr">Sep 24 – Dec 4</b> (weeks 1–10, official UCSD calendar); switch to <b>Finals week</b> to see your exams laid out on <b class="t-finals">Dec 5–12</b>. Both go into the calendar export.</div>
        </div>
        <div class="map-card">
          <div class="map-head" id="mapHead"><b>Campus map</b> — buildings for your selected sections</div>
@@ -1250,14 +1250,14 @@
       <h3>Data &amp; methodology</h3>
       <ul>
         <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
-        <li><b>Offered this term</b> — matched against the live <b>Fall 2026</b> WebReg catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
+        <li><b>Offered this term</b> — matched against the live <b class="t-name">Fall 2026</b> catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
         <li><b>Course page link</b> — every offered course carries a <b>Course page ↗</b> link straight to its WebReg / TSS enrolment page (UCSD login required); in <b>My Schedule</b>, <b>Open all course pages</b> launches them all at once so you can enrol in one pass.</li>
-        <li><b>This term's instructor (FA26)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each Fall 2026 section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way. Neither source carries an instructor id, so names are linked by a precision-first ladder: normalise order/accents, handle compound surnames (<i>Massimiliano Di Ventra</i> ↔ <i>Di Ventra, Massimiliano</i>) and Mc/apostrophe spellings, match on a first <i>or middle</i> initial (<i>Ryan Wagner</i> ↔ <i>Wagner, Timothy Ryan</i>), and auto-alias genuine renames by shared course (<i>Paul Cao</i> teaches the same courses <i>Cao, Yingjun</i> has taught). A professor teaching at UCSD for the first time has no grade history, so their name is marked <span class="firstx">0×</span> and sorted after the returning instructors — and so is a returning professor teaching a course they haven't taught before, which is why every Fall-2026 course still shows up under <b>Teaching FA26 only</b> even when its instructor has no record for that course.</li>
-        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same FA26 catalog; selections are saved in your browser. Each course card also shows its <b>final exam</b> (FI) date &amp; time for the selected section group, and overlapping finals are flagged as conflicts. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the Fall 2026 term (Sep 24 – Dec 4) plus one-time final-exam events, campus holidays excluded and Pacific-time DST handled. <b>Open all course pages</b> launches every scheduled course on WebReg in its own tab, so you can enrol in one pass — this needs <b>pop-ups allowed for this site</b> (browsers block multiple tabs by default), and you should be <b>signed into TSS first</b>.</li>
+        <li><b>This term's instructor (<span class="t-code">FA26</span>)</b> — pulled from the WebReg Course Planner catalog (SahirSSharma), which lists each <span class="t-name">Fall 2026</span> section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way. Neither source carries an instructor id, so names are linked by a precision-first ladder: normalise order/accents, handle compound surnames (<i>Massimiliano Di Ventra</i> ↔ <i>Di Ventra, Massimiliano</i>) and Mc/apostrophe spellings, match on a first <i>or middle</i> initial (<i>Ryan Wagner</i> ↔ <i>Wagner, Timothy Ryan</i>), and auto-alias genuine renames by shared course (<i>Paul Cao</i> teaches the same courses <i>Cao, Yingjun</i> has taught). A professor teaching at UCSD for the first time has no grade history, so their name is marked <span class="firstx">0×</span> and sorted after the returning instructors — and so is a returning professor teaching a course they haven't taught before, which is why every <span class="t-name">Fall 2026</span> course still shows up under <b>Teaching <span class="t-code">FA26</span> only</b> even when its instructor has no record for that course.</li>
+        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same <span class="t-code">FA26</span> catalog; selections are saved in your browser. Each course card also shows its <b>final exam</b> (FI) date &amp; time for the selected section group, and overlapping finals are flagged as conflicts. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the <span class="t-name">Fall 2026</span> term (<span class="t-instr">Sep 24 – Dec 4</span>) plus one-time final-exam events, campus holidays excluded and Pacific-time DST handled. <b>Open all course pages</b> launches every scheduled course on WebReg in its own tab, so you can enrol in one pass — this needs <b>pop-ups allowed for this site</b> (browsers block multiple tabs by default), and you should be <b>signed into TSS first</b>.</li>
         <li><b>Meeting-time filter</b> — the 🕐 filter keeps only courses that can actually fit your week: in at least one section group, every required meeting type (lecture / discussion / lab) must have a section inside your chosen days &amp; hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you're free. Sections with TBA times always count as fitting.</li>
         <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
         <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
-        <li><b>Course titles &amp; catalog courses</b> — UCSD's grade-distribution export abbreviates titles to a 30-character field (<i>Probablty Stats/Bioinformatics</i>), so titles are replaced with the official ones from <b>catalog.ucsd.edu</b> wherever they match. The catalog also fills a real gap: a course that has never had a published grade distribution — many grad seminars, directed-study and research courses (e.g. <i>BENG 223</i>) — used to be absent entirely. Those are now listed as reference rows tagged <span class="firstx">catalog</span> with their title and prerequisites but no GPA. They sit outside the Fall 2026 schedule, so <b>Offered this term only</b> hides them; search tells you when matches are hidden and reveals them in one click.</li>
+        <li><b>Course titles &amp; catalog courses</b> — UCSD's grade-distribution export abbreviates titles to a 30-character field (<i>Probablty Stats/Bioinformatics</i>), so titles are replaced with the official ones from <b>catalog.ucsd.edu</b> wherever they match. The catalog also fills a real gap: a course that has never had a published grade distribution — many grad seminars, directed-study and research courses (e.g. <i>BENG 223</i>) — used to be absent entirely. Those are now listed as reference rows tagged <span class="firstx">catalog</span> with their title and prerequisites but no GPA. They sit outside the <span class="t-name">Fall 2026</span> schedule, so <b>Offered this term only</b> hides them; search tells you when matches are hidden and reveals them in one click.</li>
         <li><b>Degree Planner</b> — the <b>Undergraduate</b> mode loads UCSD's official college academic plans (2022–2026) as a quarter-by-quarter grid. The <b>Graduate</b> mode lists <b>every UCSD graduate ISIS major code</b> by school → department → research area (base degrees, specializations, joint-doctoral and online variants), and gives the Jacobs engineering programs a full worksheet organised by requirement category — including all <b>thirteen ECE research areas</b> modeled from their official 2025–2027 degree planners (ISRC/EC80, CE/EC79, ECS/EC78, SIP/EC82, MLDS/EC93, CTS, AEM, AOS, AP-EDM, MDS, MI, NDS, PHO). Each area carries its own core, additional and technical-elective rules and unit quotas (which vary by area); the plan choice sets the total (Plan I 52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA). It tracks units per bucket, total units toward the plan, and the 201+ ECE minimum — a reference guide, not official advice.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
       </ul>
@@ -1492,6 +1492,27 @@ async function unGz(j){
   const bytes=Uint8Array.from(atob(j.gz),c=>c.charCodeAt(0));
   return JSON.parse(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
 }
+// ---- the term the site is showing ----
+// Everything term-specific — labels, finals week, the .ics export's dates, the saved
+// schedule's storage key — reads TERM. new-term.js flips TERM_CODE when a new quarter's
+// data lands; add the quarter to TERMS first (official academic calendar, blink.ucsd.edu).
+const TERM_CODE='FA26';
+const TERMS={
+  FA26:{code:'FA26',name:'Fall 2026',  start:'2026-09-24',end:'2026-12-04',finals:'2026-12-05',
+        holidays:['2026-11-11','2026-11-26','2026-11-27']},
+  WI27:{code:'WI27',name:'Winter 2027',start:'2027-01-04',end:'2027-03-12',finals:'2027-03-13',
+        holidays:['2027-01-18','2027-02-15']},
+};
+const TERM=TERMS[TERM_CODE];
+const ymd=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const mdShort=d=>(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()])+' '+d.getDate();
+// Static page text carries the term in .t-name / .t-code spans and {term}/{code} title templates.
+document.querySelectorAll('.t-name').forEach(e=>{e.textContent=TERM.name;});
+document.querySelectorAll('.t-code').forEach(e=>{e.textContent=TERM.code;});
+document.querySelectorAll('[data-ttl]').forEach(e=>{e.title=e.dataset.ttl.replace(/\{term\}/g,TERM.name).replace(/\{code\}/g,TERM.code);});
+(()=>{const f=ymd(TERM.finals),fe=new Date(f);fe.setDate(f.getDate()+7);
+  document.querySelectorAll('.t-instr').forEach(e=>{e.textContent=mdShort(ymd(TERM.start))+' – '+mdShort(ymd(TERM.end));});
+  document.querySelectorAll('.t-finals').forEach(e=>{e.textContent=mdShort(f)+'–'+(fe.getMonth()===f.getMonth()?fe.getDate():mdShort(fe));});})();
 
 function init(DATA){
   const C={}; DATA.cols.forEach((c,i)=>C[c]=i);
@@ -1682,15 +1703,15 @@ function init(DATA){
       const nx=isNew?' <span class="firstx" title="No prior grade-distribution record in 2015–2026 (may be new to UCSD, or taught in a capacity without recorded grades)">0×</span>':'';
       return `<span class="who${m?' match':''}${isNew?' isnew':''}">${esc(n)}${m?' ✓':''}${nx}</span>`;
     }).join('');
-    return `<div class="term-instr"><span class="th">Fall 2026 instructor${faList.length>1?'s':''}</span>${who}</div>`;
+    return `<div class="term-instr"><span class="th">${TERM.name} instructor${faList.length>1?'s':''}</span>${who}</div>`;
   }
   function detailHTML(r){
     const idx=RI.get(r), h=H[idx];
     const fb=faBlockHTML(r);
     if(!h||!h.length){
-      const msg=r[C.src]===2?'No grade-distribution data for this professor on this course — they may be new to UCSD, or new to this course, or the course (often a grad/seminar course) has no recorded grade breakdown. Listed so the rankings match the Fall 2026 schedule.'
-        :r[C.src]===3?'This course runs in Fall 2026 but has no assigned instructor yet (or is a research / independent-study course with many advisors) and no grade-distribution history. Listed so the rankings match the schedule.'
-        :r[C.src]===4?'Listed in the UCSD catalog, but UCSD has never published a grade distribution for it (typical of grad seminars, directed study and research courses) and it isn’t on the Fall 2026 schedule. Shown for reference — title and prerequisites only.'
+      const msg=r[C.src]===2?'No grade-distribution data for this professor on this course — they may be new to UCSD, or new to this course, or the course (often a grad/seminar course) has no recorded grade breakdown. Listed so the rankings match the '+TERM.name+' schedule.'
+        :r[C.src]===3?'This course runs in '+TERM.name+' but has no assigned instructor yet (or is a research / independent-study course with many advisors) and no grade-distribution history. Listed so the rankings match the schedule.'
+        :r[C.src]===4?'Listed in the UCSD catalog, but UCSD has never published a grade distribution for it (typical of grad seminars, directed study and research courses) and it isn’t on the '+TERM.name+' schedule. Shown for reference — title and prerequisites only.'
         :r[C.src]===5?'Instructor identified from UCSD course evaluations (SET); no grade distribution is published for graduate courses.'
         :'No term-by-term grade data (this row comes from RateMyProfessors course history).';
       const sh=setHTML(r);   // grad courses: show SET evaluation links instead of the "no data" note
@@ -1721,7 +1742,7 @@ function init(DATA){
     const isRmp=r[C.src]===1, isNew2=r[C.src]===2, isTBA=r[C.src]===3, isCat=r[C.src]===4, isSet=r[C.src]===5;
     const idx=RI.get(r), isOpen=expanded.has(idx);
     const code=r[C.s]+'-'+r[C.c];
-    const off=r[C.off]?'<span class="badge-off" title="This course runs in Fall 2026.">Offered</span>':'';
+    const off=r[C.off]?'<span class="badge-off" title="This course runs in '+TERM.name+'.">Offered</span>':'';
     const setL=setListForRow(r);
     const setBadge=setL?'<span class="badge-set" title="Official UCSD SET course evaluations available — expand this row for this instructor’s per-year report links">SET</span>':'';
     const fakey=CK(r[C.s],r[C.c]);
@@ -1733,7 +1754,7 @@ function init(DATA){
     const nowBadge=isNew2?'<span class="firstx" title="No grade-distribution data for this course × professor">0×</span>'
                   :isTBA?(umbrella?'<span class="firstx" title="Research / independent study — many possible instructors">research</span>':'<span class="firstx" title="Instructor not assigned yet in the catalog">TBA</span>')
                   :isCat?'<span class="firstx" title="Listed in the UCSD catalog, but no recorded grade distribution and not offered this term">catalog</span>'
-                  :(isCur?'<span class="badge-now" title="This professor is teaching this course in Fall 2026.">Teaching now</span>':'');
+                  :(isCur?'<span class="badge-now" title="This professor is teaching this course in '+TERM.name+'.">Teaching now</span>':'');
     const preferredInstructor=isCur&&faList ? orderFa(faList).find(n=>faMatchesName(n,r[C.i]||''))||'' : '';
     const scheduledItem=schItems.find(it=>it.k===fakey);
     const addState=!scheduledItem?'add'
@@ -1744,14 +1765,14 @@ function init(DATA){
     const addBtn=r[C.off]?`<button class="addbtn ${addState}" data-add="${esc(fakey)}"${preferredInstructor?` data-instr="${esc(preferredInstructor)}"`:''} title="${esc(addTitle)}">${addText}</button>`:'';
     let nowLine='';
     if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Teaching this term · no grade data</span>';
-    else if(isCat) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Not offered in Fall 2026</span>';
+    else if(isCat) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Not offered in '+TERM.name+'</span>';
     else if(isTBA) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>${umbrella?'Research / independent study':'Instructor to be announced'}</span>`;
     else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
     else if(isSet) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--accent)"></span>Recent instructor · course evaluations below</span>';
     // This row's professor is NOT teaching it this term — the names belong to the
     // course, not to this row, so say "this course" (a bare "FA26: …" under every
     // past instructor read as though all of them were teaching it this fall, #65).
-    else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');const tip=`${instrShort(r[C.i]||'')||'This professor'} is not teaching ${r[C.s]} ${r[C.c]} in Fall 2026 — it is taught by ${ord.join(', ')}. This row is their past grade history for the course.`;nowLine=`<span class="now" style="color:var(--muted)" title="${esc(tip)}"><span class="dotnow" style="background:var(--muted)"></span>This course in FA26: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
+    else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');const tip=`${instrShort(r[C.i]||'')||'This professor'} is not teaching ${r[C.s]} ${r[C.c]} in ${TERM.name} — it is taught by ${ord.join(', ')}. This row is their past grade history for the course.`;nowLine=`<span class="now" style="color:var(--muted)" title="${esc(tip)}"><span class="dotnow" style="background:var(--muted)"></span>This course in ${TERM.code}: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
     // Offered course with NO instructor in the WebReg catalog at all (key absent from the
     // fa map): fillFa26Rows() never visits it and the branch above can't fire, so its
     // RMP-backfill row showed the RMP professor + "Offered" as if they taught it (#65's
@@ -1786,7 +1807,7 @@ function init(DATA){
       :isTBA?`<span class="n">—</span><div class="yr">${umbrella?faList.length+' instr':'TBA'}</div>`
       :isRmp?`<span class="n">${r[C.n]}</span><div class="yr" title="RateMyProfessors reviews written specifically about this course. The RMP column shows this professor's total review count across all their courses.">for this course</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
-    const instrLabel=isTBA?'FA26':isNew2?(isNewProf?'New instructor':'FA26 instructor'):isSet?'Instructor':'Past instructor';
+    const instrLabel=isTBA?TERM.code:isNew2?(isNewProf?'New instructor':TERM.code+' instructor'):isSet?'Instructor':'Past instructor';
     const displayName=isTBA?(umbrella?`Instructors vary · ${faList.length}`:'Instructor TBA'):instrShort(r[C.i]);
     const aka=AKA[r[C.i]];
     const nmTitle=aka?` title="Also known as ${esc(aka.join(', '))}"`:'';
@@ -2160,7 +2181,7 @@ function init(DATA){
     if(cc) cc.textContent=R.reduce((n,r)=>n+(r[C.cur]===1&&r[C.src]!==2&&r[C.src]!==3&&r[C.src]!==4?1:0),0).toLocaleString();
   }
 
-  const SCH_KEY='easyA_sched_fa26_v1';
+  const SCH_KEY='easyA_sched_'+TERM.code.toLowerCase()+'_v1';   // a new term starts a fresh schedule
   let SCHED=null, schPromise=null;
   function loadSchState(){try{const a=JSON.parse(localStorage.getItem(SCH_KEY));if(Array.isArray(a))return a;}catch(e){}return [];}
   function saveSchState(){try{localStorage.setItem(SCH_KEY,JSON.stringify(schItems.map(it=>({k:it.k,group:it.group,picks:it.picks||{}}))));}catch(e){}}
@@ -2307,9 +2328,10 @@ function init(DATA){
     }
     flush();
   }
-  // Finals week (official UCSD FA26 calendar): Sat Dec 5 – Sat Dec 12, 2026.
-  const FINALS_D0=new Date(2026,11,5);
-  const FINALS_LABELS=['Sa 12/5','Su 12/6','Mo 12/7','Tu 12/8','We 12/9','Th 12/10','Fr 12/11','Sa 12/12'];
+  // Finals week: eight days Sat–Sat from TERM.finals (official UCSD calendar).
+  const FINALS_D0=ymd(TERM.finals);
+  const FINALS_LABELS=Array.from({length:8},(_,i)=>{const d=new Date(FINALS_D0);d.setDate(d.getDate()+i);
+    return ['Su','Mo','Tu','We','Th','Fr','Sa'][d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate();});
   function finalsEvents(){
     const evs=[];
     schItems.forEach((it,ci)=>{
@@ -2380,7 +2402,7 @@ function init(DATA){
   }
   function schItemHTML(it,ci){
     const {course,secs,opts,groups,gl}=itemSections(it),color=CAL_COLORS[ci%CAL_COLORS.length];
-    if(!course)return `<div class="sci"><div class="h"><span class="code">${esc(it.k)}</span><button class="rm" data-rm="${esc(it.k)}">×</button></div><div class="ttl">Not offered in Fall 2026.</div></div>`;
+    if(!course)return `<div class="sci"><div class="h"><span class="code">${esc(it.k)}</span><button class="rm" data-rm="${esc(it.k)}">×</button></div><div class="ttl">Not offered in ${TERM.name}.</div></div>`;
     const groupChoices=ScheduleInstructor.instructorGroupChoices(groups);
     const grpSel=groupChoices.length>1?`<label>Instructor / section <select data-grp="${esc(it.k)}">${groupChoices.map(choice=>`<option value="${choice.group}"${choice.group===gl?' selected':''}>${esc(choice.label)}</option>`).join('')}</select></label>`:'';
     const optSel=Object.keys(opts).map(ty=>{const list=opts[ty],cur=secs.find(s=>s[S_TYPE]===ty);return `<label>${esc(ty)} <select data-pick="${esc(it.k)}" data-ty="${esc(ty)}">${list.map(s=>`<option value="${esc(s[S_CODE])}"${(cur&&cur[S_CODE]===s[S_CODE])?' selected':''}>${esc(s[S_CODE])} · ${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}</option>`).join('')}</select></label>`;}).join('');
@@ -2510,15 +2532,21 @@ function init(DATA){
   }
   $('calTabWeek').addEventListener('click',()=>setCalMode('week'));
   $('calTabFinals').addEventListener('click',()=>setCalMode('finals'));
-  // -------- Calendar export (.ics) : Fall 2026 term --------
-  // Official UCSD FA26: instruction Thu Sep 24 – Fri Dec 4, 2026.
-  // Holidays (no class): Veterans Day Wed Nov 11; Thanksgiving Thu Nov 26 & Fri Nov 27.
-  const ICS_UNTIL='20261205T075959Z';                 // through end of Fri Dec 4 (PST)
+  // -------- Calendar export (.ics) : the current TERM --------
+  // Weekly events run from TERM.start through the end of TERM.end (Pacific), skipping
+  // TERM.holidays. UNTIL is UTC, so the last day's 23:59:59 local needs LA's offset:
+  // PDT (UTC-7) from the 2nd Sunday of March to the 1st Sunday of November, else PST.
+  function laDST(d){const y=d.getFullYear();
+    const nth=(m,n)=>{const x=new Date(y,m,1);x.setDate(1+(7-x.getDay())%7+7*(n-1));return x;};
+    return d>=nth(2,2)&&d<nth(10,1);}
+  const ICS_UNTIL=(()=>{const e=ymd(TERM.end),off=laDST(e)?7:8;
+    const u=new Date(Date.UTC(e.getFullYear(),e.getMonth(),e.getDate(),23+off,59,59));
+    return u.toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');})();
   const JSDAY={0:1,1:2,2:3,3:4,4:5};                   // my DAYIDX(M..F) -> JS getDay(Mon..Fri)
   const ICSDAY=['SU','MO','TU','WE','TH','FR','SA'];   // by JS getDay
-  const HOLIDAY_BY_JSDAY={3:'20261111',4:'20261126',5:'20261127'}; // Wed/Thu/Fri holidays in term
+  const HOLIDAYS=TERM.holidays.map(ymd);                // no-class days → EXDATEs on their weekday
   const p2=n=>String(n).padStart(2,'0');
-  function firstDateForJsDay(jsd){const d=new Date(2026,8,24);while(d.getDay()!==jsd)d.setDate(d.getDate()+1);return d;}
+  function firstDateForJsDay(jsd){const d=ymd(TERM.start);while(d.getDay()!==jsd)d.setDate(d.getDate()+1);return d;}
   function dbasic(d){return ''+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate());}
   function minHMS(m){return p2(Math.floor(m/60))+p2(m%60)+'00';}
   function icsEsc(s){return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');}
@@ -2533,7 +2561,7 @@ function init(DATA){
     'BEGIN:STANDARD','TZOFFSETFROM:-0700','TZOFFSETTO:-0800','TZNAME:PST','DTSTART:19701101T020000','RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU','END:STANDARD',
     'END:VTIMEZONE'];
   function buildICS(){
-    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Easy-A Radar//UCSD FA26 Schedule//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:UCSD Fall 2026',...VTZ];
+    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Easy-A Radar//UCSD '+TERM.code+' Schedule//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:UCSD '+TERM.name,...VTZ];
     const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');
     let count=0;
     schItems.forEach(it=>{
@@ -2548,7 +2576,7 @@ function init(DATA){
         L.push('DTSTART;TZID=America/Los_Angeles:'+ds+'T'+minHMS(a));
         L.push('DTEND;TZID=America/Los_Angeles:'+ds+'T'+minHMS(b));
         L.push(foldICS('SUMMARY:'+icsEsc('FINAL EXAM · '+it.k+' — '+course.t)));
-        L.push(foldICS('DESCRIPTION:'+icsEsc('Final exam · UCSD Fall 2026 · check WebReg for the room')));
+        L.push(foldICS('DESCRIPTION:'+icsEsc('Final exam · UCSD '+TERM.name+' · check WebReg for the room')));
         L.push('END:VEVENT');
         count++;
       }
@@ -2558,19 +2586,19 @@ function init(DATA){
         for(const dow of days){
           const jsd=JSDAY[dow]; if(jsd==null)continue;
           const first=firstDateForJsDay(jsd), byday=ICSDAY[jsd];
-          const uid=it.k.replace(/\s+/g,'')+'-'+(s[S_CODE]||'x')+'-'+byday+'-fa26@easy-a-radar';
+          const uid=it.k.replace(/\s+/g,'')+'-'+(s[S_CODE]||'x')+'-'+byday+'-'+TERM.code.toLowerCase()+'@easy-a-radar';
           const loc=((s[S_BLD]||'')+' '+(s[S_ROOM]||'')).trim();
-          const hol=HOLIDAY_BY_JSDAY[jsd];
+          const hol=HOLIDAYS.filter(h=>h.getDay()===jsd).map(dbasic);
           L.push('BEGIN:VEVENT');
           L.push('UID:'+uid);
           L.push('DTSTAMP:'+stamp);
           L.push('DTSTART;TZID=America/Los_Angeles:'+dbasic(first)+'T'+minHMS(a));
           L.push('DTEND;TZID=America/Los_Angeles:'+dbasic(first)+'T'+minHMS(b));
           L.push('RRULE:FREQ=WEEKLY;BYDAY='+byday+';UNTIL='+ICS_UNTIL);
-          if(hol) L.push('EXDATE;TZID=America/Los_Angeles:'+hol+'T'+minHMS(a));
+          if(hol.length) L.push('EXDATE;TZID=America/Los_Angeles:'+hol.map(h=>h+'T'+minHMS(a)).join(','));
           L.push(foldICS('SUMMARY:'+icsEsc(it.k+' '+s[S_TYPE]+' — '+course.t)));
           if(loc) L.push(foldICS('LOCATION:'+icsEsc(loc)));
-          L.push(foldICS('DESCRIPTION:'+icsEsc((s[S_INSTR]?'Instructor: '+s[S_INSTR]+' · ':'')+'Section '+(s[S_CODE]||'')+' · UCSD Fall 2026')));
+          L.push(foldICS('DESCRIPTION:'+icsEsc((s[S_INSTR]?'Instructor: '+s[S_INSTR]+' · ':'')+'Section '+(s[S_CODE]||'')+' · UCSD '+TERM.name)));
           L.push('END:VEVENT');
           count++;
         }
@@ -2584,7 +2612,7 @@ function init(DATA){
     if(!count){alert('Nothing to export yet — add courses with scheduled meeting times first.');return;}
     const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
     const url=URL.createObjectURL(blob), a=document.createElement('a');
-    a.href=url; a.download='ucsd-fa26-schedule.ics'; document.body.appendChild(a); a.click(); a.remove();
+    a.href=url; a.download='ucsd-'+TERM.code.toLowerCase()+'-schedule.ics'; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1500);
   }
   $('exportIcs').addEventListener('click',exportICS);
@@ -3152,7 +3180,7 @@ function init(DATA){
   function mwOptEl(code,bi){
     const el=document.createElement('div'); el.className='gp-opt';
     el.innerHTML='<span class="cc">'+esc(code)+'</span><span class="ct">'+esc(mwTitle(code)||'')+'</span>'
-      +(mwFa(code)?'<span class="off" title="Runs in Fall 2026">offered</span>':'')
+      +(mwFa(code)?'<span class="off" title="Runs in '+esc(TERM.name)+'">offered</span>':'')
       +'<span class="plus">+ add</span>';
     el.onclick=()=>mwAdd(bi,code,mwTitle(code),UNIT);
     return el;
@@ -3162,7 +3190,7 @@ function init(DATA){
     el.innerHTML='<input type="checkbox" '+(c.done?'checked':'')+' title="Mark completed">'
       +'<span class="cc">'+esc(c.code)+'</span>'
       +'<span class="ct">'+esc(c.title||mwTitle(c.code)||'')+'</span>'
-      +(mwFa(c.code)?'<span class="off" title="Runs in Fall 2026">offered</span>':'')
+      +(mwFa(c.code)?'<span class="off" title="Runs in '+esc(TERM.name)+'">offered</span>':'')
       +'<input class="qt" placeholder="term" maxlength="5" value="'+esc(c.quarter||'')+'" title="Term you’ll take it">'
       +'<span class="cu">'+mwFmt(c.units)+'u</span>'
       +'<button class="gr" title="See this course’s grade ranking">grades↗</button>'
@@ -3248,7 +3276,7 @@ function init(DATA){
     $('minorView').classList.toggle('active',v==='minor');
     $('tab-planner').setAttribute('aria-selected',v==='planner'?'true':'false');
     $('plannerView').classList.toggle('active',v==='planner');
-    if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The Fall 2026 catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
+    if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The '+TERM.name+' catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
     if(v==='ge') ensureGeCourses().then(renderGE);
     if(v==='minor') ensureMinors().then(renderMinors);
     if(v==='planner') initPlanner();
