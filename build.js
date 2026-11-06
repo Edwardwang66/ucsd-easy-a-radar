@@ -27,7 +27,12 @@ const crypto = require("crypto");
 const zlib = require("zlib");
 
 const ROOT = __dirname;
-const ASSETS = ["data.json", "hist.json", "schedule.json", "plans.json", "gradplans.json", "walkbike.json", "ge-courses.json", "minors.json"];
+// Past quarters are kept as data.<TERM>.json / schedule.<TERM>.json (written by new-term.js
+// when it archives the term it replaces) and picked up here automatically, so the page's
+// quarter picker can load any of them.
+const ARCHIVED = fs.readdirSync(__dirname)
+  .filter((f) => /^(data|schedule)\.[A-Z]{2}\d{2}\.json$/.test(f)).sort();
+const ASSETS = ["data.json", "hist.json", "schedule.json", "plans.json", "gradplans.json", "walkbike.json", "ge-courses.json", "minors.json", ...ARCHIVED];
 
 function shortHash(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex").slice(0, 10);

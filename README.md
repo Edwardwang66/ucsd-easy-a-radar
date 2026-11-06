@@ -221,6 +221,14 @@ git commit                 # 4. commit data + index.html together
 | **WARN** | Churn drift — orphaned `set`/`seats`/`pre` keys, `fa` not rebuilt from the current `schedule.json`, `off`/`cur` flags disagreeing with the live schedule, `seats` key-shape regressions, offered courses with no `recs` row. | Prune orphans; re-run the relevant join. A genuinely-new course having no grade history is expected. |
 | **INFO** | Fuzzy, needs a human — probable **renumber twins** (same subject+title split across an unoffered "history" code and an offered "no-history" code), stale `alias`/`aka`/`block`/`rmpAka`/`newProf`, missing prerequisites or titles. | Review, don't automate. These have a real false-positive rate by design. |
 
+**Quarters live side by side.** The header's quarter picker lists every quarter that has
+data: the current one (`data.json` / `schedule.json`) and the archives `new-term.js` leaves
+behind when it replaces a quarter (`data.<CODE>.json` / `schedule.<CODE>.json`, which
+`build.js` hashes automatically). The choice is per browser (`localStorage` `easyA_term`)
+and reloads the page, since everything — rankings, "Teaching now", the schedule builder,
+conflicts, finals week, the `.ics` export — is initialised from one quarter's data. My
+Schedule is saved per quarter, so switching back and forth keeps each quarter's plan.
+
 **Per-term checklist** (new quarter → `new-term.js`):
 
 0. **Add the quarter to `TERMS` in `index.html`** (code, name, instruction start/end, first day
@@ -263,6 +271,8 @@ walk/bike matrix in `walkbike.json` were seeded from the
 built entirely on its `data/catalog.json` snapshot. The schemas (`cols` / `titles` / `recs` /
 `fa` / `alias` / `newProf`, and `secCols` / `courses` / `buildings`) are self-describing.
 
-A building that first appears in a new term has no coordinates and no walk/bike row until
-`schedule.json`'s `buildings` map and `walkbike.json` are regenerated (offline OSRM step); the
-app simply shows no distance for it. `new-term.js` lists them.
+A building that first appears in a new term has no walk/bike row until it is added to
+`schedule.json`'s `buildings` map (name exactly as TSS prints it, `[lat, lon]`) and
+`walkbike.json` is regenerated with `node walkbike-gen.js` (OpenStreetMap pedestrian / bicycle
+routing via the public Valhalla server; `--dry-run` compares with the current file first);
+until then the app simply shows no distance for it. `new-term.js` lists such buildings.
