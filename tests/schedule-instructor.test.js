@@ -6,7 +6,10 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const helperPath = path.join(root, 'schedule-instructor.js');
 const helper = fs.existsSync(helperPath) ? require(helperPath) : {};
-const schedule = JSON.parse(fs.readFileSync(path.join(root, 'schedule.json'), 'utf8'));
+// A frozen FA26 slice, not the live schedule.json: these tests pin facts about specific
+// courses (ECON 1's instructor groups, AWP 3's 66 seminar groups running past 'Z') that
+// change every quarter. The helper's behaviour is what's under test, not this term's data.
+const schedule = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'schedule.fa26.json'), 'utf8'));
 
 const S_CODE = 0;
 const S_TYPE = 1;
@@ -43,13 +46,22 @@ test('exact FA26 name wins even when historical aliases use a different surname'
   assert.equal(helper.preferredGroupForInstructor(groups, 'Bailey Choi-Vanos'), 'B');
 
   // The row's schedule button picks its instructor through faMatchesName, which
-  // must try the exact catalog name before falling back to surname/initial keys.
+  // must try the exact catalog name (after the reviewed data.aka map, which is
+  // also exact) before falling back to the surname+initial heuristic ladder.
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.match(html, /preferredInstructor=[^;]*faMatchesName/);
-  assert.match(
-    html,
-    /function faMatchesName\([\s\S]{0,300}?ScheduleInstructor\.sameInstructorName\(faName,gradeName\)\) return true;[\s\S]{0,200}?catKeysJS/,
-  );
+  const fnMatch = html.match(/function faMatchesName\(faName,gradeName\)\{[\s\S]*?\n  \}\n/);
+  assert.ok(fnMatch, 'index.html defines function faMatchesName(faName,gradeName)');
+  const fn = fnMatch[0];
+  const exactAt = fn.indexOf('if(ScheduleInstructor.sameInstructorName(faName,gradeName)) return true;');
+  const heuristicAt = fn.indexOf('catKeysJS(faName)');
+  assert.ok(exactAt !== -1, 'faMatchesName short-circuits on sameInstructorName(faName,gradeName)');
+  assert.ok(heuristicAt !== -1, 'faMatchesName falls back to catKeysJS surname+initial keys');
+  assert.ok(exactAt < heuristicAt, 'exact name match must run before the surname+initial ladder');
+  // Nothing before the exact match may be a heuristic key comparison — only the AKA map.
+  const before = fn.slice(0, exactAt);
+  assert.doesNotMatch(before, /catKeysJS|ourKeysJS/);
+  assert.match(before, /AKA\[gradeName\]/);
 });
 
 test('instructor choices identify every ECON 1 section group', () => {

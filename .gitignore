@@ -9,3 +9,8 @@ dist
 .env
 .env.*
 .claude/
+
+# Per-term pipeline inputs (TSS Schedule-of-Classes dump + the export new-term.js derives
+# from it) — large, and reproducible from the scrape; keep them out of the repo
+soc_*.json
+ucsd-seats-*.json
