@@ -9,7 +9,7 @@ A single-page tool that ranks UCSD courses by how GPA-friendly they've been, fro
 ## Deploy to Vercel
 
 This is a **static site** — no build runs on Vercel. `node build.js`, run locally before a
-data commit, writes a content-hashed, packed copy of each data file (`data.<hash>.json` …)
+data commit, writes a content-hashed copy of each data file (`data.<hash>.json` …)
 and rewrites the names in `index.html`; those hashed copies are what's served (and cached
 `immutable`, see `vercel.json`). The plain sources below are in `.vercelignore` and 404 in
 production — the pipeline scripts read them.

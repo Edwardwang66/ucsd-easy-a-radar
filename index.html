@@ -14,7 +14,7 @@
      not know which quarter the reader had picked. hist.json is fetched after first paint. -->
 <script>
 const TERM_DEFAULT='WI27';
-const TERM_FILES={WI27:{data:'data.b8bc8b1384.json',schedule:'schedule.9abbc73751.json'},FA26:{data:'data.FA26.a767435a79.json',schedule:'schedule.FA26.c7a1632c60.json'}};
+const TERM_FILES={WI27:{data:'data.929bd0975f.json',schedule:'schedule.d23991ea73.json'},FA26:{data:'data.FA26.3c36ecebf9.json',schedule:'schedule.FA26.265225b42f.json'}};
 const TERM_KEY='easyA_term';
 const TERM_PICKED=(function(){try{var t=localStorage.getItem(TERM_KEY);if(t&&TERM_FILES[t])return t;}catch(e){}return TERM_DEFAULT;})();
 window.__dataPromise=fetch(TERM_FILES[TERM_PICKED].data).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
@@ -1498,9 +1498,8 @@ function gpaColor(g){
 function diffColor(d){if(d==null)return 'var(--neutral)';const t=clamp((d-1.6)/(4.2-1.6),0,1);return mix('#2E9E63','#C63F37',t);}
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function instrShort(i){if(!i)return '—';if(i.indexOf(',')<0)return i;const [l,r]=i.split(',');const first=(r||'').trim().split(/\s+/)[0]||'';return (first+' '+l.trim()).trim();}
-// Data files ship packed as {"gz": base64(gzip)} — build.js packs them at hash time so
-// the raw JSON isn't casually readable at its URL. Unwrap transparently; plain JSON
-// (and a null from a tolerant loader) passes straight through.
+// Data files are served as plain JSON (the CDN compresses them). A file still wrapped as
+// {"gz": base64(gzip)} — the old shipping format — is unwrapped transparently.
 async function unGz(j){
   if(!j||!j.gz) return j;
   const bytes=Uint8Array.from(atob(j.gz),c=>c.charCodeAt(0));
@@ -2462,7 +2461,7 @@ function init(DATA){
   function ensureWalk(){
     if(WALK) return Promise.resolve(WALK);
     if(walkPromise) return walkPromise;
-    walkPromise=fetch('walkbike.b0c4b021d1.json').then(r=>r.ok?r.json():null).then(unGz).then(j=>{
+    walkPromise=fetch('walkbike.666d3bfba3.json').then(r=>r.ok?r.json():null).then(unGz).then(j=>{
       if(j) j._idx=Object.fromEntries(j.names.map((n,i)=>[n,i]));
       WALK=j; return j;
     }).catch(()=>null);
@@ -2876,7 +2875,7 @@ function init(DATA){
   let GE_COURSES=null, geCoursesPromise=null;
   function ensureGeCourses(){
     if(geCoursesPromise) return geCoursesPromise;
-    geCoursesPromise=fetch('ge-courses.c1d827884c.json').then(r=>r.ok?r.json():null).then(unGz)
+    geCoursesPromise=fetch('ge-courses.32db06a14d.json').then(r=>r.ok?r.json():null).then(unGz)
       .then(j=>{GE_COURSES=(j&&j.colleges)||{};}).catch(()=>{GE_COURSES={};});
     return geCoursesPromise;
   }
@@ -2984,7 +2983,7 @@ function init(DATA){
   function mwSave(){ if(mwM){mwStore.sel=mwM.tss;mwStore['ws:'+mwM.tss]=mwWS;} mwSaveStore(); }
   function ensureMinors(){
     if(minPromise) return minPromise;
-    minPromise=fetch('minors.968b3c1045.json').then(r=>r.ok?r.json():null).then(unGz)
+    minPromise=fetch('minors.67b07766f2.json').then(r=>r.ok?r.json():null).then(unGz)
       .then(j=>{MIN=(j&&j.minors)||[];MINMETA=(j&&j.meta)||{};}).catch(()=>{MIN=[];});
     return minPromise;
   }
@@ -3332,7 +3331,7 @@ function init(DATA){
   function dpEnsureData(){
     if(dpDB) return Promise.resolve(dpDB);
     if(dpPromise) return dpPromise;
-    dpPromise=fetch('plans.c31c4d6d87.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(async j=>{
+    dpPromise=fetch('plans.2398acfd99.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(async j=>{
       let obj=j;
       if(j && j.gz){
         const bytes=Uint8Array.from(atob(j.gz),c=>c.charCodeAt(0));
@@ -3662,7 +3661,7 @@ function init(DATA){
   function gpEnsureData(){
     if(gpDB) return Promise.resolve(gpDB);
     if(gpPromise) return gpPromise;
-    gpPromise=fetch('gradplans.708cc80386.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(unGz).then(j=>{gpDB=j;return j;});
+    gpPromise=fetch('gradplans.145376c0c1.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(unGz).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
   function gpProgLabel(p){
@@ -4079,7 +4078,7 @@ function init(DATA){
 
   // lazily load per-term history in the background (≈40% of the data, only needed on row expand)
   if(!histReady){
-    fetch('hist.b6f84b79d5.json').then(r=>r.ok?r.json():null).then(unGz).then(hd=>{
+    fetch('hist.520c32e21c.json').then(r=>r.ok?r.json():null).then(unGz).then(hd=>{
       if(!hd) return;
       H=hd.hist||hd; histReady=true;
       if(expanded.size) rerenderShown(); // fill any already-open detail panels
