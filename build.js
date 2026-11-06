@@ -37,14 +37,16 @@ const ASSETS = ["data.json", "hist.json", "schedule.json", "plans.json", "gradpl
 function shortHash(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex").slice(0, 10);
 }
-// Ship every data file packed as {"gz": base64(gzip)} — same wrapper plans.json has
-// always used — so the served JSON isn't casually readable at its URL. The page's
-// unGz() helper unwraps transparently (deterrence, not encryption: the browser still
-// has to decode it). Sources in the repo stay plain — the pipeline scripts read them.
-function pack(bytes) {
-  if (bytes.slice(0, 6).toString() === '{"gz":') return bytes;  // packed at source
-  const gz = zlib.gzipSync(bytes, { level: 9 });
-  return Buffer.from('{"gz":"' + gz.toString("base64") + '"}');
+// Every hashed copy is plain JSON: the CDN brotli-compresses it on the wire, which beats
+// any pre-packing (a base64'd gzip can't be compressed again — the {"gz": base64} wrapper
+// these files used to ship in cost ~250 KB on first load and a main-thread decode, for a
+// deterrent that never held: the browser has to decode it anyway). plans.json is still
+// stored packed at source, so it is unpacked here; the page's unGz() accepts either form.
+function servable(bytes) {
+  const head = bytes.slice(0, 16).toString().replace(/\s+/g, "");
+  if (!head.startsWith('{"gz":')) return bytes;
+  const j = JSON.parse(bytes.toString("utf8"));
+  return Buffer.from(zlib.gunzipSync(Buffer.from(j.gz, "base64")).toString("utf8"));
 }
 function reEsc(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -61,7 +63,7 @@ function main() {
     if (!fs.existsSync(src)) {
       throw new Error(`build.js: source data file missing: ${asset}`);
     }
-    const bytes = pack(fs.readFileSync(src));
+    const bytes = servable(fs.readFileSync(src));
     const hashed = `${base}.${shortHash(bytes)}${ext}`;   // data.<hash>.json
 
     // (Re)write the current hashed copy.
