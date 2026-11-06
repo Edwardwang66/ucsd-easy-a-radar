@@ -34,13 +34,13 @@ const fs = require("fs");
 const path = require("path");
 
 const argv = process.argv.slice(2);
-const src = argv.find((a) => !a.startsWith("--"));
+const src = argv.find((a, i) => !a.startsWith("--") && (i === 0 || argv[i - 1] !== "--root"));
 const dry = argv.includes("--dry-run");
 const noFlip = argv.includes("--no-flip");
 const rootArg = argv.indexOf("--root");
 const ROOT = rootArg >= 0 ? path.resolve(argv[rootArg + 1]) : __dirname;
 if (!src) {
-  console.error("usage: node new-term.js <soc_<year>_<period>.json> [--dry-run] [--no-flip] [--root DIR]");
+  console.error("usage: node new-term.js <scrape.json> [more scrapes…] [--dry-run] [--no-flip] [--root DIR]\n  a scrape is the TSS Schedule-of-Classes dump (modules[]) or a ucsd-seat-sync v2 export (courses[]);\n  later files only fill courses the earlier ones have no sections for");
   process.exit(1);
 }
 const P = (f) => path.join(ROOT, f);
@@ -106,18 +106,106 @@ function parseSched(text) {
   return { meets, finals };
 }
 
-// ---------------------------------------------------------------- load
-const soc = JSON.parse(fs.readFileSync(src, "utf8"));
-const year = String((soc.term || {}).AcademicYear || (soc.modules[0] || {}).AcademicYear || "");
-const period = String((soc.term || {}).AcademicPeriod || (soc.modules[0] || {}).AcademicPeriod || "");
-const sample = soc.modules.find((m) => m.Persl) || {};
-const pm = /^(\d{2})(FA|WI|SP|SU|S1|S2)$/.exec(sample.Persl || "");         // "27WI"
-const code = pm ? pm[2] + pm[1] : null;                                      // "WI27"
-const qname = (sample.AcademicPeriod_Text || "").replace(/\s*Quarter$/i, "");  // "Winter"
-const calYear = pm ? 2000 + +pm[1] : +year;
-const termName = qname && pm ? `${qname} ${calYear}` : `${year}/${period}`;
-if (!year || !period || !code) { console.error("could not read the term (AcademicYear / AcademicPeriod / Persl) from the scrape"); process.exit(1); }
-console.log(`scrape: ${soc.modules.length} modules, term ${year}/${period} = ${code} (${termName}), scraped ${soc.scrapedAt || "?"}`);
+// ---------------------------------------------------------------- load + normalise
+// Two scrape formats are accepted, and several files may be given: a course comes from the
+// first file that has sections for it (so a complete Schedule-of-Classes dump can be backed
+// by a seat-sync export, or vice versa). Both are normalised to
+//   { abbr, moduleId, title, units, sections: [{ id, abbr, type, instr, pkg, seatsA, seatsL,
+//     meetings: [{days:Set, start24, end24, building, room}], finals: [{date, start24, end24, building, room}] }] }
+function fromSoc(soc) {                                    // raw SAP module dump: modules[] with _sections/_schedule
+  const out = new Map();
+  for (const mod of soc.modules || []) {
+    const slots = new Map();                                 // EventObjid -> Map("16:00|16:50" -> Set(days))
+    for (const r of mod._schedule || []) {
+      if (!slots.has(r.SectionId)) slots.set(r.SectionId, new Map());
+      const k = to24FromHms(r.BeginTime) + "|" + to24FromHms(r.EndTime);
+      const by = slots.get(r.SectionId);
+      if (!by.has(k)) by.set(k, new Set());
+      if (DOW[r.DoW]) by.get(k).add(DOW[r.DoW]);
+    }
+    const sections = [], seen = new Set();
+    for (const s of mod._sections || []) {
+      if (seen.has(s.EventObjid)) continue;
+      seen.add(s.EventObjid);
+      const { meets, finals } = parseSched(s.Sched);
+      const meetings = [];
+      const by = slots.get(s.EventObjid);
+      if (by && by.size) {
+        for (const [k, days] of by) {
+          const [start24, end24] = k.split("|");
+          const meet = meets.find((x) => t24(x.start) === start24 && t24(x.end) === end24) || meets.find((x) => t24(x.start) === start24) || meets[0] || {};
+          meetings.push({ days, start24, end24, building: meet.building || "", room: meet.room || "" });
+        }
+      } else {
+        for (const x of meets) { meetings.push({ days: new Set(x.days), start24: t24(x.start), end24: t24(x.end), building: x.building, room: x.room }); stats.unparsedSched++; }
+      }
+      const num = (v) => (v === "" || v == null || !Number.isFinite(+v) ? null : +v);
+      sections.push({ id: s.EventObjid, abbr: s.EventAbbr, type: s.TeachingMethod, instr: (s.InstructorName || "").trim(),
+        pkg: s.EventPkgObjid || "", seatsA: num(s.EventPkgSeatsAvailable), seatsL: num(s.EventPkgLimit), meetings,
+        finals: finals.map((f) => ({ date: f.date, start24: t24(f.start), end24: t24(f.end), building: f.building, room: f.room })) });
+    }
+    out.set(mod.CourseAbbr, { abbr: mod.CourseAbbr, moduleId: String(mod.ModuleID), title: mod.CourseTitle || mod.Description || "",
+      units: mod.CreditsDisplay || "", sections });
+  }
+  return out;
+}
+function fromSeatsV2(x) {                                  // ucsd-seat-sync v2: courses[] -> packages[] -> sections[]
+  const out = new Map();
+  for (const c of x.courses || []) {
+    const byId = new Map();
+    const mid = ((c.bookingUrl || "").match(/\/SM\/(\d+)\//) || [])[1] || "";
+    for (const p of c.packages || []) {
+      for (const s of p.sections || []) {
+        const e = byId.get(s.sectionId) || { id: s.sectionId, abbr: s.sectionCode, type: s.type, instr: (s.instructor || "").trim(),
+          pkg: String(p.eventPackageId || s.eventPackageId || ""), seatsA: s.openSeats == null ? null : +s.openSeats, seatsL: s.capacity == null ? null : +s.capacity,
+          meetings: [], finals: [], _slots: new Set() };
+        const dayList = String(s.days || "").match(/Tu|Th|Sa|Su|M|W|F/g) || [];
+        if (s.start && s.end && dayList.length) {
+          const k = `${s.days}|${s.start}|${s.end}`;
+          if (!e._slots.has(k)) { e._slots.add(k); e.meetings.push({ days: new Set(dayList), start24: s.start, end24: s.end, building: /online/i.test(s.mode || "") && !s.building ? "RCLAS" : (s.building || ""), room: s.room || "" }); }
+        }
+        if (s.final && s.final.date && !e.finals.some((f) => f.date === s.final.date && f.start24 === s.final.start)) e.finals.push({ date: s.final.date, start24: s.final.start, end24: s.final.end, building: s.building || "", room: s.room || "" });
+        byId.set(s.sectionId, e);
+      }
+    }
+    for (const e of byId.values()) delete e._slots;
+    out.set(c.course, { abbr: c.course, moduleId: mid, title: c.title || "", units: c.credits == null ? "" : Number(c.credits).toFixed(2), sections: [...byId.values()] });
+  }
+  return out;
+}
+
+const inputs = argv.filter((a, i) => !a.startsWith("--") && !(rootArg >= 0 && i === rootArg + 1));
+const stats = { courses: 0, sections: 0, meetingRows: 0, tbaRows: 0, fiRows: 0, online: 0, withInstructor: 0,
+  unknownBuilding: new Map(), unparsedSched: 0, dupKeys: [], skippedNoAbbr: 0, groupWrap: 0, recoded: 0, filled: 0 };
+let year = "", period = "", code = null, termName = "", scrapedAt = "";
+const norm = new Map();
+for (const file of inputs) {
+  const j = JSON.parse(fs.readFileSync(file, "utf8"));
+  let m, fmt;
+  if (Array.isArray(j.modules)) {
+    m = fromSoc(j); fmt = "SOC dump";
+    const sample = j.modules.find((x) => x.Persl) || {};
+    const pm = /^(\d{2})(FA|WI|SP|SU|S1|S2)$/.exec(sample.Persl || "");
+    if (!code && pm) { year = String((j.term || sample).AcademicYear || ""); period = String((j.term || sample).AcademicPeriod || "");
+      code = pm[2] + pm[1]; termName = `${(sample.AcademicPeriod_Text || "").replace(/\s*Quarter$/i, "")} ${2000 + +pm[1]}`.trim(); scrapedAt = j.scrapedAt || ""; }
+  } else if (Array.isArray(j.courses)) {
+    m = fromSeatsV2(j); fmt = "seat-sync v2";
+    const ap = j.academicPeriod || {};
+    if (!code && ap.peryr && ap.perid) { year = String(ap.peryr); period = String(ap.perid);
+      const q = { 1: "SU", 2: "FA", 3: "WI", 4: "SP" }[+ap.perid] || "T" + ap.perid, y = +ap.peryr + (+ap.perid >= 3 ? 1 : 0);
+      code = q + String(y).slice(2); termName = `${(ap.term || "").replace(/\s*Quarter$/i, "")} ${y}`.trim(); scrapedAt = j.generatedAt || ""; }
+  } else { console.error(`${file}: not a TSS scrape I recognise (expected modules[] or courses[])`); process.exit(1); }
+  let added = 0, filled = 0;
+  for (const [abbr, c] of m) {
+    const have = norm.get(abbr);
+    if (!have) { norm.set(abbr, c); added++; }
+    else if (!have.sections.length && c.sections.length) { norm.set(abbr, c); filled++; }
+  }
+  stats.filled += filled;
+  console.log(`${path.basename(file)}: ${fmt}, ${m.size} courses — ${added} new${filled ? `, ${filled} filled in (empty in an earlier file)` : ""}`);
+}
+if (!year || !period || !code) { console.error("could not read the term from the scrape(s)"); process.exit(1); }
+console.log(`term ${year}/${period} = ${code} (${termName}), ${norm.size} courses, scraped ${scrapedAt || "?"}`);
 
 const old = JSON.parse(fs.readFileSync(P("schedule.json"), "utf8"));
 const data = JSON.parse(fs.readFileSync(P("data.json"), "utf8"));
@@ -147,33 +235,19 @@ function resolveBuilding(name) {
 
 // ---------------------------------------------------------------- schedule.json
 const courses = {}, legacy = [];
-const stats = { courses: 0, sections: 0, meetingRows: 0, tbaRows: 0, fiRows: 0, online: 0, withInstructor: 0,
-  unknownBuilding: new Map(), unparsedSched: 0, dupKeys: [], skippedNoAbbr: 0, groupWrap: 0, recoded: 0 };
 const bookingUrl = (moduleId, pkgObjid) =>
   `https://tss.ucsd.edu/fiori#ZUSModule-display?TileType=MYMOD&/Detail/EventPackage/SM/${moduleId}/00000000/0/0/0/00000000-0000-0000-0000-000000000000/${pkgObjid}/${year}/${period}/?`;
 
-for (const mod of soc.modules) {
-  const key = keyOf(mod.CourseAbbr);
+for (const nc of norm.values()) {
+  const key = keyOf(nc.abbr);
   if (!key) { stats.skippedNoAbbr++; continue; }
   if (courses[key]) { stats.dupKeys.push(key); continue; }
   const [sub, num] = key.split(" ");
-  // meeting rows per section id, grouped by time slot
-  const slots = new Map();                                  // EventObjid -> Map("16:00:00|16:50:00" -> Set(days))
-  for (const r of mod._schedule || []) {
-    const k = `${r.BeginTime}|${r.EndTime}`;
-    if (!slots.has(r.SectionId)) slots.set(r.SectionId, new Map());
-    const bySlot = slots.get(r.SectionId);
-    if (!bySlot.has(k)) bySlot.set(k, new Set());
-    if (DOW[r.DoW]) bySlot.get(k).add(DOW[r.DoW]);
-  }
-  // sections, grouped the way WebReg groups them (A00 lecture, A01.. discussions, then the group's final)
-  const groups = new Map();                                 // letter -> {rows:[], finals:Map, hasNonLE}
-  const pkgs = new Map();                                   // EventPkgObjid -> {sections:[]}
-  const seenSec = new Set(), usedCodes = new Set();
-  for (const s of mod._sections || []) {
-    if (seenSec.has(s.EventObjid)) continue;
-    seenSec.add(s.EventObjid);
-    let [codeStr, letter] = groupCode(s.EventAbbr);
+  const groups = new Map();                                 // letter -> {rows:[], finals:Map, hasNonLE, order}
+  const pkgs = new Map();                                   // pkg id -> {id, bookingUrl, sections:[]}
+  const usedCodes = new Set();
+  for (const s of nc.sections) {
+    let [codeStr, letter] = groupCode(s.abbr);
     // TSS numbers a lecture and its co-scheduled lab/other "001-000-LE" / "001-000-LA" —
     // the same number with a different type. The app keys sections by code within a
     // course (WebReg never reused one), so give the second one the group's next free number.
@@ -188,47 +262,34 @@ for (const mod of soc.modules) {
     if (letter > "Z") stats.groupWrap++;
     const g = groups.get(letter) || { rows: [], finals: new Map(), hasNonLE: false, order: groups.size };
     groups.set(letter, g);
-    if (s.TeachingMethod !== "LE") g.hasNonLE = true;
-    const { meets, finals } = parseSched(s.Sched);
-    const instr = (s.InstructorName || "").trim();
-    if (instr) stats.withInstructor++;
-    const seatsA = Number.isFinite(+s.EventPkgSeatsAvailable) && s.EventPkgSeatsAvailable !== "" ? +s.EventPkgSeatsAvailable : null;
-    const seatsL = Number.isFinite(+s.EventPkgLimit) && s.EventPkgLimit !== "" ? +s.EventPkgLimit : null;
+    if (s.type !== "LE") g.hasNonLE = true;
+    if (s.instr) stats.withInstructor++;
     const rowsOut = [];
-    const bySlot = slots.get(s.EventObjid);
-    if (bySlot && bySlot.size) {
-      for (const [slot, daySet] of bySlot) {
-        const [b, e] = slot.split("|");
-        const start24 = to24FromHms(b);
-        const meet = meets.find((x) => t24(x.start) === start24 && t24(x.end) === to24FromHms(e)) || meets.find((x) => t24(x.start) === start24) || meets[0] || {};
-        if (meet.building === "RCLAS") stats.online++;
-        rowsOut.push({ code: codeStr, type: s.TeachingMethod, days: daysStr(daySet), start: t12(b), end: t12(e),
-          building: resolveBuilding(meet.building || ""), room: meet.room || "", start24, days24: daysStr(daySet) });
+    if (s.meetings.length) {
+      for (const m of s.meetings) {
+        const building = resolveBuilding(m.building);
+        if (building === "RCLAS") stats.online++;
+        rowsOut.push({ code: codeStr, type: s.type, days: daysStr(m.days), start: t12(m.start24 + ":00"), end: t12(m.end24 + ":00"),
+          building, room: m.room || "", start24: m.start24, end24: m.end24, days24: daysStr(m.days) });
         stats.meetingRows++;
       }
-    } else if (meets.length) {                                // no structured rows but the text has a meeting
-      for (const x of meets) {
-        rowsOut.push({ code: codeStr, type: s.TeachingMethod, days: daysStr(new Set(x.days)), start: t12(t24(x.start) + ":00"), end: t12(t24(x.end) + ":00"),
-          building: resolveBuilding(x.building), room: x.room, start24: t24(x.start), days24: daysStr(new Set(x.days)) });
-        stats.meetingRows++; stats.unparsedSched++;
-      }
     } else {
-      rowsOut.push({ code: codeStr, type: s.TeachingMethod, days: "", start: "", end: "", building: "", room: "", start24: null, days24: "" });
+      rowsOut.push({ code: codeStr, type: s.type, days: "", start: "", end: "", building: "", room: "", start24: null, end24: null, days24: "" });
       stats.tbaRows++;
     }
     for (const r of rowsOut) {
       if (r.building && r.building !== "RCLAS" && !old.buildings[r.building]) stats.unknownBuilding.set(r.building, (stats.unknownBuilding.get(r.building) || 0) + 1);
-      g.rows.push({ ...r, instr, seatsA, seatsL, isLE: s.TeachingMethod === "LE" });
+      g.rows.push({ ...r, instr: s.instr, seatsA: s.seatsA, seatsL: s.seatsL, isLE: s.type === "LE" });
     }
-    for (const f of finals) {
-      const fk = `${f.date}|${f.start}|${f.end}`;
+    for (const f of s.finals) {
+      const fk = `${f.date}|${f.start24}|${f.end24}`;
       if (!g.finals.has(fk)) g.finals.set(fk, f);
     }
-    const pk = s.EventPkgObjid || s.EventPkgOtjid || codeStr;
-    if (!pkgs.has(pk)) pkgs.set(pk, { id: String(pk), bookingUrl: bookingUrl(mod.ModuleID, s.EventPkgObjid || "0"), sections: [] });
+    const pk = s.pkg || codeStr;
+    if (!pkgs.has(pk)) pkgs.set(pk, { id: String(pk), bookingUrl: bookingUrl(nc.moduleId || "0", s.pkg || "0"), sections: [] });
     for (const r of rowsOut) {
-      pkgs.get(pk).sections.push({ sectionCode: r.code, type: r.type, days: r.days24, start: r.start24, end: r.end ? t24(r.end.replace(/([ap])$/, " $1m").toUpperCase()) : null,
-        building: r.building, room: r.room, instructor: instr, seatsAvail: seatsA, seatsLimit: seatsL });
+      pkgs.get(pk).sections.push({ sectionCode: r.code, type: r.type, days: r.days24, start: r.start24, end: r.end24,
+        building: r.building, room: r.room, instructor: s.instr, seatsAvail: s.seatsA, seatsLimit: s.seatsL });
     }
     stats.sections++;
   }
@@ -240,20 +301,21 @@ for (const mod of soc.modules) {
       sec.push([r.code, r.type, r.days, r.start, r.end, r.building, r.room, r.instr, showSeats ? r.seatsA : null, showSeats ? r.seatsL : null, 0]);
     }
     for (const f of g.finals.values()) {
-      sec.push([f.date, "FI", f.date, t12(t24(f.start) + ":00"), t12(t24(f.end) + ":00"), f.building === "RCLAS" ? "" : resolveBuilding(f.building), f.room, "", null, null, 0]);
+      const fb = f.building === "RCLAS" ? "" : resolveBuilding(f.building);
+      sec.push([f.date, "FI", f.date, t12(f.start24 + ":00"), t12(f.end24 + ":00"), fb, f.room || "", "", null, null, 0]);
       stats.fiRows++;
     }
   }
-  courses[key] = { t: mod.CourseTitle || mod.Description || "", u: mod.CreditsDisplay || "", sub, num, sec };
+  courses[key] = { t: nc.title, u: nc.units, sub, num, sec };
   stats.courses++;
   const pkgList = [...pkgs.values()];
-  legacy.push({ course: mod.CourseAbbr, moduleId: mod.ModuleID, title: courses[key].t, units: courses[key].u,
+  legacy.push({ course: nc.abbr, moduleId: nc.moduleId, title: nc.title, units: nc.units,
     bookingUrl: pkgList.length ? pkgList[0].bookingUrl : null, packages: pkgList });
 }
 
 const schedule = {
   term: code, termName, generated: new Date().toISOString().slice(0, 10),
-  source: `TSS Schedule of Classes scrape (${path.basename(src)}, ${(soc.scrapedAt || "").slice(0, 10)})`,
+  source: `TSS Schedule of Classes scrape (${inputs.map((f) => path.basename(f)).join(" + ")}, ${scrapedAt.slice(0, 10)})`,
   secCols: old.secCols, buildings: old.buildings, courses,
 };
 
@@ -328,11 +390,12 @@ if (!noFlip && !hasTerm) { console.error(`index.html's TERMS table has no ${code
 // ---------------------------------------------------------------- report
 const ub = [...stats.unknownBuilding.entries()].sort((a, b) => b[1] - a[1]);
 console.log(`
-schedule.json  ${code} — ${stats.courses} courses (old ${old.term}: ${Object.keys(old.courses).length}), ${stats.sections} sections
+schedule.json  ${code} — ${stats.courses} courses (old ${old.term}: ${Object.keys(old.courses).length}), ${stats.sections} sections${stats.filled ? `, ${stats.filled} courses filled from a later file` : ""}
                ${stats.meetingRows} meeting rows, ${stats.tbaRows} TBA rows (no time), ${stats.fiRows} final-exam rows, ${stats.online} online rows
                ${stats.withInstructor} sections carry an instructor; ${stats.groupWrap} sections in groups past Z (WebReg-style ASCII letters); ${stats.recoded} renumbered to avoid a same-code clash
                buildings not in the coordinates map: ${ub.length}${ub.length ? " — " + ub.slice(0, 12).map(([b, n]) => `${b} (${n})`).join(", ") : ""}
                ${stats.unparsedSched ? stats.unparsedSched + " rows timed from Sched text only (no _schedule rows); " : ""}${stats.dupKeys.length ? "duplicate course keys skipped: " + stats.dupKeys.join(", ") : ""}
+               empty courses (no sections in any file): ${Object.values(courses).filter((c) => !c.sec.length).length}
 data.json      rows ${before.rows} -> ${recs.length}: dropped ${before.src2} src=2 + ${before.src3} src=3 (previous term) + ${dropped4} src=4 now offered; added ${added.tba} TBA + ${added.umbrella} umbrella src=3 rows, ${kept4} src=4 catalog rows for courses no longer offered; ${titled1} RMP rows titled
                off: ${before.off} -> ${recs.filter((r) => r[C.off]).length} (+${offOn} newly offered, -${offOff} no longer offered)
                cur ${before.cur} -> 0, fa ${before.fa} -> ${Object.keys(fa).length} (umbrella advisor lists only), seats ${before.seats} -> 0, newProf -> 0
