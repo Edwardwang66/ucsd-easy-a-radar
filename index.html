@@ -44,7 +44,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     --ink:#14202E; --muted:#5C6875; --faint:#8A95A3;
     --line:#E3E7ED; --line-strong:#CFD6DF;
     --accent:#0B4F8A; --accent-2:#0E63AC; --accent-soft:#E7F0F9; --gold:#E8A400;
-    --gA:#1F9D6B; --gB:#8FB63C; --gC:#E0A100; --gD:#E17B36; --gF:#D2544B; --gW:#93A0B0; --gO:#DCE2E9;
+    --gA:#1F9D6B; --gB:#8FB63C; --gC:#E0A100; --gD:#E17B36; --gF:#D2544B; --gW:#93A0B0; --gO:#DCE2E9; --gPN:#6E9FDB;
     --neutral:#C3CBD5;
     --shadow:0 1px 2px rgba(16,32,52,.05),0 10px 30px rgba(16,32,52,.06);
     --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;
@@ -57,7 +57,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
       --ink:#E7ECF3; --muted:#96A3B4; --faint:#66727F;
       --line:#232E3B; --line-strong:#33404F;
       --accent:#4E9BDC; --accent-2:#69AEE8; --accent-soft:#16283A; --gold:#E8A400;
-      --gA:#33B183; --gB:#93BE49; --gC:#E4B23C; --gD:#E68A4C; --gF:#E06A61; --gW:#5A6675; --gO:#26303C;
+      --gA:#33B183; --gB:#93BE49; --gC:#E4B23C; --gD:#E68A4C; --gF:#E06A61; --gW:#5A6675; --gO:#26303C; --gPN:#4C7DBA;
       --neutral:#3A4756;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.35);
     }
@@ -67,7 +67,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     --ink:#E7ECF3; --muted:#96A3B4; --faint:#66727F;
     --line:#232E3B; --line-strong:#33404F;
     --accent:#4E9BDC; --accent-2:#69AEE8; --accent-soft:#16283A; --gold:#E8A400;
-    --gA:#33B183; --gB:#93BE49; --gC:#E4B23C; --gD:#E68A4C; --gF:#E06A61; --gW:#5A6675; --gO:#26303C;
+    --gA:#33B183; --gB:#93BE49; --gC:#E4B23C; --gD:#E68A4C; --gF:#E06A61; --gW:#5A6675; --gO:#26303C; --gPN:#4C7DBA;
     --neutral:#3A4756;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px rgba(0,0,0,.35);
   }
@@ -76,7 +76,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     --ink:#14202E; --muted:#5C6875; --faint:#8A95A3;
     --line:#E3E7ED; --line-strong:#CFD6DF;
     --accent:#0B4F8A; --accent-2:#0E63AC; --accent-soft:#E7F0F9; --gold:#E8A400;
-    --gA:#1F9D6B; --gB:#8FB63C; --gC:#E0A100; --gD:#E17B36; --gF:#D2544B; --gW:#93A0B0; --gO:#DCE2E9;
+    --gA:#1F9D6B; --gB:#8FB63C; --gC:#E0A100; --gD:#E17B36; --gF:#D2544B; --gW:#93A0B0; --gO:#DCE2E9; --gPN:#6E9FDB;
     --neutral:#C3CBD5;
     --shadow:0 1px 2px rgba(16,32,52,.05),0 10px 30px rgba(16,32,52,.06);
   }
@@ -240,6 +240,8 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
   .gpa{justify-self:start}
   .gpa .b{display:inline-flex;align-items:center;justify-content:center;min-width:52px;padding:5px 8px;border-radius:8px;font-weight:800;font-size:15px;color:#fff;letter-spacing:-.02em}
   .gpa .na{color:var(--faint);font-size:13px}
+  .gpa .pnp{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--ink);background:color-mix(in srgb,var(--gPN) 30%,transparent);border:1px solid var(--gPN);border-radius:6px;padding:2px 7px}
+  .gpa .pnp-rate{font-size:10.5px;color:var(--muted);margin-top:3px}
   .gpa .rmponly{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--accent-2);
     border:1px dashed color-mix(in srgb,var(--accent-2) 45%,transparent);border-radius:6px;padding:3px 6px;line-height:1.2}
 
@@ -811,7 +813,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     <span class="lg"><i class="sw" style="background:var(--gD)"></i>D</span>
     <span class="lg"><i class="sw" style="background:var(--gF)"></i>F</span>
     <span class="lg"><i class="sw" style="background:var(--gW)"></i>W (withdraw)</span>
-    <span class="lg"><i class="sw" style="background:var(--gO)"></i>P / NP</span>
+    <span class="lg"><i class="sw" style="background:var(--gPN)"></i>P/NP</span>
   </div>
 
   <div class="tablecard">
@@ -1559,7 +1561,7 @@ function init(DATA){
   // #curcount is filled by fillFa26Rows() below, which runs after first paint.
 
   function riskOf(r){const d=r[C.gD],f=r[C.gF],w=r[C.gW];if(d==null&&f==null&&w==null)return null;return (d||0)+(f||0)+(w||0);}
-  function sortVal(r,key){ if(key==='risk')return riskOf(r); return r[C[key]]; }
+  function sortVal(r,key){ if(NOGPA.has(r)&&(key==='g'||key==='gA'||key==='risk'))return null; if(key==='risk')return riskOf(r); return r[C[key]]; }
 
   function levelOk(lv){
     switch(state.level){
@@ -1571,6 +1573,64 @@ function init(DATA){
     }
   }
   const AKA=(DATA&&DATA.aka)||{};   // catalog name -> other name forms (preferred/legal/spelling variants)
+
+  // ---- load-time data hygiene (rankings) ----
+  // (1) One professor under two name spellings on one course ("Moshiri, Alexander Niema" /
+  // "Moshiri, Niema" — the same RMP profile) showed as two "Teaching now" rows with two
+  // GPAs. Fold such rows into one: grades weighted by times taught, counts summed. RI keeps
+  // the original indices, so the per-term history (indexed by them) is merged when it loads.
+  const ROWAKA=new Map(), FOLDS=[];
+  {
+    const groups=new Map();
+    for(const r of R){ if(r[C.src]||r[C.rid]==null) continue; const k=r[C.s]+' '+r[C.c]+'|'+r[C.rid]; if(!groups.has(k))groups.set(k,[]); groups.get(k).push(r); }
+    const drop=new Set(), wt=r=>r[C.n]||1;
+    for(const rows of groups.values()){
+      if(rows.length<2) continue;
+      rows.sort((a,b)=>(wt(b)-wt(a))||((b[C.i]||'').length-(a[C.i]||'').length));
+      const p=rows[0];
+      for(const k of ['g','gA','gB','gC','gD','gF','gW','gP','gNP']){
+        const have=rows.filter(r=>r[C[k]]!=null); if(!have.length) continue;
+        const v=have.reduce((x,r)=>x+r[C[k]]*wt(r),0)/have.reduce((x,r)=>x+wt(r),0);
+        p[C[k]]=k==='g'?Math.round(v*1000)/1000:Math.round(v*10)/10;
+      }
+      p[C.n]=rows.reduce((x,r)=>x+(r[C.n]||0),0);
+      for(const k of ['y','off','cur']) p[C[k]]=Math.max(...rows.map(r=>r[C[k]]||0));
+      if(!(p[C.t]>=0)){const t=rows.find(r=>r[C.t]>=0); if(t) p[C.t]=t[C.t];}
+      ROWAKA.set(p,rows.slice(1).map(r=>r[C.i]).filter(Boolean));
+      FOLDS.push([RI.get(p),rows.slice(1).map(r=>RI.get(r))]);
+      rows.slice(1).forEach(r=>drop.add(r));
+    }
+    for(let i=R.length-1;i>=0;i--) if(drop.has(R[i])) R.splice(i,1);
+  }
+  const TERM_RANK={WI:1,SP:2,S1:3,S2:4,S3:4,SU:4,FA:5};
+  function mergeFoldedHist(){
+    if(!H) return;
+    for(const [pi,ds] of FOLDS){
+      const all=[...(H[pi]||[]),...ds.flatMap(i=>H[i]||[])];
+      all.sort((a,b)=>(b[0]-a[0])||((TERM_RANK[b[1]]||0)-(TERM_RANK[a[1]]||0)));
+      H[pi]=all;
+    }
+  }
+  mergeFoldedHist();
+  // (2) A GPA of 0.00 in the export is not a grade average: in every such row letter grades
+  // cover under 20% of students — P/NP-graded offerings, rows with no breakdown at all, a few
+  // "F only" fragments. They ranked below real 1.3-GPA rows and dragged the stats down. Drop
+  // the fake GPA (they sort last and leave the median); P/NP rows show their pass rate.
+  const PNP=new Set(), NOGPA=new Set();
+  for(const r of R){
+    if(r[C.src]||r[C.g]!==0) continue;
+    const letters=(r[C.gA]||0)+(r[C.gB]||0)+(r[C.gC]||0)+(r[C.gD]||0)+(r[C.gF]||0);
+    if(letters>=20) continue;
+    r[C.g]=null; NOGPA.add(r);
+    if(((r[C.gP]||0)+(r[C.gNP]||0))>0) PNP.add(r);
+  }
+  // (3) A matched RMP profile with no ratings carries 0.0 quality / 0.0 difficulty and a
+  // -1% would-take-again — placeholders, not scores. Null them so they neither lead the
+  // difficulty sort nor print as ratings.
+  for(const r of R){
+    if(r[C.rid]!=null&&!r[C.rn]){r[C.rq]=null;r[C.rd]=null;r[C.rw]=null;}
+    if(r[C.rw]!=null&&r[C.rw]<0) r[C.rw]=null;
+  }
   const PRE=(DATA&&DATA.pre)||{};   // "SUBJ NUM" -> prerequisite text (from catalog.ucsd.edu)
   function preHTML(r){
     const p=PRE[r[C.s]+' '+r[C.c]]; if(!p) return '';
@@ -1634,13 +1694,14 @@ function init(DATA){
     const subj=(r[C.s]||'').toLowerCase();
     const code=(r[C.s]+'-'+r[C.c]).toLowerCase(), code2=(r[C.s]+' '+r[C.c]).toLowerCase();
     const title=(r[C.t]>=0?(T[r[C.t]]||''):'').toLowerCase(), instr=(r[C.i]||'').toLowerCase();
-    if(subj===q||code.startsWith(q)||code2.startsWith(q)) return 5; // subject / course-code prefix
-    if(code.includes(q)||code2.includes(q)) return 4;               // course code contains
+    const codeNS=(r[C.s]+r[C.c]).toLowerCase(), qNS=/\d/.test(q)?q.replace(/[\s-]+/g,''):'';   // "cse100" = "CSE 100"
+    if(subj===q||code.startsWith(q)||code2.startsWith(q)||(qNS&&codeNS.startsWith(qNS))) return 5; // subject / course-code prefix
+    if(code.includes(q)||code2.includes(q)||(qNS&&codeNS.includes(qNS))) return 4;               // course code contains
     if(title.startsWith(q)) return 3;
     if(title.includes(q)) return 2;                                 // title contains
     if(instr.includes(q)) return 1;                                 // professor name only — lowest
-    const aka=AKA[r[C.i]]; // also match the professor's known name variants
-    return (aka&&aka.some(n=>n.toLowerCase().includes(q))) ? 1 : 0;
+    const aka=(AKA[r[C.i]]||[]).concat(ROWAKA.get(r)||[]); // also match the professor's known name variants
+    return aka.some(n=>n.toLowerCase().includes(q)) ? 1 : 0;
   }
   function matchQ(r,q){ return matchRank(r,q)>0; }
   function tie(a,b){const ga=a[C.g],gb=b[C.g];if(ga!=null&&gb!=null&&ga!==gb)return gb-ga;if(ga!=null&&gb==null)return -1;if(ga==null&&gb!=null)return 1;return b[C.n]-a[C.n];}
@@ -1657,7 +1718,8 @@ function init(DATA){
       if(state.courseSet && !state.courseSet.has(r[C.s]+' '+r[C.c])) continue;   // exact approved-course whitelist (GE bridge)
       if(state.prof && r[C.i]!==state.prof) continue;
       if(!levelOk(r[C.lv])) continue;
-      if(r[C.src]===0 && r[C.n]<state.minoff) continue;   // min-times filter only gates real grade rows
+      if(r[C.src]===0 && r[C.n]<state.minoff) continue;   // min-times filter gates real grade rows…
+      if(state.minoff>1 && (r[C.src]===2||r[C.src]===3||r[C.src]===4)) continue;   // …and hides rows with no teaching record
       const mr=matchRank(r,q); if(!mr) continue;
       rankOf.set(r,mr); out.push(r);
     }
@@ -1698,7 +1760,7 @@ function init(DATA){
     let sum=0; vals.forEach(v=>sum+=(v||0));
     const other=clamp(100-sum,0,100);
     let segs=LETTERS.map(([k,lab,col],i)=>{const v=vals[i]||0; return v>0?`<i style="width:${v}%;background:${col}" title="${lab} ${v.toFixed(1)}%"></i>`:'';}).join('');
-    if(other>0.5) segs+=`<i style="width:${other}%;background:var(--gO)" title="P/NP ${other.toFixed(1)}%"></i>`;
+    if(other>0.5) segs+=`<i style="width:${other}%;background:var(--gPN)" title="P/NP ${other.toFixed(1)}%"></i>`;
     const labs=LETTERS.map(([k,lab,col],i)=>{const v=vals[i]; if(v==null||v<0.05)return ''; return `<span><i class="dot" style="background:${col}"></i>${lab}<b>${v.toFixed(0)}</b></span>`;}).join('');
     return `<div class="bar">${segs}</div><div class="distlab">${labs}</div>`;
   }
@@ -1750,7 +1812,7 @@ function init(DATA){
       const cols=[['A',t.A,'var(--gA)'],['B',t.B,'var(--gB)'],['C',t.Cc,'var(--gC)'],['D',t.D,'var(--gD)'],['F',t.F,'var(--gF)'],['W',t.W,'var(--gW)']];
       let sum=0; cols.forEach(c=>sum+=(c[1]||0)); const other=clamp(100-sum,0,100);
       let seg=cols.map(c=>(c[1]>0?`<i style="width:${c[1]}%;background:${c[2]}" title="${c[0]} ${c[1].toFixed(1)}%"></i>`:'')).join('');
-      if(other>0.5) seg+=`<i style="width:${other}%;background:var(--gO)"></i>`;
+      if(other>0.5) seg+=`<i style="width:${other}%;background:var(--gPN)"></i>`;
       const g=t.g;
       const gcell=g==null?'<span class="tg na">—</span>':`<span class="tg" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`;
       const acell=t.A==null?'':`A${t.A.toFixed(0)}`;
@@ -1774,7 +1836,7 @@ function init(DATA){
     const umbrella=isTBA&&faList&&faList.length>1;   // research / independent study (many advisors)
     const isNewProf=isNew2&&NEWPROF.has(r[C.i]||'');
     const isCur=r[C.cur]===1;
-    const title=isRmp?'Graduate course · RMP-rated':(r[C.t]>=0?(T[r[C.t]]||''):'');
+    const title=(r[C.t]>=0?(T[r[C.t]]||''):'')||(isRmp?'Graduate course · RMP-rated':'');
     const nowBadge=isNew2?'<span class="firstx" title="No grade-distribution data for this course × professor">0×</span>'
                   :isTBA?(umbrella?'<span class="firstx" title="Research / independent study — many possible instructors">research</span>':'<span class="firstx" title="Instructor not assigned yet in the catalog">TBA</span>')
                   :isCat?'<span class="firstx" title="Listed in the UCSD catalog, but no recorded grade distribution and not offered this term">catalog</span>'
@@ -1792,7 +1854,7 @@ function init(DATA){
     else if(isCat) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Not offered in '+TERM.name+'</span>';
     else if(isTBA) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>${umbrella?'Research / independent study':'Instructor to be announced'}</span>`;
     else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
-    else if(isSet) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--accent)"></span>Recent instructor · course evaluations below</span>';
+    else if(isSet && !(r[C.off]&&faList)) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--accent)"></span>Recent instructor · course evaluations below</span>';
     // This row's professor is NOT teaching it this term — the names belong to the
     // course, not to this row, so say "this course" (a bare "FA26: …" under every
     // past instructor read as though all of them were teaching it this fall, #65).
@@ -1806,6 +1868,8 @@ function init(DATA){
     const gpaCell=isNew2?'<span class="firstx" title="No grade data for this course">0×</span>'
                  :(isTBA||isCat)?'<span class="na">—</span>'
                  :isRmp?'<span class="rmponly">RMP only</span>'
+                 :PNP.has(r)?(()=>{const p=r[C.gP]||0,np=r[C.gNP]||0,pass=Math.round(100*p/((p+np)||1));return `<span class="pnp" title="Graded Pass / No Pass — ${pass}% passed. No letter grades, so no GPA; not part of the GPA ranking.">P/NP</span><div class="pnp-rate">${pass}% pass</div>`;})()
+                 :NOGPA.has(r)?'<span class="na" title="The published distribution has (almost) no letter grades, so there is no GPA; not part of the GPA ranking.">—</span>'
                  :(g==null?'<span class="na">—</span>':`<span class="b" style="background:${gpaColor(g)}">${g.toFixed(2)}</span>`);
     const dist=isNew2?'<span class="nodata">No grade data for this course</span>'
               :isCat?'<span class="nodata">No recorded grade distribution</span>'
@@ -1819,7 +1883,8 @@ function init(DATA){
       const diff=rd==null?'':`<span class="d">Diff <span class="diffchip" style="background:${diffColor(rd)}">${rd.toFixed(1)}</span></span>`;
       const wta=rwta==null?'':`<span class="wta">${rwta}% again</span>`;
       const aka=RMPAKA[rid]?`<span class="rmpaka" title="This professor is listed on RateMyProfessors under a different name">listed on RMP as ${esc(RMPAKA[rid])}</span>`:'';
-      rmpCell=`${diff}${wta}${aka}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener">RMP · ${rn||0} ratings ↗</a>`;
+      rmpCell=rn?`${diff}${wta}${aka}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener">RMP · ${rn} rating${rn===1?'':'s'} ↗</a>`
+        :`${aka}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener" title="This professor has a RateMyProfessors page but no ratings yet">RMP profile · no ratings yet ↗</a>`;
     }
     const rmpStar=rq==null?'':`<span class="rmpq"><span class="star">★</span>${rq.toFixed(1)}</span>`;
     const yr=r[C.y],recent=(yr!=null&&yr>=25);
@@ -1833,7 +1898,8 @@ function init(DATA){
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
     const instrLabel=isTBA?TERM.code:isNew2?(isNewProf?'New instructor':TERM.code+' instructor'):isSet?'Instructor':'Past instructor';
     const displayName=isTBA?(umbrella?`Instructors vary · ${faList.length}`:'Instructor TBA'):instrShort(r[C.i]);
-    const aka=AKA[r[C.i]];
+    const akaAll=(AKA[r[C.i]]||[]).concat((ROWAKA.get(r)||[]).map(instrShort));
+    const aka=akaAll.length?akaAll:null;
     const nmTitle=aka?` title="Also known as ${esc(aka.join(', '))}"`:'';
     const akaTag=aka?`<span class="aka" title="Also known as ${esc(aka.join(', '))}">aka ${esc(aka[0])}</span>`:'';
     const seatL=seatLink(r);
@@ -1875,26 +1941,45 @@ function init(DATA){
   // Undergrad level filter (most are 200+). When a search matches some that the
   // current filters exclude, say so and reveal them in one click — otherwise a
   // course like BENG 223 just looks missing.
+  // When a search matches courses the current filters hide, say so and offer to show them
+  // (exact-code searches for grad or not-offered courses used to hit a bare "No matching").
+  // Subject / exact-list / professor picks and the time window are explicit choices and are
+  // respected; level, "Offered this term only", "Teaching … only" and "Taught ≥" are relaxed.
   function renderCatHint(){
     const el=$('catHint'); if(!el) return;
     const q=state.q.trim().toLowerCase();
     if(!q){ el.hidden=true; return; }
     const shownKeys=new Set(current.map(r=>r[C.s]+' '+r[C.c]));
-    const hidden=new Set();
+    const catOnly=new Set(), filtered=new Set();
     for(const r of R){
-      if(r[C.src]!==4) continue;
-      if(!matchQ(r,q)) continue;                                  // query only — the filters are what we're offering to relax
-      if(state.subjects.size && !state.subjects.has(r[C.s])) continue;   // an explicit subject pick is respected
+      if(!matchQ(r,q)) continue;
+      if(state.subjects.size && !state.subjects.has(r[C.s])) continue;
+      if(state.courseSet && !state.courseSet.has(r[C.s]+' '+r[C.c])) continue;
+      if(state.prof && r[C.i]!==state.prof) continue;
+      if(state.time && SCHED && (!r[C.off]||!courseFits(CK(r[C.s],r[C.c])))) continue;
       const k=r[C.s]+' '+r[C.c];
-      if(!shownKeys.has(k)) hidden.add(k);
+      if(shownKeys.has(k)) continue;
+      (r[C.src]===4?catOnly:filtered).add(k);
     }
-    const n=hidden.size;
+    for(const k of filtered) catOnly.delete(k);
+    const n=catOnly.size+filtered.size;
     if(!n){ el.hidden=true; return; }
-    el.innerHTML='<b>'+n+' more '+(n===1?'course':'courses')+'</b> in the UCSD catalog '+(n===1?'matches':'match')+' “'+esc(state.q.trim())+'” — no published grade distribution and not offered this term, so the current filters hide '+(n===1?'it':'them')+'.<button type="button" id="catShow">Show '+(n===1?'it':'them')+'</button>';
+    const why=[];
+    if(state.level!=='all') why.push('course level');
+    if(state.offered) why.push('“Offered this term only”');
+    if(state.curonly) why.push('“Teaching '+TERM.code+' only”');
+    if(state.minoff>1) why.push('“Taught ≥ '+state.minoff+'”');
+    const list=[...filtered,...catOnly].slice(0,3).join(', ')+(n>3?' …':'');
+    const one=n===1;
+    el.innerHTML='<b>'+n+' more '+(one?'course':'courses')+'</b> '+(one?'matches':'match')+' “'+esc(state.q.trim())+'” ('+esc(list)+')'
+      +(filtered.size?' but '+(why.length?'your '+why.join(' / ')+' filter'+(why.length>1?'s hide':' hides'):'the current filters hide')+' '+(one?'it':'them')
+                     :' — in the UCSD catalog with no published grades, not offered this term')
+      +'. <button type="button" id="catShow">Show '+(one?'it':'them')+'</button>';
     el.hidden=false;
     const b=$('catShow');
     if(b) b.onclick=()=>{
       state.offered=false; const ob=$('offered'); if(ob)ob.setAttribute('aria-pressed','false');
+      state.curonly=false; const co=$('curonly'); if(co)co.setAttribute('aria-pressed','false');
       state.level='all';
       document.querySelectorAll('#levels .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.lv==='all'?'true':'false'));
       state.minoff=1; const mo=$('minoff'); if(mo)mo.value='1';
@@ -1909,7 +1994,7 @@ function init(DATA){
     const list=all.filter(r=>r[C.src]<2);   // 0× / TBA rows carry no grade data — exclude from stats
     const withG=list.filter(r=>r[C.g]!=null).map(r=>r[C.g]).sort((a,b)=>a-b);
     const med=withG.length?withG[Math.floor(withG.length/2)]:null;
-    const av=list.filter(r=>r[C.gA]!=null).map(r=>r[C.gA]);
+    const av=list.filter(r=>r[C.gA]!=null&&!NOGPA.has(r)).map(r=>r[C.gA]);
     const avgA=av.length?av.reduce((a,b)=>a+b,0)/av.length:null;
     const cov=list.length?Math.round(100*list.filter(r=>r[C.rid]!=null).length/list.length):0;
     const tiles=[
@@ -4080,7 +4165,7 @@ function init(DATA){
   if(!histReady){
     fetch('hist.b6f84b79d5.json').then(r=>r.ok?r.json():null).then(unGz).then(hd=>{
       if(!hd) return;
-      H=hd.hist||hd; histReady=true;
+      H=hd.hist||hd; histReady=true; mergeFoldedHist();
       if(expanded.size) rerenderShown(); // fill any already-open detail panels
     }).catch(()=>{});
   }
