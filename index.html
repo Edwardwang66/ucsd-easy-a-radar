@@ -664,6 +664,8 @@
       <span class="sub">Find this term's most GPA-friendly courses — ranked on UCSD's real 2015–2026 grade distributions, with each course's <b>past</b> instructors and their RateMyProfessors scores.</span>
     </div>
     <div class="header-actions">
+      <select class="theme-btn" id="termPick" aria-label="Quarter" title="Which quarter's schedule and instructors to show" hidden
+              style="appearance:auto;-webkit-appearance:auto;padding-right:8px;cursor:pointer;font:inherit;font-size:13px"></select>
       <a class="theme-btn" href="https://edward-wang-portfolio.vercel.app/" target="_blank" rel="noopener" aria-label="About the author — Edward Wang's portfolio">
         <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm0 1.4c-2.67 0-6.4 1.34-6.4 4V15h12.8v-1.6c0-2.66-3.73-4-6.4-4z"/></svg>
         <span>Author</span>
@@ -1494,16 +1496,30 @@ async function unGz(j){
 }
 // ---- the term the site is showing ----
 // Everything term-specific — labels, finals week, the .ics export's dates, the saved
-// schedule's storage key — reads TERM. new-term.js flips TERM_CODE when a new quarter's
-// data lands; add the quarter to TERMS first (official academic calendar, blink.ucsd.edu).
-const TERM_CODE='WI27';
+// schedule's storage key, which data files load — reads TERM. TERM_DEFAULT is the current
+// quarter (new-term.js flips it when a new quarter's data lands and archives the previous
+// one as data.<CODE>.json / schedule.<CODE>.json); TERM_FILES lists every quarter that has
+// data, and the header's quarter picker lets the reader choose among them. Add a quarter to
+// TERMS first (official academic calendar, blink.ucsd.edu).
+const TERM_DEFAULT='WI27';
+const TERM_FILES={WI27:{data:'data.b8bc8b1384.json',schedule:'schedule.9abbc73751.json'},FA26:{data:'data.FA26.a767435a79.json',schedule:'schedule.FA26.c7a1632c60.json'}};
+const TERM_KEY='easyA_term';
 const TERMS={
   FA26:{code:'FA26',name:'Fall 2026',  start:'2026-09-24',end:'2026-12-04',finals:'2026-12-05',
         holidays:['2026-11-11','2026-11-26','2026-11-27']},
   WI27:{code:'WI27',name:'Winter 2027',start:'2027-01-04',end:'2027-03-12',finals:'2027-03-13',
         holidays:['2027-01-18','2027-02-15']},
 };
+const TERM_CODE=(()=>{try{const t=localStorage.getItem(TERM_KEY);if(t&&TERMS[t]&&TERM_FILES[t])return t;}catch(e){}return TERM_DEFAULT;})();
 const TERM=TERMS[TERM_CODE];
+// Quarter picker: every quarter with data, newest first; changing it reloads the page,
+// since the whole app is initialised from one quarter's data.
+(()=>{const sel=document.getElementById('termPick'); if(!sel)return;
+  const codes=Object.keys(TERM_FILES).filter(c=>TERMS[c]).sort((a,b)=>TERMS[b].start.localeCompare(TERMS[a].start));
+  sel.innerHTML=codes.map(c=>'<option value="'+c+'"'+(c===TERM_CODE?' selected':'')+'>'+TERMS[c].name+(c===TERM_DEFAULT?'':' (archived)')+'</option>').join('');
+  sel.hidden=codes.length<2;
+  sel.onchange=()=>{try{if(sel.value===TERM_DEFAULT)localStorage.removeItem(TERM_KEY);else localStorage.setItem(TERM_KEY,sel.value);}catch(e){}location.reload();};
+})();
 const ymd=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
 const mdShort=d=>(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()])+' '+d.getDate();
 // Static page text carries the term in .t-name / .t-code spans and {term}/{code} title templates.
@@ -2191,7 +2207,7 @@ function init(DATA){
   function ensureSched(){
     if(SCHED) return Promise.resolve(SCHED);
     if(schPromise) return schPromise;
-    schPromise=fetch('schedule.8b9f7fdbff.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(unGz).then(j=>{SCHED=j;return j;});
+    schPromise=fetch(TERM_FILES[TERM.code].schedule).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(unGz).then(j=>{SCHED=j;return j;});
     return schPromise;
   }
   const CAL_COLORS=['#0E63AC','#1F9D6B','#B9700E','#7A4FC0','#C0392B','#0E8F8F','#B0357A','#5B7A0E','#2C5FA8','#A15C2B'];
@@ -2432,7 +2448,7 @@ function init(DATA){
   function ensureWalk(){
     if(WALK) return Promise.resolve(WALK);
     if(walkPromise) return walkPromise;
-    walkPromise=fetch('walkbike.1c6930f6f3.json').then(r=>r.ok?r.json():null).then(unGz).then(j=>{
+    walkPromise=fetch('walkbike.b0c4b021d1.json').then(r=>r.ok?r.json():null).then(unGz).then(j=>{
       if(j) j._idx=Object.fromEntries(j.names.map((n,i)=>[n,i]));
       WALK=j; return j;
     }).catch(()=>null);
@@ -4063,7 +4079,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 (async function boot(){
   try{
     let data=window.__DATA__;
-    if(!data){const res=await fetch('data.b8bc8b1384.json');if(!res.ok)throw new Error('HTTP '+res.status);data=await unGz(await res.json());}
+    if(!data){const res=await fetch(TERM_FILES[TERM.code].data);if(!res.ok)throw new Error('HTTP '+res.status);data=await unGz(await res.json());}
     init(data);
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';

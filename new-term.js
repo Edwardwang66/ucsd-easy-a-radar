@@ -383,8 +383,10 @@ const offeredNoRow = Object.keys(courses).filter((k) => !byCourse.has(k)).length
 // ---------------------------------------------------------------- index.html
 let html = fs.readFileSync(P("index.html"), "utf8");
 const hasTerm = new RegExp(`^\\s*${code}:\\{code:'${code}'`, "m").test(html);
-const flipRe = /^const TERM_CODE='([A-Z]{2}\d{2})';/m;
+const flipRe = /^const TERM_DEFAULT='([A-Z]{2}\d{2})';/m;
+const filesRe = /^const TERM_FILES=\{.*\};$/m;
 const curCode = (flipRe.exec(html) || [])[1];
+if (!filesRe.test(html) || !curCode) { console.error("index.html needs the TERM_DEFAULT and TERM_FILES lines (quarter picker)"); process.exit(1); }
 if (!noFlip && !hasTerm) { console.error(`index.html's TERMS table has no ${code} entry — add its dates (official academic calendar) before switching.`); process.exit(1); }
 
 // ---------------------------------------------------------------- report
@@ -400,15 +402,29 @@ data.json      rows ${before.rows} -> ${recs.length}: dropped ${before.src2} src
                off: ${before.off} -> ${recs.filter((r) => r[C.off]).length} (+${offOn} newly offered, -${offOff} no longer offered)
                cur ${before.cur} -> 0, fa ${before.fa} -> ${Object.keys(fa).length} (umbrella advisor lists only), seats ${before.seats} -> 0, newProf -> 0
                offered courses with no row yet: ${offeredNoRow} (merge-schedule will add their src=2 rows)
-index.html     TERM_CODE ${curCode} -> ${code}${noFlip ? " (skipped: --no-flip)" : hasTerm ? "" : "  !! missing from TERMS"}
+index.html     TERM_DEFAULT ${curCode} -> ${code}${noFlip ? " (skipped: --no-flip)" : hasTerm ? "" : "  !! missing from TERMS"}; ${old.term} archived as data.${old.term}.json / schedule.${old.term}.json for the quarter picker
 `);
 if (dry) { console.log("Nothing written (dry run)."); process.exit(0); }
 
+// Archive the quarter being replaced so the page's quarter picker can still show it
+// (build.js hashes data.<CODE>.json / schedule.<CODE>.json automatically). Never overwrite
+// an archive that already exists — a re-run must not clobber it with half-switched data.
+if (old.term && old.term !== code) {
+  for (const f of ["data", "schedule"]) {
+    const dst = P(`${f}.${old.term}.json`);
+    if (!fs.existsSync(dst)) fs.copyFileSync(P(`${f}.json`), dst);
+  }
+}
 fs.writeFileSync(P("schedule.json"), JSON.stringify(schedule));
 fs.writeFileSync(P("data.json"), JSON.stringify(data));
+// TERM_FILES: the live pair plus every archived quarter on disk.
+const archived = fs.readdirSync(ROOT).map((f) => (/^data\.([A-Z]{2}\d{2})\.json$/.exec(f) || [])[1]).filter((t) => t && t !== code && fs.existsSync(P(`schedule.${t}.json`)));
+const filesLine = "const TERM_FILES={" + [code, ...archived].map((t) => `${t}:{data:'${t === code ? "data.json" : `data.${t}.json`}',schedule:'${t === code ? "schedule.json" : `schedule.${t}.json`}'}`).join(",") + "};";
+html = html.replace(filesRe, filesLine);
+if (!noFlip) html = html.replace(flipRe, `const TERM_DEFAULT='${code}';`);
+fs.writeFileSync(P("index.html"), html);
 const exportName = `ucsd-seats-${year}-${period}.json`;
 fs.writeFileSync(P(exportName), JSON.stringify({ status: "ok", term: { year: +year, period: +period, label: code },
   generated: new Date().toISOString(), source: schedule.source, courses: legacy }));
-if (!noFlip && curCode !== code) fs.writeFileSync(P("index.html"), html.replace(flipRe, `const TERM_CODE='${code}';`));
-console.log(`wrote schedule.json, data.json, ${exportName}${!noFlip && curCode !== code ? ", index.html" : ""}.
+console.log(`wrote schedule.json, data.json, index.html, ${exportName}${old.term && old.term !== code ? `, data.${old.term}.json, schedule.${old.term}.json` : ""}.
 next: node merge-schedule.js ${exportName} && node merge-seats.js ${exportName} && node align-packages.js && node sync-current.js ${exportName} && node healthcheck.js && node build.js`);
