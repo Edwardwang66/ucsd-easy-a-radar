@@ -3331,7 +3331,7 @@ function init(DATA){
   function dpEnsureData(){
     if(dpDB) return Promise.resolve(dpDB);
     if(dpPromise) return dpPromise;
-    dpPromise=fetch('plans.2398acfd99.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(async j=>{
+    dpPromise=fetch('plans.dfb91608fb.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(async j=>{
       let obj=j;
       if(j && j.gz){
         const bytes=Uint8Array.from(atob(j.gz),c=>c.charCodeAt(0));
@@ -4078,7 +4078,7 @@ function init(DATA){
 
   // lazily load per-term history in the background (≈40% of the data, only needed on row expand)
   if(!histReady){
-    fetch('hist.520c32e21c.json').then(r=>r.ok?r.json():null).then(unGz).then(hd=>{
+    fetch('hist.b6f84b79d5.json').then(r=>r.ok?r.json():null).then(unGz).then(hd=>{
       if(!hd) return;
       H=hd.hist||hd; histReady=true;
       if(expanded.size) rerenderShown(); // fill any already-open detail panels
