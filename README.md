@@ -8,14 +8,19 @@ A single-page tool that ranks UCSD courses by how GPA-friendly they've been, fro
 
 ## Deploy to Vercel
 
-This is a **static site** (no build step). Three files matter:
+This is a **static site** — no build runs on Vercel. `node build.js`, run locally before a
+data commit, writes a content-hashed, packed copy of each data file (`data.<hash>.json` …)
+and rewrites the names in `index.html`; those hashed copies are what's served (and cached
+`immutable`, see `vercel.json`). The plain sources below are in `.vercelignore` and 404 in
+production — the pipeline scripts read them.
 
-- `index.html` — the app (fetches `data.json`, and `schedule.json` / `plans.json` / `gradplans.json` / `minors.json` / `ge-courses.json` on demand)
-- `data.json` — the ranking dataset (grades × professors × RMP, + FA26 current instructors)
-- `schedule.json` — the Fall 2026 section catalog (times, rooms, instructors, building coords) used by the schedule builder
+- `index.html` — the app (fetches the current quarter's `data.<hash>.json`, and the schedule / plans / gradplans / minors / ge-courses / walkbike files on demand)
+- `data.json` — the ranking dataset (grades × professors × RMP, + the current quarter's instructors)
+- `schedule.json` — the current quarter's sections (times, rooms, instructors, building coords) used by the schedule builder; past quarters are kept as `data.<CODE>.json` / `schedule.<CODE>.json` for the quarter picker
 - `plans.json` — UCSD official undergraduate academic plans (2022–2026), used by the Degree Planner's **Undergraduate** mode
 - `minors.json` — all 112 UCSD undergraduate minors with their General Catalog requirements, used by the **Minors** tab
-- `gradplans.json` — graduate catalog for the Degree Planner's **Graduate** mode: all 11 UCSD grad schools and 51 departments, with full course-level worksheets for the 13 ECE research areas and a verified degree-type + official-requirements overview for every other department
+- `gradplans.json` — graduate catalog for the Degree Planner's **Graduate** mode: all 11 UCSD grad schools and 51 departments, with course-level worksheets for the ECE research areas and the other modeled programs, and a verified degree-type + official-requirements overview for every other department
+- `walkbike.json` — walk / bike minutes and walking metres between every pair of classroom buildings (`walkbike-gen.js`)
 
 **Option A — Vercel CLI**
 ```bash
@@ -28,8 +33,8 @@ vercel --prod # deploy to production
 Push this folder to a repo, "Import Project" on vercel.com, framework preset **Other**,
 leave build & output settings empty (it serves the folder as static files).
 
-The **site itself** needs no build, no server, and no environment variables —
-`fetch('data.json')` is same-origin, so it just works. The one exception is the
+The **site itself** needs no server-side build, no server, and no environment variables —
+every data `fetch()` is same-origin, so it just works. The one exception is the
 optional feedback button, backed by a single serverless function (`api/feedback.js`)
 that files GitHub issues; it reads one env var on Vercel. See **Run locally** below.
 
@@ -82,12 +87,17 @@ Because the app is just `index.html` + the JSON data files, you can host it on *
 static platform — GitHub Pages, Netlify, Cloudflare Pages, an S3 bucket, or your own
 web server. No build, no Node, no config.
 
-**What to upload:** everything except the dev-only files. Ship these —
+**What to upload:** run `node build.js` first, then ship `index.html`, `schedule-instructor.js`,
+`vercel.json` and **every hashed data file** —
 ```
-index.html  data.json  schedule.json  hist.json  plans.json  gradplans.json  minors.json  ge-courses.json  schedule-instructor.js  vercel.json
+index.html  schedule-instructor.js  vercel.json  *.[0-9a-f]*.json
 ```
-and skip `README.md`, `.git*`, `api/`, `tests/`, `.vercel/`, `node_modules/`. (`vercel.json`
-only sets cache headers; harmless to include or drop on other hosts.)
+(`data.<hash>.json`, `hist.<hash>.json`, `schedule.<hash>.json`, `plans.<hash>.json`,
+`gradplans.<hash>.json`, `minors.<hash>.json`, `ge-courses.<hash>.json`, `walkbike.<hash>.json`
+and the archived `data.<CODE>.<hash>.json` / `schedule.<CODE>.<hash>.json`). The plain
+`data.json` etc. are sources, not needed by the page. Skip `README.md`, `.git*`, `api/`,
+`tests/`, `.vercel/`, `node_modules/` and the pipeline scripts. (`vercel.json` only sets cache
+headers; harmless to include or drop on other hosts.)
 
 **GitHub Pages** — push this folder to a repo, then Settings → Pages → *Deploy from a branch*,
 pick `main` / root. Your site goes live at `https://<user>.github.io/<repo>/`.

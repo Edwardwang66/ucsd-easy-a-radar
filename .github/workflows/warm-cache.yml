@@ -9,10 +9,14 @@ name: Warm CDN cache
 # integration creates a GitHub Deployment (environment "Production") and marks
 # it "success" once the prod alias is live — exactly when we want to warm.
 #
+# The data files are served under content-hashed names (data.<hash>.json …,
+# written by build.js; the plain data.json sources are in .vercelignore and 404
+# in production), so the names to warm are read from the live index.html.
+#
 # Note: GitHub-hosted runners live in a single region, so one run warms the
-# edge node nearest the runner. stale-while-revalidate (set in vercel.json)
-# covers the remaining regions — their first visitor still gets an instant
-# stale copy while the edge refreshes in the background.
+# edge node nearest the runner; elsewhere the first visitor fills the edge.
+# The hashed files are cached immutable by browsers (vercel.json), so a
+# returning visitor doesn't refetch them until their content changes.
 
 on:
   deployment_status:
@@ -35,7 +39,12 @@ jobs:
           BASE: https://easy-a-radar.vercel.app
         run: |
           set -euo pipefail
-          assets="data.json hist.json schedule.json index.html"
+          # The current quarter's dataset, grade history and schedule, by the hashed
+          # names index.html actually requests (archived quarters are left cold).
+          names="$(curl -sS --compressed "$BASE/" | grep -oE "'(data|hist|schedule)\.[0-9a-f]{10}\.json'" | tr -d "'" | sort -u | tr '\n' ' ')"
+          if [ -z "$names" ]; then echo "::error::no hashed data files referenced by $BASE/"; exit 1; fi
+          assets="index.html $names"
+          echo "warming: $assets"
           fail=0
           for a in $assets; do
             hit=""

@@ -1,7 +1,16 @@
 {
   "headers": [
     {
-      "source": "/(data|hist|schedule|ge-courses|minors).([0-9a-f]+).json",
+      "source": "/(data|hist|schedule|ge-courses|minors|plans|gradplans|walkbike).([0-9a-f]+).json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(data|schedule).([A-Z]{2}[0-9]{2}).([0-9a-f]+).json",
       "headers": [
         {
           "key": "Cache-Control",
