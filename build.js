@@ -37,16 +37,26 @@ const ASSETS = ["data.json", "hist.json", "schedule.json", "plans.json", "gradpl
 function shortHash(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex").slice(0, 10);
 }
-// Every hashed copy is plain JSON: the CDN brotli-compresses it on the wire, which beats
-// any pre-packing (a base64'd gzip can't be compressed again — the {"gz": base64} wrapper
-// these files used to ship in cost ~250 KB on first load and a main-thread decode, for a
-// deterrent that never held: the browser has to decode it anyway). plans.json is still
-// stored packed at source, so it is unpacked here; the page's unGz() accepts either form.
+// Each hashed copy ships in whichever form is smaller ON THE WIRE. Vercel compresses
+// static files on the fly at roughly brotli quality 2 (measured: data.json's plain copy
+// came back at 709 KB, which q2 reproduces; q11 would be 491 KB). At that level plain
+// JSON wins for most files, but for the big, very repetitive ones a pre-gzipped
+// {"gz": base64} wrapper still wins by a wide margin (plans: ~592 KB packed vs ~795 KB
+// plain). So: estimate both at q2 and pack only when that saves at least 10% and 20 KB.
+// The page's unGz() accepts either form. plans.json is stored packed at source.
+const WIRE_Q = 2, PACK_MIN_SAVING = 0.10, PACK_MIN_BYTES = 20 * 1024;
+const wire = (buf) => zlib.brotliCompressSync(buf, { params: {
+  [zlib.constants.BROTLI_PARAM_QUALITY]: WIRE_Q, [zlib.constants.BROTLI_PARAM_SIZE_HINT]: buf.length } }).length;
 function servable(bytes) {
   const head = bytes.slice(0, 16).toString().replace(/\s+/g, "");
-  if (!head.startsWith('{"gz":')) return bytes;
-  const j = JSON.parse(bytes.toString("utf8"));
-  return Buffer.from(zlib.gunzipSync(Buffer.from(j.gz, "base64")).toString("utf8"));
+  const plain = head.startsWith('{"gz":')
+    ? Buffer.from(zlib.gunzipSync(Buffer.from(JSON.parse(bytes.toString("utf8")).gz, "base64")).toString("utf8"))
+    : bytes;
+  const packed = Buffer.from('{"gz":"' + zlib.gzipSync(plain, { level: 9 }).toString("base64") + '"}');
+  const wp = wire(plain), wk = wire(packed);
+  const usePacked = wk <= wp * (1 - PACK_MIN_SAVING) && wp - wk >= PACK_MIN_BYTES;
+  return { bytes: usePacked ? packed : plain,
+    note: `${usePacked ? "packed" : "plain "}  ~${Math.round((usePacked ? wk : wp) / 1024)} KB on the wire (plain ~${Math.round(wp / 1024)}, packed ~${Math.round(wk / 1024)})` };
 }
 function reEsc(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -63,7 +73,7 @@ function main() {
     if (!fs.existsSync(src)) {
       throw new Error(`build.js: source data file missing: ${asset}`);
     }
-    const bytes = servable(fs.readFileSync(src));
+    const { bytes, note } = servable(fs.readFileSync(src));
     const hashed = `${base}.${shortHash(bytes)}${ext}`;   // data.<hash>.json
 
     // (Re)write the current hashed copy.
@@ -84,7 +94,7 @@ function main() {
       throw new Error(`build.js: no reference to ${asset} found in index.html`);
     }
     html = html.replace(new RegExp(pattern, "g"), `$1${hashed}$1`);
-    summary.push(`${asset}  ->  ${hashed}`);
+    summary.push(`${asset}  ->  ${hashed}  ${note}`);
   }
 
   fs.writeFileSync(path.join(ROOT, "index.html"), html);
