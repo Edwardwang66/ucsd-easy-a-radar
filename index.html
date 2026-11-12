@@ -342,7 +342,11 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     background:color-mix(in srgb,var(--gA) 10%,transparent)}
   .addbtn.switch{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);
     background:var(--accent-soft)}
-  .course .top{display:flex;align-items:center;gap:2px}
+  /* Badges (Offered · SET · Teaching WI27) + the "+ Schedule" button can be wider than the
+     Course column — let the line wrap instead of spilling into the instructor column. */
+  .course{min-width:0}
+  .course .top{display:flex;align-items:center;gap:2px;flex-wrap:wrap;row-gap:4px;min-width:0}
+  .course .top .badge-off,.course .top .badge-set,.course .top .badge-now,.course .top .addbtn{white-space:nowrap;flex:none}
 
   /* ---- schedule builder ---- */
   #scheduleView{display:none}
@@ -987,6 +991,11 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
    .dp-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
    .dp-field select,.dp-field input{padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--ink);font-size:13.5px;font-family:var(--sans);min-width:160px}
    .dp-field select:disabled,.dp-field input:disabled{opacity:.5;cursor:not-allowed}
+   /* a select is as wide as its longest option ("School of Arts and Humanities…") — on a
+      phone that pushed the grad planner 16px past the screen. Cap it to the field. */
+   .dp-field{min-width:0;max-width:100%}
+   .dp-field select{max-width:100%}
+   @media (max-width:720px){.dp-controls .dp-field{flex:1 1 100%}.dp-field select,.dp-field input{min-width:0;width:100%}}
    .dp-field input:focus,.dp-field select:focus{outline:2px solid var(--accent);border-color:transparent}
    /* Searchable Research Area combobox */
    .gp-combo{position:relative}
@@ -1243,14 +1252,14 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
    </div><!-- /dpUG -->
 
    <div id="dpGrad" hidden>
-     <p class="ge-intro">Browse by <b>school → department → research area</b> — every UCSD graduate <b>ISIS major code</b>. Coursework degrees (all engineering programs and more) open a full <b>worksheet</b>: fill each requirement bucket and track units, with every course linked to its <b>grade ranking</b>. Research doctorates and specializations open an overview card with the official requirements link.</p>
+     <p class="ge-intro">Browse by <b>school → department → research area</b> — every UCSD graduate <b>major code</b>. Coursework degrees (all engineering programs and more) open a full <b>worksheet</b>: fill each requirement bucket and track units, with every course linked to its <b>grade ranking</b>. Research doctorates and specializations open an overview card with the official requirements link.</p>
 
      <div class="dp-controls">
        <div class="dp-field"><label>School</label>
          <select id="gpSchool"><option value="">Select…</option></select></div>
        <div class="dp-field"><label>Department / Program</label>
          <select id="gpDept" disabled><option value="">—</option></select></div>
-       <div class="dp-field gp-combo" style="flex:1;min-width:210px"><label>Research Area / ISIS Code</label>
+       <div class="dp-field gp-combo" style="flex:1;min-width:210px"><label>Research area / major code</label>
          <input id="gpProgInput" type="text" placeholder="Search title or major code (e.g. EC80)…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="gpProgList" disabled>
          <select id="gpProg" class="gp-hidden-sel" disabled tabindex="-1" aria-hidden="true"><option value="">—</option></select>
          <div id="gpProgList" class="gp-combo-list" role="listbox" hidden></div></div>
@@ -3338,7 +3347,7 @@ function init(DATA){
     $('mnEmpty').hidden=true; $('mnApp').hidden=false;
     $('mnTitle').textContent=m.name+' minor';
     const codes=(m.codes||[]).filter(c=>courseKeySet.has(c));
-    $('mnSub').innerHTML=esc(m.admin)+' · ISIS '+esc(m.code)+' · '+esc(m.tss)
+    $('mnSub').innerHTML=esc(m.admin)+' · minor code '+esc(m.code)
       +(w.n?' · '+w.n+' courses':'')+(w.units?' / '+w.units+' units':'')
       +' · <a href="'+esc(m.url||'https://catalog.ucsd.edu/')+'" target="_blank" rel="noopener" style="color:var(--accent-2)">catalog entry ↗</a>'
       +(m.site?' · <a href="'+esc(m.site)+'" target="_blank" rel="noopener" style="color:var(--accent-2)">department requirements ↗</a>':'');
