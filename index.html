@@ -223,6 +223,16 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
   /* WebReg course-page link */
   .seatlink{font-size:11px;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap}
   .seatlink:hover{text-decoration:underline}
+  /* Rankings: section picker for courses with one TSS page per section */
+  .secpick{display:inline-block;position:relative}
+  .secpick>summary{list-style:none;cursor:pointer}
+  .secpick>summary::-webkit-details-marker{display:none}
+  .secpick-list{position:absolute;z-index:30;top:calc(100% + 4px);right:0;min-width:240px;max-width:min(360px,86vw);max-height:280px;overflow:auto;
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:4px;font-size:12px;color:var(--muted)}
+  .secpick-list a{display:block;padding:7px 8px;border-radius:6px;color:var(--ink);text-decoration:none;white-space:normal;font-weight:400}
+  .secpick-list a b{font-family:var(--mono)}
+  .secpick-list a:hover,.secpick-list a:focus-visible{background:var(--accent-soft)}
+  .secpick-list .sp-h{padding:6px 8px 4px;font-size:11px;color:var(--muted)}
   /* Graduate-course SET (Student Evaluation of Teaching) links */
   .badge-set{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.05em;color:var(--accent);
     border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:5px;padding:1px 5px;margin-left:7px;vertical-align:1px;text-transform:uppercase}
@@ -1657,6 +1667,59 @@ function init(DATA){
   // Direct deep-link if we have one, else the TSS launchpad. The deep-link only lands on the
   // course when the user is already signed into TSS (SSO drops the URL #fragment otherwise).
   function courseLinkInfo(key){ const s=SEATS[key]; return s&&s.u ? {href:s.u,direct:true} : {href:TSS_HOME,direct:false}; }
+  // Courses with one TSS package per section (lecture + labs, seminars): a rankings row
+  // has no section picked, so offer the sections themselves — each aligned package
+  // (.p[].s) becomes a link, labelled from the schedule once it's loaded. The row's
+  // instructor's sections only, when we can tell which are theirs.
+  function secPickHTML(key,entry,instr){
+    const coded=(entry.p||[]).map((p,i)=>({p,i})).filter(x=>x.p.s&&x.p.s.length);
+    if(coded.length<2) return '';
+    const mine=instr?coded.filter(x=>x.p.i&&x.p.i.some(n=>faMatchesName(n,instr))):[];
+    const use=mine.length?mine:coded;
+    return `<details class="secpick" data-k="${esc(key)}"><summary class="seatlink" title="${esc(key)} has a separate TSS page for each section — pick one to open it (sign into TSS first)">Pick a section ↗</summary><div class="secpick-list" data-idx="${use.map(x=>x.i).join(',')}" data-mine="${mine.length?1:0}">Loading sections…</div></details>`;
+  }
+  function fillSecPick(d){
+    const key=d.dataset.k, entry=SEATS[key], list=d.querySelector('.secpick-list');
+    if(!entry||!list||list.dataset.done) return;
+    const pkgs=list.dataset.idx.split(',').map(Number).map(i=>entry.p[i]).filter(Boolean);
+    // codes every package of the same group shares (CHEM 43A's lecture A00, BILD 1 group B's
+    // B00) say nothing about the choice — label each option by its own lab / discussion.
+    const all=(entry.p||[]).filter(p=>p.s&&p.s.length), byGrp={};
+    for(const q of all){const g=String(q.s[0]).charAt(0);(byGrp[g]=byGrp[g]||[]).push(q);}
+    const sharedIn=q=>{const grp=byGrp[String(q.s[0]).charAt(0)]||[q];return grp.length<2?new Set():new Set(q.s.filter(c=>grp.every(o=>o.s.indexOf(c)>=0)));};
+    ensureSched().then(()=>{
+      const course=SCHED.courses[key];
+      const items=pkgs.map(p=>{
+        const shared=sharedIn(p), own=p.s.filter(c=>!shared.has(c)), codes=own.length?own:p.s;
+        const secs=course?course.sec.filter(x=>codes.indexOf(String(x[S_CODE]))>=0&&x[S_TYPE]!=='FI'):[];
+        const when=secs.map(x=>esc(x[S_TYPE])+' '+esc(x[S_DAYS]||'TBA')+(x[S_START]?' '+esc(x[S_START]):'')).join(' + ');
+        const s0=secs.find(x=>x[S_BLD])||secs[0];
+        const where=s0&&s0[S_BLD]?(s0[S_BLD]==='RCLAS'?'online':esc(s0[S_BLD])+(s0[S_ROOM]?' '+esc(s0[S_ROOM]):'')):'';
+        const who=[...new Set(secs.map(x=>x[S_INSTR]).filter(Boolean))].map(instrShort).join(', ');
+        return {code:codes[0],who,html:`<a href="${esc(p.u)}" target="_blank" rel="noopener"><b>${esc(codes[0])}</b>${when?' · '+when:''}${where?' · '+where:''}`};
+      }).sort((a,b)=>a.code<b.code?-1:a.code>b.code?1:0);
+      // name the instructor only when the sections differ (one name on every line is noise)
+      const manyWho=new Set(items.map(x=>x.who)).size>1;
+      items.forEach(x=>{x.html+=(manyWho&&x.who?' · '+esc(x.who):'')+'</a>';});
+      list.innerHTML=`<div class="sp-h">${list.dataset.mine==='1'?'This instructor’s sections':'Sections'} in ${esc(TERM.name)} — opens TSS (sign in first)</div>`+items.map(x=>x.html).join('');
+      list.dataset.done='1'; placeSecPick(list);
+    }).catch(()=>{list.innerHTML=`<a href="${TSS_HOME}" target="_blank" rel="noopener">Couldn’t load the sections — open TSS ↗</a>`;});
+  }
+  // keep the popup on screen (on a phone the row's right edge sits near the left side)
+  function placeSecPick(list){
+    list.style.transform='';
+    const r=list.getBoundingClientRect(), vw=document.documentElement.clientWidth; let dx=0;
+    if(r.left<8) dx=8-r.left; else if(r.right>vw-8) dx=vw-8-r.right;
+    if(dx) list.style.transform='translateX('+Math.round(dx)+'px)';
+  }
+  // <details> 'toggle' doesn't bubble — listen in the capture phase. One picker open at a time.
+  document.addEventListener('toggle',e=>{
+    const d=e.target; if(!d.classList||!d.classList.contains('secpick')||!d.open) return;
+    document.querySelectorAll('.secpick[open]').forEach(o=>{if(o!==d)o.open=false;});
+    fillSecPick(d); const l=d.querySelector('.secpick-list'); if(l) placeSecPick(l);
+  },true);
+  document.addEventListener('click',e=>{if(!e.target.closest('.secpick'))document.querySelectorAll('.secpick[open]').forEach(o=>{o.open=false;});});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const o=document.querySelector('.secpick[open]');if(o){o.open=false;const sm=o.querySelector('summary');if(sm)sm.focus();}}});
   function seatLink(r){
     if(!r[C.off]) return '';
     const key=CK(r[C.s],r[C.c]);
@@ -1669,7 +1732,8 @@ function init(DATA){
     // package is theirs, open the launchpad instead of someone else's section.
     if(entry&&entry.x){
       const mine=r[C.i]?(entry.p||[]).filter(p=>p.i&&p.i.some(n=>faMatchesName(n,r[C.i]))):[];
-      if(mine.length) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s own section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
+      if(mine.length===1) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s own section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
+      const pick=secPickHTML(key,entry,r[C.i]); if(pick) return pick;
       return `<a class="seatlink" href="${TSS_HOME}" target="_blank" rel="noopener" title="Each section of this course has its own TSS page and we can’t tell which one belongs to this row — opens the TSS launchpad to search (sign in first)">Find on TSS ↗</a>`;
     }
     // Several section packages (a lecture with many labs / discussions): the
@@ -1679,6 +1743,7 @@ function init(DATA){
     if(entry&&entry.p&&entry.p.length>1){
       const mine=r[C.i]?entry.p.filter(p=>p.i&&p.i.some(n=>faMatchesName(n,r[C.i]))):[];
       if(mine.length===1) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
+      const pick=secPickHTML(key,entry,r[C.i]); if(pick) return pick;
       return `<a class="seatlink" href="${TSS_HOME}" target="_blank" rel="noopener" title="Each section of ${esc(key)} has its own TSS page — opens the TSS launchpad to pick yours (sign in first)">Find on TSS ↗</a>`;
     }
     const {href,direct}=courseLinkInfo(key);
@@ -2168,7 +2233,7 @@ function init(DATA){
   curBtn.addEventListener('click',()=>{state.curonly=!state.curonly;curBtn.setAttribute('aria-pressed',state.curonly?'true':'false');state.limit=PAGE;render();});
   moreBtn.addEventListener('click',appendMore);
   $('rows').addEventListener('click',e=>{
-    if(e.target.closest('a')) return; // let RMP links work
+    if(e.target.closest('a')||e.target.closest('.secpick')) return; // let RMP / TSS links and the section picker work
     const ab=e.target.closest('.addbtn'); if(ab){
       e.stopPropagation();
       const k=ab.dataset.add,instructor=ab.dataset.instr||'';
