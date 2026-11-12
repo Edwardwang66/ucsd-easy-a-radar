@@ -1672,6 +1672,15 @@ function init(DATA){
       if(mine.length) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s own section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
       return `<a class="seatlink" href="${TSS_HOME}" target="_blank" rel="noopener" title="Each section of this course has its own TSS page and we can’t tell which one belongs to this row — opens the TSS launchpad to search (sign in first)">Find on TSS ↗</a>`;
     }
+    // Several section packages (a lecture with many labs / discussions): the
+    // course-level url is just the FIRST section's package (CHEM 43A → lab A01), and a
+    // rankings row has no section picked. Link the instructor's own package when
+    // exactly one is theirs, else the launchpad — never someone else's section.
+    if(entry&&entry.p&&entry.p.length>1){
+      const mine=r[C.i]?entry.p.filter(p=>p.i&&p.i.some(n=>faMatchesName(n,r[C.i]))):[];
+      if(mine.length===1) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
+      return `<a class="seatlink" href="${TSS_HOME}" target="_blank" rel="noopener" title="Each section of ${esc(key)} has its own TSS page — opens the TSS launchpad to pick yours (sign in first)">Find on TSS ↗</a>`;
+    }
     const {href,direct}=courseLinkInfo(key);
     const label=direct?'Course page ↗':'Find on TSS ↗';
     const title=direct?'Open this course on TSS — sign into TSS first so the link lands on the course page'
