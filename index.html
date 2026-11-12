@@ -231,7 +231,9 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
   .secpick{display:inline-block;position:relative}
   .secpick>summary{list-style:none;cursor:pointer}
   .secpick>summary::-webkit-details-marker{display:none}
-  .secpick-list{position:absolute;z-index:30;top:calc(100% + 4px);right:0;min-width:240px;max-width:min(360px,86vw);max-height:280px;overflow:auto;
+  /* fixed, not absolute: the rankings card clips its overflow, so an absolute list on a
+     lower row was cut off (CHEM 43A's last rows). placeSecPick() positions it. */
+  .secpick-list{position:fixed;z-index:60;top:0;left:0;min-width:240px;max-width:min(360px,calc(100vw - 16px));max-height:280px;overflow:auto;
     background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:4px;font-size:12px;color:var(--muted)}
   .secpick-list a{display:block;padding:7px 8px;border-radius:6px;color:var(--ink);text-decoration:none;white-space:normal;font-weight:400}
   .secpick-list a b{font-family:var(--mono)}
@@ -1712,12 +1714,23 @@ function init(DATA){
     }).catch(()=>{list.innerHTML=`<a href="${TSS_HOME}" target="_blank" rel="noopener">Couldn’t load the sections — open TSS ↗</a>`;});
   }
   // keep the popup on screen (on a phone the row's right edge sits near the left side)
+  // Position the (fixed) list under its button — or above it when there's more room
+  // there — kept inside the viewport, its height capped to the space available.
   function placeSecPick(list){
-    list.style.transform='';
-    const r=list.getBoundingClientRect(), vw=document.documentElement.clientWidth; let dx=0;
-    if(r.left<8) dx=8-r.left; else if(r.right>vw-8) dx=vw-8-r.right;
-    if(dx) list.style.transform='translateX('+Math.round(dx)+'px)';
+    const d=list.closest('.secpick'), sm=d&&d.querySelector('summary'); if(!sm) return;
+    const a=sm.getBoundingClientRect(), vw=document.documentElement.clientWidth, vh=window.innerHeight;
+    if(a.bottom<0||a.top>vh){d.open=false;return;}          // its button scrolled away
+    const below=vh-a.bottom-12, above=a.top-12, want=Math.min(list.scrollHeight,360);
+    const up=below<Math.min(want,220)&&above>below;
+    const maxH=Math.max(120,Math.min(360,up?above:below));
+    list.style.maxHeight=maxH+'px';
+    const h=Math.min(list.scrollHeight,maxH), w=list.offsetWidth;
+    list.style.top=Math.round(up?a.top-4-h:a.bottom+4)+'px';
+    list.style.left=Math.round(Math.max(8,Math.min(a.right-w,vw-8-w)))+'px';
   }
+  const replaceSecPick=()=>{const l=document.querySelector('.secpick[open] .secpick-list');if(l)placeSecPick(l);};
+  window.addEventListener('scroll',e=>{if(!(e.target&&e.target.classList&&e.target.classList.contains('secpick-list')))replaceSecPick();},{passive:true,capture:true});
+  window.addEventListener('resize',replaceSecPick);
   // <details> 'toggle' doesn't bubble — listen in the capture phase. One picker open at a time.
   document.addEventListener('toggle',e=>{
     const d=e.target; if(!d.classList||!d.classList.contains('secpick')||!d.open) return;
