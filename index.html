@@ -1496,7 +1496,7 @@ window.GE_REQS={
     marshall:{'Core writing':['DOC'],'Natural Science':NATSCI,'Math / Stats / Logic':MATHQ.concat(['PHIL','CSE']),'Humanities & Cultural':['AAS','AAPI','ETHN','HILD','HIUS','LATI','LTEN','LTAM','RELI','LTWL','LTCS'],'Fine Arts':ARTS},
     warren:{'Writing':['WCWP'],'Ethics & Society':['PHIL','POLI'],'Formal Skills':QUANT,'Depth · non-eng':{'Humanities & Arts':WA_HA,'Social Sciences':WA_SS},'Depth · eng BS':{'Humanities & Arts':WA_HA,'Social Sciences':WA_SS}},
     erc:{'MMW core':['MMW'],'Regional Specialization':ERC_REG,'Natural Science':NATSCI,'Quantitative Methods':QUANT,'Fine Arts':ARTS,'Language':LANG},
-    sixth:{'CAT core':['CAT'],'CAT upper-div writing':['CAT'],'Modes of Inquiry':{'Social Sci':S6_SS,'Humanities':S6_HU,'Natural Sci':S6_NS,'Math/Logic':S6_ML},'IT Fluency':S6_IT,'Exploring Data':S6_DATA,'Art Making':S6_ART},
+    sixth:{'CAT core':['CAT'],'CAT upper-div writing':['CAT'],'Modes of Inquiry':{'Social Science':S6_SS,'Humanities':S6_HU,'Natural Science':S6_NS,'Math/Logic':S6_ML},'IT Fluency':S6_IT,'Exploring Data':S6_DATA,'Art Making':S6_ART},
     seventh:{'Synthesis core':['SYN'],'Alternatives':{'Arts':ARTS,'Humanities':HUM,'Nat Sci & Eng':NATSCI.concat(ENGR),'Quantitative':MATHQ,'Social Sci':SOCSCI},'High-Impact':['AIP','EAP']},
     eighth:{'CCE core':['CCE'],'Breadth':{'Arts':E8_ARTS,'Humanities':E8_HUM,'Natural Sci':E8_NS,'Quant & Eng':E8_QE,'Social Sci':E8_SS}}
   };
@@ -2561,7 +2561,11 @@ function init(DATA){
     const groupChoices=ScheduleInstructor.instructorGroupChoices(groups);
     const grpSel=groupChoices.length>1?`<label>Instructor / section <select data-grp="${esc(it.k)}">${groupChoices.map(choice=>`<option value="${choice.group}"${choice.group===gl?' selected':''}>${esc(choice.label)}</option>`).join('')}</select></label>`:'';
     const optSel=Object.keys(opts).map(ty=>{const list=opts[ty],cur=secs.find(s=>s[S_TYPE]===ty);return `<label>${esc(ty)} <select data-pick="${esc(it.k)}" data-ty="${esc(ty)}">${list.map(rows=>{const c=rows[0][S_CODE];const when=rows.map(s=>(s[S_DAYS]||'TBA')+(s[S_START]?' '+s[S_START]:'')).join(' + ');const where=rows[0][S_BLD]&&rows[0][S_BLD]!=='RCLAS'?' · '+rows[0][S_BLD]:(rows[0][S_BLD]==='RCLAS'?' · online':'');return `<option value="${esc(c)}"${(cur&&cur[S_CODE]===c)?' selected':''}>${esc(c)} · ${esc(when)}${esc(where)}</option>`;}).join('')}</select></label>`;}).join('');
-    const meets=secs.map(s=>{const tba=!(s[S_DAYS]&&s[S_START]);return `<div class="m${tba?' tba':''}"><span class="mt">${esc(s[S_TYPE])}</span><span>${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>${esc(s[S_BLD]||'')}${s[S_ROOM]?' '+esc(s[S_ROOM]):''}</span></div>`;}).join('');
+    // TSS occasionally lists a section in the small hours (WI27: HUM 2 A12 "W, F 03:00 AM",
+    // MUS 87 A00 "W 03:00 AM") — almost certainly a data-entry slip for p.m. Show it as
+    // listed, but say so, rather than silently moving it.
+    const oddHour=s=>{const m=parseMin(s[S_START]);return m!=null&&m<360;};
+    const meets=secs.map(s=>{const tba=!(s[S_DAYS]&&s[S_START]),odd=!tba&&oddHour(s);return `<div class="m${tba?' tba':''}"><span class="mt">${esc(s[S_TYPE])}</span><span>${esc(s[S_DAYS]||'TBA')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>${esc(s[S_BLD]||'')}${s[S_ROOM]?' '+esc(s[S_ROOM]):''}</span></div>${odd?'<div class="conf-note odd-hour">⚠ TSS lists this section at '+esc(s[S_START])+' — probably a typo for p.m. Check the time on TSS before planning around it.</div>':''}`;}).join('');
     const finRows=finalsFor(course,gl).map(s=>{
       const d=parseFiDate(s), wd=d?WD[d.getDay()]+' ':'';
       return `<div class="m fin"><span class="mt">FI</span><span>${wd}${esc(s[S_DAYS]||'')} ${esc(s[S_START]||'')}${s[S_END]?'–'+esc(s[S_END]):''}</span><span>Final exam</span></div>`;
@@ -3109,7 +3113,7 @@ function init(DATA){
   function mwSave(){ if(mwM){mwStore.sel=mwM.tss;mwStore['ws:'+mwM.tss]=mwWS;} mwSaveStore(); }
   function ensureMinors(){
     if(minPromise) return minPromise;
-    minPromise=fetch('minors.67b07766f2.json').then(r=>r.ok?r.json():null).then(unGz)
+    minPromise=fetch('minors.4c9793d763.json').then(r=>r.ok?r.json():null).then(unGz)
       .then(j=>{MIN=(j&&j.minors)||[];MINMETA=(j&&j.meta)||{};}).catch(()=>{MIN=[];});
     return minPromise;
   }
@@ -3192,7 +3196,7 @@ function init(DATA){
         (m.codes||[]).forEach(c=>{const sj=c.split(' ')[0];cnt[sj]=(cnt[sj]||0)+1;});
         const share={}; Object.keys(cnt).forEach(sj=>{share[sj.toLowerCase()]=cnt[sj]/tot;});
         return {key:m.tss, code:m.code, name:m.name, sub:m.admin+(n?' · '+n+' courses named':''),
-                tag:m.status==='nodetail'?'no list':(m.status==='shared'?'shared':''),
+                tag:m.closed?'closed':(m.status==='nodetail'?'no list':(m.status==='shared'?'shared':'')),
                 share:share, off:!!(mwDept&&m.admin!==mwDept),
                 hay:(m.name+' '+m.code+' '+m.tss+' '+m.admin+' '+(m.subs||[]).join(' ')).toLowerCase()};}),
     rank:(x,q)=>{
@@ -3274,6 +3278,11 @@ function init(DATA){
       stub.hidden=false;
       stub.innerHTML='This minor has its own catalog page; the buckets below are read off that whole page.';
     } else stub.hidden=true;
+    // A minor the department has stopped offering to new students (Psychology).
+    if(m.closed){
+      stub.hidden=false;
+      stub.innerHTML='<b>⚠ '+esc(m.closed)+'</b>'+(stub.innerHTML?'<br>'+stub.innerHTML:'');
+    }
 
     const host=$('mnGroups'); host.innerHTML='';
     (w.buckets||[]).forEach((b,i)=>host.appendChild(mwBucketEl(b,i)));
@@ -3454,6 +3463,22 @@ function init(DATA){
   function dpSum(a){return a.reduce((s,c)=>s+(+c.units||0),0);}
   function dpFmt(n){return (Math.round(n*10)/10).toString();}
   function dpSubject(name){const m=String(name||'').match(/[A-Za-z]{2,}/);return m?m[0].toUpperCase():'';}
+  // plans.ucsd.edu marks footnotes inline — "^^DEI", "*MATH 18", "MMW 121**", "ETHN 1 * / DEI".
+  // The footnotes themselves aren't published with the plan, so drop the markers.
+  function dpCleanName(name){
+    return String(name||'').replace(/[\^*]+/g,' ').replace(/\s*\/\s*/g,'/').replace(/\s*\(\s*/g,' (')
+      .replace(/\s+\)/g,')').replace(/\s{2,}/g,' ').trim();
+  }
+  // A card's grade-ranking jump: "MATH 20A" → that course; a real subject alone
+  // ("PHIL/POLI 27", "MUS elective") → that subject; a placeholder whose first word is
+  // no subject ("SOCIAL SCIENCE GE/DEI", "M070 elective 1") → no button at all.
+  function dpGradesTarget(name){
+    const nm=dpCleanName(name).toUpperCase();
+    const m=/^([A-Z]{2,5}) ?(\d{1,3}[A-Z]{0,3})\b/.exec(nm);
+    if(m&&courseKeySet.has(m[1]+' '+m[2])) return {code:m[1]+' '+m[2]};
+    const subj=dpSubject(nm);
+    return subj&&subjSet.has(subj)?{subj}:null;
+  }
   function dpEnsureData(){
     if(dpDB) return Promise.resolve(dpDB);
     if(dpPromise) return dpPromise;
@@ -3572,7 +3597,7 @@ function init(DATA){
   function dpLoadOfficial(){
     const p=dpPlanById($('dpType').value); if(!p)return;
     const tmpl=dpDB.templates[p.tid];
-    const courses=tmpl.map((r,i)=>({key:'c'+i+'_'+Math.random().toString(36).slice(2,7),name:dpDB.names[r[0]],units:+r[1],type:dpDB.types[r[2]]||'OTHER',year:r[3],quarter:r[4],overlap:!!r[5],done:false}));
+    const courses=tmpl.map((r,i)=>({key:'c'+i+'_'+Math.random().toString(36).slice(2,7),name:dpCleanName(dpDB.names[r[0]]),units:+r[1],type:dpDB.types[r[2]]||'OTHER',year:r[3],quarter:r[4],overlap:!!r[5],done:false}));
     dpModel={meta:{id:p.id,college:p.c,collegeName:dpDB.colleges[p.c],year:p.y,major:p.m,title:p.t,L:p.L},courses,notes:''};
     dpOfficial=JSON.parse(JSON.stringify(dpModel));
     $('dpNotes').value=''; dpSave(); dpRender();
@@ -3630,16 +3655,17 @@ function init(DATA){
   function dpCourseEl(c){
     const el=document.createElement('div');
     el.className='dp-course t'+(c.type||'OTHER')+(c.done?' done':''); el.draggable=true;
-    const subj=dpSubject(c.name);
+    c.name=dpCleanName(c.name);
+    const tgt=dpGradesTarget(c.name);
     el.innerHTML='<input type="checkbox" '+(c.done?'checked':'')+' title="Mark completed">'
       +'<span class="cn" title="Click to rename — e.g. change a requirement placeholder like “DEI” to the class you’re taking (MUS 17)">'+dpEsc(c.name)+'</span>'
       +(c.overlap?'<span class="ov" title="Counts for GE and major">★</span>':'')
       +'<span class="cu">'+dpFmt(c.units)+'u</span>'
-      +(subj?'<button class="gr" title="See this course\'s grade ranking">grades↗</button>':'')
+      +(tgt?'<button class="gr" title="'+(tgt.code?'See '+dpEsc(tgt.code)+'’s grade ranking':'See '+dpEsc(tgt.subj)+' courses ranked')+'">grades↗</button>':'')
       +'<button class="del" title="Remove">✕</button>';
     el.querySelector('input[type=checkbox]').onchange=e=>{c.done=e.target.checked;el.classList.toggle('done',c.done);dpSave();dpUpdateSummary();};
     el.querySelector('.del').onclick=()=>{dpModel.courses=dpModel.courses.filter(x=>x.key!==c.key);dpSave();dpRender();};
-    const gr=el.querySelector('.gr'); if(gr)gr.onclick=()=>{try{goToCourses([subj],c.name);}catch(e){setView('rank');}};
+    const gr=el.querySelector('.gr'); if(gr)gr.onclick=()=>{try{if(tgt.code)goToCoursesByCode([tgt.code],tgt.code);else goToCourses([tgt.subj],c.name);}catch(e){setView('rank');}};
     // Move to another quarter without dragging (touch screens, keyboard): a native select
     // under a small ⇄ glyph, listing every year × quarter on the grid.
     const mv=document.createElement('span'); mv.className='mv'; mv.textContent='⇄'; mv.title='Move to another quarter';
@@ -3692,7 +3718,7 @@ function init(DATA){
       const added=!!(dpModel&&dpModel.meta.minors&&dpModel.meta.minors.some(x=>x.tss===m.tss));
       return {key:m.tss, code:m.code, name:m.name,
               sub:m.admin+(m.work&&m.work.n?' · '+m.work.n+' courses / '+m.work.units+' units':''),
-              tag:added?'added':(m.status==='nodetail'?'no list':''),
+              tag:added?'added':(m.closed?'closed':(m.status==='nodetail'?'no list':'')),
               hay:(m.name+' '+m.code+' '+m.tss+' '+m.admin+' '+(m.subs||[]).join(' ')).toLowerCase()};}),
     onPick:k=>{$('dpMinorField').hidden=true;dpAddMinor(k);}
   });
@@ -3801,10 +3827,29 @@ function init(DATA){
     gpPromise=fetch('gradplans.145376c0c1.json').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(unGz).then(j=>{gpDB=j;return j;});
     return gpPromise;
   }
+  // Several ISIS codes share one department + name (Rady "Business Analytics" ×6,
+  // Biology ×3). Tell them apart: the degree (MS / PhD / MAS…) always, and for codes
+  // whose notes say they're an administrative / cohort variant of another code, point
+  // at that code — the coursework is identical, so the student picks the main one.
+  const GP_VARIANT_RE=/variant|same (?:single )?(?:mas )?(?:in [\w ]+ )?program as|identical to/i;
+  let gpVariantOf=null;
+  function gpBuildVariants(){
+    gpVariantOf=new Map();
+    const by=new Map();
+    for(const p of (gpDB&&gpDB.programs)||[]){const k=p.dept+'|'+p.name+'|'+String(p.degrees||'');(by.get(k)||by.set(k,[]).get(k)).push(p);}
+    for(const list of by.values()){
+      if(list.length<2) continue;
+      const main=list.find(p=>!GP_VARIANT_RE.test(p.deptNotes||''))||list.slice().sort((a,b)=>a.code<b.code?-1:1)[0];
+      for(const p of list) if(p!==main) gpVariantOf.set(p.code,main.code);
+    }
+  }
   function gpProgLabel(p){
+    if(!gpVariantOf) gpBuildVariants();
     // Prefix the short area only when it adds information (not already in the name).
     const pre=(p.area && !(p.name||'').toLowerCase().includes(p.area.toLowerCase()))?p.area+' — ':'';
-    return pre+p.name+' ('+p.code+')';
+    const dg=String(p.degrees||''), deg=dg?' · '+dg.split(',').join('/'):'';
+    const v=gpVariantOf.get(p.code);
+    return pre+p.name+deg+' ('+p.code+(v?', variant of '+v:'')+')';
   }
   function initGradPlanner(){
     if(gpInited) return; gpInited=true;
