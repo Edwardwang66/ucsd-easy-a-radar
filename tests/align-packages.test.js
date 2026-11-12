@@ -162,13 +162,54 @@ test('shipped annotations are consistent with the schedule', () => {
 
 test('index.html trusts only aligned section codes on x-courses', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  // pkgLinkFor: the x branch matches picked section codes against p.s and
-  // never falls through to time-key matching.
-  assert.match(html, /function pkgLinkFor\(key,secs\)\{[\s\S]{0,200}?if\(entry\.x\)\{[\s\S]{0,300}?p\.s&&p\.s\.length&&codes\.every/);
+  // pkgLinkFor: packages with aligned codes (p.s) match picked section codes;
+  // on x-courses it never falls through to time-key matching.
+  assert.match(html, /function pkgLinkFor\(key,secs\)\{[\s\S]{0,500}?p\.s&&p\.s\.length[\s\S]{0,200}?if\(entry\.x\|\|coded\.length\)\{[\s\S]{0,200}?codes\.every\(c=>p\.s\.indexOf\(c\)>=0\)[\s\S]{0,120}?if\(entry\.x\)return null;/);
+  // bookingFor: several packages and none identified -> launchpad, never the
+  // course-level url (= the first package, a different section).
+  assert.match(html, /function bookingFor\(it\)\{[\s\S]{0,900}?entry&&entry\.p&&entry\.p\.length>1\)return\{href:TSS_HOME/);
   // bookingFor: an unidentified group on an aligned course goes to the
   // launchpad, never to the course-level link (someone else's section).
   assert.match(html, /function bookingFor\(it\)\{[\s\S]{0,400}?entry\.x&&Object\.keys\(groups\)\.length>1[\s\S]{0,80}?TSS_HOME/);
   // seatLink: a professor's row on an aligned course links to their own
   // package, with a launchpad fallback.
   assert.match(html, /function seatLink\(r\)\{[\s\S]{0,900}?entry&&entry\.x[\s\S]{0,300}?faMatchesName\(n,r\[C\.i\]\)/);
+});
+
+test('annotateEntry aligns combo courses lab by lab in package-id order (CHEM 43A)', () => {
+  // LE A00 + labs A01–A05 at 9:00 and A06–A10 at 1:00 (same times, different rooms)
+  // + an OT section; ten packages, scraped out of order.
+  const lab = (c, t) => [c, 'LA', 'MW', t, '', 'York Hall', '', 'Emmanuel Theodorakis', 24, 24, 0];
+  const course = { sec: [
+    ['A00', 'LE', 'F', '9:00a', '9:50a', 'Mosaic', '114', 'Emmanuel Theodorakis', null, null, 0],
+    ...[1, 2, 3, 4, 5].map((n) => lab('A0' + n, '9:00a')),
+    ...[6, 7, 8, 9, 10].map((n) => lab('A' + String(n).padStart(2, '0'), '1:00p')),
+    ['A11', 'OT', '', '', '', '', '', 'Emmanuel Theodorakis', 24, 24, 0],
+    ['03/17/2027', 'FI', '03/17/2027', '8:00a', '10:59a', 'Mosaic', '114', '', null, null, 0],
+  ] };
+  const url = (id) => `https://tss.ucsd.edu/fiori#ZUSModule-display?TileType=MYMOD&/Detail/EventPackage/SM/2117/00000000/0/0/0/00000000-0000-0000-0000-000000000000/${id}/2026/3/?`;
+  const ids = [162952, 162947, 162948, 162949, 162950, 162951, 162953, 162954, 162955, 162956]; // shuffled
+  const entry = { u: url(162947), p: ids.map((id) => ({
+    u: url(id),
+    k: id === 162947 ? ['LA|MW|09:00', 'LE|F|09:00'] : [id <= 162951 ? 'LA|MW|09:00' : 'LA|MW|13:00'],
+  })) };
+  assert.equal(align.annotateEntry(entry, course), 'combo-aligned');
+  assert.equal(entry.x, undefined);
+  const byId = Object.fromEntries(entry.p.map((p) => [+/\/(\d+)\/2026/.exec(p.u)[1], p.s]));
+  assert.deepEqual(byId[162947], ['A00', 'A11', 'A01']);
+  assert.deepEqual(byId[162952], ['A00', 'A11', 'A06']);
+  assert.deepEqual(byId[162956], ['A00', 'A11', 'A10']);
+});
+
+test('annotateEntry leaves cross-product combos (two choice types in a group) alone', () => {
+  const course = { sec: [
+    ['A00', 'LE', 'MWF', '9:00a', '', '', '', 'X', null, null, 0],
+    ['A01', 'DI', 'M', '1:00p', '', '', '', 'X', 1, 1, 0],
+    ['A02', 'DI', 'M', '2:00p', '', '', '', 'X', 1, 1, 0],
+    ['A50', 'LA', 'Tu', '1:00p', '', '', '', 'X', 1, 1, 0],
+    ['A51', 'LA', 'Tu', '2:00p', '', '', '', 'X', 1, 1, 0],
+  ] };
+  const entry = { u: 'u1', p: [1, 2, 3, 4].map((n) => ({ u: `x/${n}/2026/3/?`, k: ['DI|M|13:00'] })) };
+  assert.equal(align.annotateEntry(entry, course), 'combo');
+  assert.ok(entry.p.every((p) => !p.s));
 });

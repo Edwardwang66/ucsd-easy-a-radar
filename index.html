@@ -14,7 +14,7 @@
      not know which quarter the reader had picked. hist.json is fetched after first paint. -->
 <script>
 const TERM_DEFAULT='WI27';
-const TERM_FILES={WI27:{data:'data.929bd0975f.json',schedule:'schedule.d23991ea73.json'},FA26:{data:'data.FA26.3c36ecebf9.json',schedule:'schedule.FA26.265225b42f.json'}};
+const TERM_FILES={WI27:{data:'data.27d421c778.json',schedule:'schedule.d23991ea73.json'},FA26:{data:'data.FA26.3c36ecebf9.json',schedule:'schedule.FA26.265225b42f.json'}};
 const TERM_KEY='easyA_term';
 const TERM_PICKED=(function(){try{var t=localStorage.getItem(TERM_KEY);if(t&&TERM_FILES[t])return t;}catch(e){}return TERM_DEFAULT;})();
 window.__dataPromise=fetch(TERM_FILES[TERM_PICKED].data).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
@@ -1672,6 +1672,15 @@ function init(DATA){
       if(mine.length) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s own section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
       return `<a class="seatlink" href="${TSS_HOME}" target="_blank" rel="noopener" title="Each section of this course has its own TSS page and we can’t tell which one belongs to this row — opens the TSS launchpad to search (sign in first)">Find on TSS ↗</a>`;
     }
+    // Several section packages (a lecture with many labs / discussions): the
+    // course-level url is just the FIRST section's package (CHEM 43A → lab A01), and a
+    // rankings row has no section picked. Link the instructor's own package when
+    // exactly one is theirs, else the launchpad — never someone else's section.
+    if(entry&&entry.p&&entry.p.length>1){
+      const mine=r[C.i]?entry.p.filter(p=>p.i&&p.i.some(n=>faMatchesName(n,r[C.i]))):[];
+      if(mine.length===1) return `<a class="seatlink" href="${esc(mine[0].u)}" target="_blank" rel="noopener" title="Open this instructor’s section of ${esc(key)} on TSS (sign into TSS first)">Section page ↗</a>`;
+      return `<a class="seatlink" href="${TSS_HOME}" target="_blank" rel="noopener" title="Each section of ${esc(key)} has its own TSS page — opens the TSS launchpad to pick yours (sign in first)">Find on TSS ↗</a>`;
+    }
     const {href,direct}=courseLinkInfo(key);
     const label=direct?'Course page ↗':'Find on TSS ↗';
     const title=direct?'Open this course on TSS — sign into TSS first so the link lands on the course page'
@@ -2362,11 +2371,15 @@ function init(DATA){
   function pkgLinkFor(key,secs){
     const entry=SEATS[key];
     if(!entry||!entry.p||!entry.p.length||!secs||!secs.length)return null;
-    if(entry.x){
+    // Packages the aligner tied to section codes (.s) match on the codes — the only
+    // way to tell apart same-time sections (CHEM 43A's labs A06–A10 all meet MW 1:00p
+    // in different rooms; the time match below can't separate them).
+    const coded=entry.p.filter(p=>p.s&&p.s.length);
+    if(entry.x||coded.length){
       const codes=secs.map(s=>s&&s[S_CODE]).filter(Boolean);
-      if(!codes.length)return null;
-      const hit=entry.p.filter(p=>p.s&&p.s.length&&codes.every(c=>p.s.indexOf(c)>=0));
-      return hit.length===1?hit[0].u:null;
+      const hit=codes.length?coded.filter(p=>codes.every(c=>p.s.indexOf(c)>=0)):[];
+      if(hit.length===1)return hit[0].u;
+      if(entry.x)return null;
     }
     const need=secs.map(secTimeKey).filter(Boolean);
     if(!need.length)return null;
@@ -2396,6 +2409,10 @@ function init(DATA){
     if(pkg)return{href:pkg,direct:true,pkg:true};
     const entry=SEATS[it.k];
     if(entry&&entry.x&&Object.keys(groups).length>1)return{href:TSS_HOME,direct:false,pkg:false};
+    // Several section packages but none identified as the picked one: the course-level
+    // url is just the FIRST package (CHEM 43A → lab A01), so it would open a different
+    // section than the one shown. Send them to the launchpad instead.
+    if(entry&&entry.p&&entry.p.length>1)return{href:TSS_HOME,direct:false,pkg:false};
     const cli=courseLinkInfo(it.k);
     return{href:cli.href,direct:cli.direct,pkg:false};
   }

@@ -34,8 +34,8 @@
 //   .p[].s = the aligned group's section codes (what the app matches picks on)
 //   .p[].i = the aligned group's instructor names from schedule.json (lets a
 //            professor's row in the rankings link straight to their section)
-// Combo courses (one lecture × many labs, several packages per group) are left
-// to the existing time-key matching and never annotated.
+// Combo courses (one lecture × many labs, one package per lab) get .p[].s too,
+// aligned lab by lab (see annotateCombo) — but never .x.
 //
 // Run it after merge-seats.js (fresh scrape) or merge-schedule.js (section /
 // instructor refresh) — both invalidate the alignment. Zero dependencies.
@@ -140,6 +140,60 @@ function certainPairs(n, m, eq) {
   return out;
 }
 
+// Combo courses (one lecture × many labs): TSS has one package per CHOICE section
+// (CHEM 43A: LE A00 + ten labs A01–A10 → ten packages, each "lecture + one lab").
+// Labs that meet at the same time (A06–A10 all MW 1:00p, different rooms) have
+// identical time keys, so the app's time match can't tell them apart and used to
+// fall back to the course-level url — the FIRST lab's package. The packages come
+// in WebReg order, so expand each group into its choice sections ("units": the
+// group's single-code sections + one choice section) and align the two ordered
+// sequences exactly as for one-package-per-group courses. Only when every group
+// has at most one choice type (else packages are a cross product) and there are
+// exactly as many units as packages. Writes .p[].s only — never .x or .p[].i.
+function comboUnits(groups) {
+  const units = [];
+  for (const [, sections] of groups) {
+    const byType = new Map(); // type -> Map(code -> rows)
+    for (const sec of sections) {
+      const ty = sec[S.TYPE], code = String(sec[S.CODE]);
+      if (!byType.has(ty)) byType.set(ty, new Map());
+      const m = byType.get(ty);
+      if (!m.has(code)) m.set(code, []);
+      m.get(code).push(sec);
+    }
+    const choice = [...byType.values()].filter((m) => m.size > 1);
+    if (choice.length > 1) return null;
+    if (!choice.length) { units.push(sections); continue; }
+    const shared = [...byType.values()].filter((m) => m.size === 1).flatMap((m) => [...m.values()].flat());
+    for (const rows of choice[0].values()) units.push([...shared, ...rows]);
+  }
+  return units;
+}
+// TSS package id — the number before "/<year>/<period>/" in the deep link.
+function packageId(u) {
+  const m = /\/(\d+)\/\d{4}\/\d+\/\?$/.exec(String(u || ""));
+  return m ? +m[1] : null;
+}
+function annotateCombo(entry, groups) {
+  const units = comboUnits(groups);
+  if (!units || units.length < 2 || units.length !== entry.p.length) return "combo";
+  // Order matters and neither list arrives in WebReg order: the scrape records a
+  // course's packages shuffled (BENG 112A: A02's package before A01's), and
+  // schedule.json can list groups out of letter order (BILD 1: A, C, B, D). But TSS
+  // numbers packages in section-code order (BILD 1: ids 162158–162173 run A01…D04),
+  // so sort packages by id and units by their choice section's code, then align.
+  const pOrder = entry.p.map((p, j) => j);
+  if (pOrder.some((j) => packageId(entry.p[j].u) == null)) return "combo";
+  pOrder.sort((a, b) => packageId(entry.p[a].u) - packageId(entry.p[b].u));
+  const unitCode = (u) => String(u[u.length - 1][S.CODE]);
+  const uOrder = units.map((u, i) => i).sort((a, b) => (unitCode(units[a]) < unitCode(units[b]) ? -1 : unitCode(units[a]) > unitCode(units[b]) ? 1 : 0));
+  const keySets = uOrder.map((i) => groupKeySet(units[i]));
+  const eq = (i, j) => pkgFitsGroup(entry.p[pOrder[j]], keySets[i]);
+  const certain = certainPairs(units.length, entry.p.length, eq);
+  for (const [j, i] of certain) entry.p[pOrder[j]].s = [...new Set(units[uOrder[i]].map((sec) => String(sec[S.CODE])))];
+  return certain.size === entry.p.length ? "combo-aligned" : certain.size ? "combo-partial" : "combo";
+}
+
 // Annotate one seats entry against its schedule course. Mutates `entry`.
 // Returns a status string for reporting.
 function annotateEntry(entry, course) {
@@ -160,7 +214,7 @@ function annotateEntry(entry, course) {
     return "skip";
   }
 
-  if (!onePackagePerGroup(groups)) return "combo";
+  if (!onePackagePerGroup(groups)) return annotateCombo(entry, groups);
   if (groups.length < 2) return "skip";
 
   entry.x = 1;
@@ -213,7 +267,7 @@ function main() {
     const status = annotateEntry(entry, courses[key]);
     stats[status] = (stats[status] || 0) + 1;
     if (Array.isArray(entry.p)) sectionLinks += entry.p.filter((p) => p.s).length;
-    if (status === "aligned-partial" || status === "aligned-none") {
+    if (status === "aligned-partial" || status === "aligned-none" || status === "combo-partial") {
       const matched = entry.p.filter((p) => p.s).length;
       partial.push(`${key}: ${matched}/${entry.p.length} packages matched`);
     }
@@ -234,4 +288,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { activeGroups, groupKeySet, pkgFitsGroup, onePackagePerGroup, certainPairs, annotateEntry, secTimeKey };
+module.exports = { activeGroups, groupKeySet, pkgFitsGroup, onePackagePerGroup, certainPairs, annotateEntry, comboUnits, secTimeKey };
