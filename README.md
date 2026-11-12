@@ -264,7 +264,9 @@ Schedule is saved per quarter, so switching back and forth keeps each quarter's 
    `node sync-current.js ucsd-seats-<year>-<period>.json`.
 5. `node align-packages.js` — re-align TSS seat packages to schedule sections, so seminar /
    special-topics courses (AWP, MCWP/WCWP, ECE 285-style topics) link each section group to its
-   OWN package page instead of the first group's. Both a seats refresh and a schedule refresh
+   OWN package page instead of the first group's — and lecture + lab/discussion courses (CHEM 43A,
+   BILD 1) link each lab/discussion to its own package, matched by section code (same-time labs
+   can't be told apart by time). Both a seats refresh and a schedule refresh
    invalidate the alignment, so run it after either.
 6. `node healthcheck.js` → prune orphans, fill coverage gaps.
 7. `node build.js`, then commit.
