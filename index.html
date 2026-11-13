@@ -223,11 +223,17 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
   /* WebReg course-page link */
   .seatlink{font-size:11px;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap}
   .seatlink:hover{text-decoration:underline}
+  .legend .lg-note{color:var(--muted);margin-left:6px}
+  .meth .meth-more{margin-top:4px}
+  .meth .meth-more>summary{cursor:pointer;color:var(--accent);font-weight:600;width:max-content}
+  .meth .meth-more[open]>summary{margin-bottom:3px}
   /* Rankings: section picker for courses with one TSS page per section */
   .secpick{display:inline-block;position:relative}
   .secpick>summary{list-style:none;cursor:pointer}
   .secpick>summary::-webkit-details-marker{display:none}
-  .secpick-list{position:absolute;z-index:30;top:calc(100% + 4px);right:0;min-width:240px;max-width:min(360px,86vw);max-height:280px;overflow:auto;
+  /* fixed, not absolute: the rankings card clips its overflow, so an absolute list on a
+     lower row was cut off (CHEM 43A's last rows). placeSecPick() positions it. */
+  .secpick-list{position:fixed;z-index:60;top:0;left:0;min-width:240px;max-width:min(360px,calc(100vw - 16px));max-height:280px;overflow:auto;
     background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:var(--shadow);padding:4px;font-size:12px;color:var(--muted)}
   .secpick-list a{display:block;padding:7px 8px;border-radius:6px;color:var(--ink);text-decoration:none;white-space:normal;font-weight:400}
   .secpick-list a b{font-family:var(--mono)}
@@ -336,7 +342,11 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     background:color-mix(in srgb,var(--gA) 10%,transparent)}
   .addbtn.switch{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent);
     background:var(--accent-soft)}
-  .course .top{display:flex;align-items:center;gap:2px}
+  /* Badges (Offered · SET · Teaching WI27) + the "+ Schedule" button can be wider than the
+     Course column — let the line wrap instead of spilling into the instructor column. */
+  .course{min-width:0}
+  .course .top{display:flex;align-items:center;gap:2px;flex-wrap:wrap;row-gap:4px;min-width:0}
+  .course .top .badge-off,.course .top .badge-set,.course .top .badge-now,.course .top .addbtn{white-space:nowrap;flex:none}
 
   /* ---- schedule builder ---- */
   #scheduleView{display:none}
@@ -706,7 +716,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
         <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm0 1.4c-2.67 0-6.4 1.34-6.4 4V15h12.8v-1.6c0-2.66-3.73-4-6.4-4z"/></svg>
         <span>Author</span>
       </a>
-      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme"><span>◐</span><span>Theme</span></button>
+      <button class="theme-btn" id="themeBtn" aria-label="Switch light/dark theme" title="Switch light/dark theme"><span>◐</span><span>Theme</span></button>
     </div>
   </header>
 
@@ -717,7 +727,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     <button class="viewtab" id="tab-sched" role="tab" aria-controls="scheduleView" aria-selected="false">
       <span>My Schedule</span><span class="cnt" id="schedTabCnt" hidden>0</span>
     </button>
-    <button class="viewtab" id="tab-ge" role="tab" aria-controls="geView" aria-selected="false">Grad &amp; GE Requirements</button>
+    <button class="viewtab" id="tab-ge" role="tab" aria-controls="geView" aria-selected="false">Graduation &amp; GE</button>
     <button class="viewtab" id="tab-minor" role="tab" aria-controls="minorView" aria-selected="false">Minors</button>
     <button class="viewtab" id="tab-planner" role="tab" aria-controls="plannerView" aria-selected="false">Degree Planner</button>
   </div>
@@ -742,7 +752,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
         <ul id="subjectList" class="combo-list" role="listbox" hidden></ul>
       </div>
       <div class="combo" id="profCombo">
-        <input id="profInput" type="text" placeholder="Any professor" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="profList" aria-label="Filter by professor">
+        <input id="profInput" type="text" placeholder="Any instructor" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="profList" aria-label="Filter by instructor">
         <span class="cv-caret" aria-hidden="true">▾</span>
         <button class="combo-clear" id="profClear" type="button" aria-label="Clear professor">×</button>
         <ul id="profList" class="combo-list" role="listbox" hidden></ul>
@@ -769,7 +779,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
         <button class="chip" data-lv="all" aria-pressed="false">All</button>
       </div>
       <button class="toggle" id="offered" aria-pressed="true">
-        <span class="sw"></span><span>Offered this term only</span>
+        <span class="sw"></span><span>Offered this quarter only</span>
       </button>
       <button class="toggle" id="curonly" aria-pressed="false" title="Only rows whose professor is teaching this course in Fall 2026" data-ttl="Only rows whose professor is teaching this course in {term}">
         <span class="sw"></span><span>Teaching <span class="t-code">FA26</span> only</span>
@@ -825,7 +835,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
   </div>
 
   <div class="note" role="note">
-    <b>How to read the professor column:</b> each row is a <b>past instructor</b> of that course (2015–2026), shown with their grade history. For <b class="t-name">Fall 2026</b> offerings we list <b>this term's actual instructor(s)</b> from UCSD's class schedule on TSS — and when a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching now</span>. Every <span class="t-name">Fall 2026</span> course appears, even ones with no grade history: an instructor with no grade data for a course is marked <span class="firstx">0×</span>, and courses with no assigned instructor yet (or research/independent-study courses) are tagged <span class="firstx">TBA</span> — all sorted last. Use the <b>Teaching <span class="t-code">FA26</span> only</b> toggle to see just the professors on the schedule this term.
+    <b>How to read a row:</b> each row is one <b>past instructor</b> of the course, with their 2015–2026 grades. Offered courses also name <b>this quarter’s instructor</b> from UCSD’s Schedule of Classes on TSS (UCSD’s enrollment system); if a past instructor is teaching it again, the row is tagged <span class="badge-now">Teaching <span class="t-code">FA26</span></span>. Rows marked <span class="firstx">0×</span> or <span class="firstx">TBA</span> have no grade history and sort last. <b>Teaching <span class="t-code">FA26</span> only</b> shows just this quarter’s instructors.
   </div>
 
   <div class="legend">
@@ -834,8 +844,9 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     <span class="lg"><i class="sw" style="background:var(--gC)"></i>C</span>
     <span class="lg"><i class="sw" style="background:var(--gD)"></i>D</span>
     <span class="lg"><i class="sw" style="background:var(--gF)"></i>F</span>
-    <span class="lg"><i class="sw" style="background:var(--gW)"></i>W (withdraw)</span>
-    <span class="lg"><i class="sw" style="background:var(--gPN)"></i>P/NP</span>
+    <span class="lg"><i class="sw" style="background:var(--gW)"></i>W (withdrew)</span>
+    <span class="lg"><i class="sw" style="background:var(--gPN)"></i>P/NP (Pass/No Pass)</span>
+    <span class="lg lg-note">RMP = RateMyProfessors</span>
   </div>
 
   <div class="tablecard">
@@ -844,13 +855,13 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
       <div>Past instructor · RMP</div>
       <div class="sortable" data-sort="g">Avg GPA</div>
       <div class="sortable" data-sort="gA">Grade distribution (A → F, W, P/NP)</div>
-      <div class="sortable" data-sort="rd">RMP difficulty / again</div>
-      <div class="sortable num" data-sort="n">Sample</div>
+      <div class="sortable" data-sort="rd">RMP difficulty · would take again</div>
+      <div class="sortable num" data-sort="n">Times taught</div>
     </div>
     <div id="rows"><div class="loading">Loading grade data…</div></div>
     <div id="empty" class="empty" hidden>
       <div class="big">No matching courses</div>
-      <div>Try loosening the filters — turn off “Offered this term only” or the meeting-time filter, or set level to “All”.</div>
+      <div>Try loosening the filters — turn off “Offered this quarter only” or the meeting-time filter, set level to “All”, or lower “Taught ≥”.</div>
     </div>
     <div id="catHint" class="cat-hint" hidden></div>
   </div>
@@ -871,7 +882,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
            Open all course pages <span id="openAllCnt"></span>
          </button>
-         <span class="exp-hint">Two things first: <b>(1)</b> sign into <a href="https://tss.ucsd.edu/fiori" target="_blank" rel="noopener">TSS</a> so links land on the course (otherwise the login redirect drops the link and you land on the TSS home); <b>(2) allow pop-ups for this site</b> — this opens one tab per course, and browsers block that by default. <b>In Chrome/Edge:</b> click the blocked-pop-ups icon at the right end of the address bar → <b>“Always allow pop-ups”</b>, then click the button again. Courses without a direct link open the TSS launchpad to search.</span>
+         <span class="exp-hint">Sign into <a href="https://tss.ucsd.edu/fiori" target="_blank" rel="noopener">TSS</a> first and <b>allow pop-ups for this site</b> — this opens one tab per course. Courses without a direct link open the TSS search.</span>
          <button class="exp-btn" id="exportIcs" title="Download an .ics calendar file of your Fall 2026 classes" data-ttl="Download an .ics calendar file of your {term} classes">
            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
            Export to Calendar (.ics)
@@ -887,7 +898,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
            <button type="button" class="cal-tab" id="calTabFinals">Finals week · <span class="t-finals">Dec 5–12</span></button>
          </div>
          <div class="cal" id="cal"></div>
-         <div class="cal-note">Times from the live <span class="t-code">FA26</span> catalog. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn. Instruction runs <b class="t-instr">Sep 24 – Dec 4</b> (weeks 1–10, official UCSD calendar); switch to <b>Finals week</b> to see your exams laid out on <b class="t-finals">Dec 5–12</b>. Both go into the calendar export.</div>
+         <div class="cal-note">Times from the <span class="t-code">FA26</span> Schedule of Classes. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn. Instruction runs <b class="t-instr">Sep 24 – Dec 4</b> (weeks 1–10, official UCSD calendar); switch to <b>Finals week</b> to see your exams laid out on <b class="t-finals">Dec 5–12</b>. Both go into the calendar export.</div>
        </div>
        <div class="map-card">
          <div class="map-head" id="mapHead"><b>Campus map</b> — buildings for your selected sections</div>
@@ -912,7 +923,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
  </div><!-- /scheduleView -->
 
  <div id="geView" role="tabpanel" aria-label="Graduation and GE requirements">
-   <p class="ge-intro">Every UCSD student shares one degree floor (180 units, ELWR, AHI, DEI…); each college adds its own general-education curriculum. Shown for <b>first-year entrants</b> — transfer differences noted per college.</p>
+   <p class="ge-intro">Every UCSD student has the same university minimums (180 units, the writing requirement, American history and institutions, DEI); on top of that, each college adds its own general-education (GE) requirements. Shown for <b>first-year students</b> — transfer differences noted per college.</p>
    <div class="ge-picker" id="gePicker" role="group" aria-label="Choose your college"></div>
    <div id="geBody"></div>
    <details class="ge-uni" id="geUni">
@@ -925,15 +936,15 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
  <div id="minorView" role="tabpanel" aria-label="Undergraduate minors">
    <p class="ge-intro">All <b id="mnTotal">112</b> UC San Diego undergraduate minors as a <b>worksheet</b>: fill each requirement bucket,
      track units, and open any course's <b>grade ranking</b>. Most minors are seven courses / twenty-eight units with at least five
-     upper-division — cheap if you pick courses you were taking anyway. Requirements come from the <b>General Catalog</b>.</p>
+     upper-division — easiest when they overlap courses you’d take anyway. Requirements come from the <b>General Catalog</b>.</p>
 
    <div class="dp-controls">
      <div class="dp-field gp-combo" style="min-width:215px"><label>Department</label>
        <input id="mnDeptInput" type="text" placeholder="All departments" autocomplete="off" role="combobox"
               aria-autocomplete="list" aria-expanded="false" aria-controls="mnDeptList">
        <div id="mnDeptList" class="gp-combo-list" role="listbox" hidden></div></div>
-     <div class="dp-field gp-combo" style="flex:1;min-width:260px"><label>Minor / ISIS code</label>
-       <input id="mnPickInput" type="text" placeholder="Search a minor, ISIS code or subject — data, M070, LTEN…" autocomplete="off"
+     <div class="dp-field gp-combo" style="flex:1;min-width:260px"><label>Minor or minor code</label>
+       <input id="mnPickInput" type="text" placeholder="Search a minor, minor code or subject — data, M070, LTEN…" autocomplete="off"
               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="mnPickList">
        <div id="mnPickList" class="gp-combo-list" role="listbox" hidden></div></div>
      <button class="dp-btn" id="mnLoad" disabled>Load Worksheet</button>
@@ -980,6 +991,11 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
    .dp-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
    .dp-field select,.dp-field input{padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--ink);font-size:13.5px;font-family:var(--sans);min-width:160px}
    .dp-field select:disabled,.dp-field input:disabled{opacity:.5;cursor:not-allowed}
+   /* a select is as wide as its longest option ("School of Arts and Humanities…") — on a
+      phone that pushed the grad planner 16px past the screen. Cap it to the field. */
+   .dp-field{min-width:0;max-width:100%}
+   .dp-field select{max-width:100%}
+   @media (max-width:720px){.dp-controls .dp-field{flex:1 1 100%}.dp-field select,.dp-field input{min-width:0;width:100%}}
    .dp-field input:focus,.dp-field select:focus{outline:2px solid var(--accent);border-color:transparent}
    /* Searchable Research Area combobox */
    .gp-combo{position:relative}
@@ -1200,7 +1216,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
        <button class="dp-btn ghost sm" id="dpSummer" aria-pressed="false" title="Show a Summer session column each year — drag or add courses to catch up, lighten a heavy term, or graduate early">☀ Summer terms</button>
        <button class="dp-btn ghost sm" id="dpMinorBtn" title="Plan a minor alongside your major — drops its requirements into the lightest quarters as renameable placeholder courses">◆ Add minor</button>
        <div class="dp-field gp-combo" id="dpMinorField" hidden style="flex:1;min-width:240px;max-width:340px">
-         <input id="dpMinorInput" type="text" placeholder="Search a minor, ISIS code or subject…" autocomplete="off"
+         <input id="dpMinorInput" type="text" placeholder="Search a minor, minor code or subject…" autocomplete="off"
                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dpMinorList" aria-label="Add a minor to this plan">
          <div id="dpMinorList" class="gp-combo-list" role="listbox" hidden></div></div>
        <span class="sp"></span>
@@ -1236,15 +1252,15 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
    </div><!-- /dpUG -->
 
    <div id="dpGrad" hidden>
-     <p class="ge-intro">Browse by <b>school → department → research area</b> — every UCSD graduate <b>ISIS major code</b>. Coursework degrees (all engineering programs and more) open a full <b>worksheet</b>: fill each requirement bucket and track units, with every course linked to its <b>grade ranking</b>. Research doctorates and specializations open an overview card with the official requirements link.</p>
+     <p class="ge-intro">Browse by <b>school → department → research area</b> — every UCSD graduate <b>major code</b>. Coursework degrees (all engineering programs and more) open a full <b>worksheet</b>: fill each requirement bucket and track units, with every course linked to its <b>grade ranking</b>. Research doctorates and specializations open an overview card with the official requirements link.</p>
 
      <div class="dp-controls">
        <div class="dp-field"><label>School</label>
          <select id="gpSchool"><option value="">Select…</option></select></div>
        <div class="dp-field"><label>Department / Program</label>
          <select id="gpDept" disabled><option value="">—</option></select></div>
-       <div class="dp-field gp-combo" style="flex:1;min-width:210px"><label>Research Area / ISIS Code</label>
-         <input id="gpProgInput" type="text" placeholder="Search title or ISIS code…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="gpProgList" disabled>
+       <div class="dp-field gp-combo" style="flex:1;min-width:210px"><label>Research area / major code</label>
+         <input id="gpProgInput" type="text" placeholder="Search title or major code (e.g. EC80)…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="gpProgList" disabled>
          <select id="gpProg" class="gp-hidden-sel" disabled tabindex="-1" aria-hidden="true"><option value="">—</option></select>
          <div id="gpProgList" class="gp-combo-list" role="listbox" hidden></div></div>
        <div class="dp-field"><label>Plan</label>
@@ -1291,16 +1307,17 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
     <div class="meth">
       <h3>Data &amp; methodology</h3>
       <ul>
-        <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, aggregated per <i>course × professor</i> across quarters. The bar shows the full spread A/B/C/D/F, plus W (withdraw) and P/NP; <code>Avg GPA</code> is the historical mean.</li>
-        <li><b>Offered this term</b> — matched against the live <b class="t-name">Fall 2026</b> catalog (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this term.</li>
-        <li><b>Course page link</b> — every offered course carries a <b>Course page ↗</b> link straight to its TSS enrollment page (UCSD login required); in <b>My Schedule</b>, <b>Open all course pages</b> launches them all at once so you can enrol in one pass.</li>
-        <li><b>This term's instructor (<span class="t-code">FA26</span>)</b> — pulled from UCSD's live class schedule (TSS), which lists each <span class="t-name">Fall 2026</span> section's professor. On offered rows we show the actual current instructor(s); a <span class="badge-now">Teaching now</span> tag means the row's past instructor is the one teaching it this term, so their grade history is directly relevant. <span id="curcount"></span> rows are tagged this way. Neither source carries an instructor id, so names are linked by a precision-first ladder: normalise order/accents, handle compound surnames (<i>Massimiliano Di Ventra</i> ↔ <i>Di Ventra, Massimiliano</i>) and Mc/apostrophe spellings, match on a first <i>or middle</i> initial (<i>Ryan Wagner</i> ↔ <i>Wagner, Timothy Ryan</i>), and auto-alias genuine renames by shared course (<i>Paul Cao</i> teaches the same courses <i>Cao, Yingjun</i> has taught). A professor teaching at UCSD for the first time has no grade history, so their name is marked <span class="firstx">0×</span> and sorted after the returning instructors — and so is a returning professor teaching a course they haven't taught before, which is why every <span class="t-name">Fall 2026</span> course still shows up under <b>Teaching <span class="t-code">FA26</span> only</b> even when its instructor has no record for that course.</li>
-        <li><b>Schedule builder</b> — add offered courses to <b>My Schedule</b> to lay out lectures/discussions/labs on a weekly calendar (with conflict detection) and see the buildings on a campus map. Section times, rooms and instructors come from the same <span class="t-code">FA26</span> catalog; selections are saved in your browser. Each course card also shows its <b>final exam</b> (FI) date &amp; time for the selected section group, and overlapping finals are flagged as conflicts. <b>Export to Calendar</b> downloads an <code>.ics</code> file (Apple Calendar, Google Calendar, Outlook) with weekly recurring events for the <span class="t-name">Fall 2026</span> term (<span class="t-instr">Sep 24 – Dec 4</span>) plus one-time final-exam events, campus holidays excluded and Pacific-time DST handled. <b>Open all course pages</b> launches every scheduled course on TSS in its own tab, so you can enroll in one pass — this needs <b>pop-ups allowed for this site</b> (browsers block multiple tabs by default), and you should be <b>signed into TSS first</b>.</li>
-        <li><b>Meeting-time filter</b> — the 🕐 filter keeps only courses that can actually fit your week: in at least one section group, every required meeting type (lecture / discussion / lab) must have a section inside your chosen days &amp; hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you're free. Sections with TBA times always count as fitting.</li>
-        <li><b>RMP</b> — RateMyProfessors (school 1079), name-matched (~80% hit). <code>Difficulty</code> lower is easier; <code>again</code> is would-take-again %. Blank means no match.</li>
-        <li><b>Grad backfill</b> — courses with no grade data (mostly 200+) are filled in reverse from professors' RMP course history, shown as <code>RMP only</code>. Those RMP scores are the professor's overall rating, not specific to that course.</li>
-        <li><b>Course titles &amp; catalog courses</b> — UCSD's grade-distribution export abbreviates titles to a 30-character field (<i>Probablty Stats/Bioinformatics</i>), so titles are replaced with the official ones from <b>catalog.ucsd.edu</b> wherever they match. The catalog also fills a real gap: a course that has never had a published grade distribution — many grad seminars, directed-study and research courses (e.g. <i>BENG 223</i>) — used to be absent entirely. Those are now listed as reference rows tagged <span class="firstx">catalog</span> with their title and prerequisites but no GPA. They sit outside the <span class="t-name">Fall 2026</span> schedule, so <b>Offered this term only</b> hides them; search tells you when matches are hidden and reveals them in one click.</li>
-        <li><b>Degree Planner</b> — the <b>Undergraduate</b> mode loads UCSD's official college academic plans (2022–2026) as a quarter-by-quarter grid. The <b>Graduate</b> mode lists <b>every UCSD graduate ISIS major code</b> by school → department → research area (base degrees, specializations, joint-doctoral and online variants), and gives the Jacobs engineering programs a full worksheet organised by requirement category — including all <b>thirteen ECE research areas</b> modeled from their official 2025–2027 degree planners (ISRC/EC80, CE/EC79, ECS/EC78, SIP/EC82, MLDS/EC93, CTS, AEM, AOS, AP-EDM, MDS, MI, NDS, PHO). Each area carries its own core, additional and technical-elective rules and unit quotas (which vary by area); the plan choice sets the total (Plan I 52u / Plan II 48u, ≥12/16 units of 201+ ECE, 3.0 GPA). It tracks units per bucket, total units toward the plan, and the 201+ ECE minimum — a reference guide, not official advice.</li>
+        <li><b>Grades</b> — official UCSD grade distributions, 2015–2026, combined per course and instructor across quarters. The bar shows A/B/C/D/F plus W (withdrew) and P/NP (Pass/No Pass); <code>Avg GPA</code> is the historical mean.</li>
+        <li><b>Offered this quarter</b> — matched against UCSD’s <b class="t-name">Fall 2026</b> Schedule of Classes on TSS, UCSD’s enrollment system (<span id="schedcount"></span> course codes). An <code>Offered</code> tag means the course runs this quarter.</li>
+        <li><b>This quarter’s instructor (<span class="t-code">FA26</span>)</b> — from the same schedule. <span class="badge-now">Teaching <span class="t-code">FA26</span></span> means the row’s past instructor is teaching it again, so their grade history applies directly (<span id="curcount"></span> rows). An instructor with no grades for a course is marked <span class="firstx">0×</span> and sorted after instructors with history.
+          <details class="meth-more"><summary>How names are matched</summary>The schedule and the grade data share no instructor ID, so names are matched conservatively: word order and accents are normalized, compound surnames (<i>Massimiliano Di Ventra</i> ↔ <i>Di Ventra, Massimiliano</i>) and Mc/apostrophe spellings are handled, a first <i>or middle</i> initial can match (<i>Ryan Wagner</i> ↔ <i>Wagner, Timothy Ryan</i>), and a renamed instructor is linked when both names taught the same courses (<i>Paul Cao</i> ↔ <i>Cao, Yingjun</i>).</details></li>
+        <li><b>Course pages</b> — offered courses link to their TSS page (sign in first). Where every section has its own page, <b>Pick a section</b> lists them. In <b>My Schedule</b> each course links to the section you picked, and <b>Open all course pages</b> opens them all at once (allow pop-ups for this site).</li>
+        <li><b>Schedule builder</b> — lay out lectures, discussions and labs on a weekly calendar with time and final-exam conflict checks, see the buildings on a campus map, and export an <code>.ics</code> file (Apple, Google, Outlook) with weekly events for <span class="t-instr">Sep 24 – Dec 4</span> plus your finals. Choices are saved in your browser.</li>
+        <li><b>Meeting-time filter</b> — keeps only courses that fit your week: in at least one section group, every required meeting type has a section inside your chosen days and hours. The <i>weekly grid</i> mode works like When2Meet — paint the hours you’re free. TBA sections always fit.</li>
+        <li><b>RMP</b> — RateMyProfessors ratings for UCSD (school 1079), matched by name (about 80% found). Lower difficulty is easier; “would take again” is the share of reviewers who would. Blank means no match.</li>
+        <li><b>Graduate courses without grades</b> — many 200+ courses have no published grades; they’re listed from instructors’ RMP history and marked <code>RMP only</code>. Those scores are the instructor’s overall rating, not specific to the course.</li>
+        <li><b>Titles &amp; courses with no grades</b> — titles come from the UCSD General Catalog (catalog.ucsd.edu), since the grade export cuts them to 30 characters. Courses that have never had published grades — many seminars, directed-study and research courses (e.g. <i>BENG 223</i>) — are listed as reference rows tagged <span class="firstx">catalog</span>, with title and prerequisites but no GPA. <b>Offered this quarter only</b> hides those not on the schedule; search tells you when matches are hidden.</li>
+        <li><b>Degree Planner</b> — <i>Undergraduate</i> loads UCSD’s official college academic plans (plans.ucsd.edu, entering years 2022–2026) as a quarter grid you can edit. <i>Graduate</i> lists every UCSD graduate major code by school → department → area; engineering programs get a full requirement worksheet, others an overview card linking the official requirements. A reference guide, not official advice.</li>
         <li><b>Caveat</b> — history is a guide, not a guarantee; instructors and grading policies change. Fewer times taught = less reliable (use the <code>Taught ≥</code> filter).</li>
       </ul>
       <p class="disclaimer"><b>Disclaimer.</b> This tool is for reference only and is not affiliated with UC San Diego. Grade and rating data may be incomplete or out of date. It does not constitute academic advice — every enrollment decision, including which course and section to take, is the student's own responsibility. Always confirm requirements and offerings with official UCSD sources and your academic advisor.</p>
@@ -1329,7 +1346,7 @@ window.GE_REQS={
       name:'Revelle', est:'est. 1964', en:'Revelle College · est. 1964',
       tagline:'the most structured (and heaviest) liberal-arts core',
       char:'The most demanding and least flexible GE on campus — a “Renaissance” breadth of math, a full science sequence, five humanities courses, a foreign language, social science and art. STEM majors overlap the math/science; the 5-course HUM sequence + language is everyone’s hard part, and the core subjects can’t be hidden with P/NP.',
-      tags:[['heavy','GE load: heaviest (~16 courses + language)'],['plain','Writing: HUM 1–5 (5 courses)'],['heavy','P/NP: most restricted'],['conf','High confidence · triple-verified']],
+      tags:[['heavy','GE load: heaviest (~16 courses + language)'],['plain','Writing: HUM 1–5 (5 courses)'],['heavy','P/NP: most restricted'],['conf','Checked against 3 official sources']],
       areas:[
         ['Humanities','5','HUM 1–5. HUM 1 & 2 are 6-unit writing-intensive; 3, 4, 5 are 4 units each (26u total).','lg'],
         ['Mathematics','3','1 calculus + 2 from an approved list (MATH 10/20 series, MATH 18, DSC 10, PHIL 10, PSYC 60).','lg'],
@@ -1344,7 +1361,7 @@ window.GE_REQS={
       name:'John Muir', est:'est. 1967', en:'John Muir College · est. 1967',
       tagline:'“your choice, your responsibility” — the most flexible',
       char:'The opposite of Revelle: just two writing courses plus four “three-course sequences” that you pick from approved lists. The highest flexibility on campus — you can choose sequences you’re good at, enjoy, and that overlap your major. A classic pick for keeping GE low-stress and GPA-safe.',
-      tags:[['light','GE load: light (~14 courses, overlappable)'],['plain','Writing: MCWP 40 + 50 (2 courses)'],['plain','Highly flexible · self-chosen sequences'],['conf','Med-high · catalog-sourced']],
+      tags:[['light','GE load: light (~14 courses, overlappable)'],['plain','Writing: MCWP 40 + 50 (2 courses)'],['plain','Highly flexible · self-chosen sequences'],['conf','From the catalog']],
       areas:[
         ['Writing','2','MCWP 40 + 50 (8u): critical thinking, rhetoric & expository writing. AP/IB cannot exempt (AP English only meets ELWR).','lg'],
         ['Social Sciences','1 seq','One approved 3-course sequence (Category I).',''],
@@ -1357,7 +1374,7 @@ window.GE_REQS={
       name:'Thurgood Marshall', est:'est. 1970', en:'Thurgood Marshall College · est. 1970',
       tagline:'“scholar & citizen” — the DOC trilogy',
       char:'Built around DOC (Dimensions of Culture), a three-course linked writing sequence on diversity, justice and imagination. GE is balanced and breadth courses pair well with outside interests. Historically the highest average GPA of the older six colleges — DOC is real work but not a harsh grader.',
-      tags:[['mid','GE load: moderate (~15 courses)'],['plain','Writing: DOC 1·2·3 (3 courses / 16u)'],['heavy','DOC: no exemptions'],['conf','High confidence · triple-verified']],
+      tags:[['mid','GE load: moderate (~15 courses)'],['plain','Writing: DOC 1·2·3 (3 courses / 16u)'],['heavy','DOC: no exemptions'],['conf','Checked against 3 official sources']],
       areas:[
         ['Core writing','3','DOC 1 (4u/fall) → DOC 2 (6u/winter) → DOC 3 (6u/spring), 16u linked. Must be done at UCSD; AP/IB/transfer cannot substitute (no exceptions).','lg'],
         ['Natural Science','3','Biology, chemistry, physics each (BILD/CHEM/PHYS/SIO; non-majors may fill the physics slot with an SIO earth-science course).',''],
@@ -1372,7 +1389,7 @@ window.GE_REQS={
       name:'Earl Warren', est:'est. 1974', en:'Earl Warren College · est. 1974',
       tagline:'“toward a life in balance” — friendliest to engineers',
       char:'GE is organized around two out-of-major depth areas. Non-engineering majors do two 6-course Programs of Concentration; but engineering BS majors take the much smaller Area Studies (two blocks of three) — and both can be replaced by a minor and taken P/NP. This is the official basis for “Warren is engineer-friendly.”',
-      tags:[['mid','GE load: heavy (non-eng) / light (eng)'],['plain','Writing: WCWP 10A-B (2 courses)'],['light','PofC / Area Studies: P/NP ok'],['conf','Med-high · catalog-sourced']],
+      tags:[['mid','GE load: heavy (non-eng) / light (eng)'],['plain','Writing: WCWP 10A-B (2 courses)'],['light','PofC / Area Studies: P/NP ok'],['conf','From the catalog']],
       areas:[
         ['Writing','2','WCWP 10A + 10B: academic argumentation & analytical papers.','lg'],
         ['Ethics & Society','2','PHIL/POLI 27 + PHIL/POLI 28.','lg'],
@@ -1386,7 +1403,7 @@ window.GE_REQS={
       name:'Eleanor Roosevelt (ERC)', est:'est. 1988', en:'Eleanor Roosevelt College · est. 1988',
       tagline:'“educating for global citizenship” — longest writing core',
       char:'MMW (Making of the Modern World) is a five-quarter linked writing/GE core — the longest on campus — and no AP, IB or transfer credit exempts any quarter. Add regional specialization, language and upper-div writing: the most international outlook, but also one of the heaviest writing loads.',
-      tags:[['heavy','GE load: heavy (~13 courses + language)'],['plain','Writing: MMW 11–15 (5 courses)'],['heavy','MMW: zero exemptions'],['conf','High confidence · triple-verified (writing)']],
+      tags:[['heavy','GE load: heavy (~13 courses + language)'],['plain','Writing: MMW 11–15 (5 courses)'],['heavy','MMW: zero exemptions'],['conf','Writing checked against 3 official sources']],
       areas:[
         ['MMW core','5','MMW 11–15 (five quarters); blends lit/history/philosophy + social science + writing (two count as the writing requirement). AP/IB/transfer exempt none.','lg'],
         ['Regional Specialization','3','Three courses on a single region (humanities/social science/arts); ≥2 upper-division. One may be P/NP.',''],
@@ -1402,7 +1419,7 @@ window.GE_REQS={
       name:'Sixth', est:'est. 2002', en:'Sixth College · est. 2002',
       tagline:'“culture, art & technology” — the widest breadth',
       char:'CAT is three core writing courses plus the upper-division CAT 125 (writing for public audiences). Breadth is the broadest on campus — IT fluency, seven “Modes of Inquiry”, data, art-making and experiential learning — many small requirements rather than one deep sequence. Good for cross-disciplinary types who don’t want to be locked into one track.',
-      tags:[['mid','GE load: moderate–high (~16 courses, spread out)'],['plain','Writing: CAT 1·2·3 + 125 (4 courses)'],['mid','Some P/NP (within 25% cap)'],['conf','High (writing) / catalog-sourced']],
+      tags:[['mid','GE load: moderate–high (~16 courses, spread out)'],['plain','Writing: CAT 1·2·3 + 125 (4 courses)'],['mid','Some P/NP (within 25% cap)'],['conf','Writing checked 3 ways · rest from the catalog']],
       areas:[
         ['CAT core','3','CAT 1 → 2 → 3; CAT 2 & 3 are 6-unit writing-intensive quarters.','lg'],
         ['CAT upper-div writing','1','CAT 125 (or 125R remote / 125GS), 4u — public rhetoric & practical communication; needs CAT 1-2-3 first.','lg'],
@@ -1418,7 +1435,7 @@ window.GE_REQS={
       name:'Seventh', est:'est. 2020', en:'Seventh College · est. 2020',
       tagline:'“a changing planet” — max overlap with your major',
       char:'A modern design: three SYN writing courses plus ten “Alternatives” (two from each of five areas), and Alternatives explicitly may overlap your major, minor and university requirements. For STEM majors with a full plate, GE adds almost nothing — 14 on paper, few net-new.',
-      tags:[['light','GE load: light (14 courses, heavy overlap)'],['plain','Writing: SYN 1·2·100 (3 courses)'],['light','Alternatives overlap major'],['conf','Med-high · catalog-sourced']],
+      tags:[['light','GE load: light (14 courses, heavy overlap)'],['plain','Writing: SYN 1·2·100 (3 courses)'],['light','Alternatives overlap major'],['conf','From the catalog']],
       areas:[
         ['Synthesis core','3','SYN 1/1R → 2/2R → 100; SYN 1 & 2 are writing-intensive, SYN 100 is project-based.','lg'],
         ['Alternatives','10','Two from each of five areas: Arts; Humanities; Natural Sciences & Engineering; Quantitative Reasoning; Social Sciences. May overlap major, minor & university requirements.',''],
@@ -1430,7 +1447,7 @@ window.GE_REQS={
       name:'Eighth', est:'est. 2023', en:'Eighth College · est. 2023',
       tagline:'“engagement & community” — breadth can be P/NP',
       char:'The newest college. Four CCE (Critical Community Engagement) core courses — writing + a community project — plus ten breadth courses (two per area). Structure resembles Seventh, but with one GPA-friendly twist: breadth may be taken P/NP within the 25% cap; only CCE must be letter grade.',
-      tags:[['light','GE load: light (14 courses, overlappable)'],['plain','Writing: CCE 1·2·3 + 120 (4 courses)'],['light','Breadth: P/NP allowed'],['conf','Med-high · catalog-sourced']],
+      tags:[['light','GE load: light (14 courses, overlappable)'],['plain','Writing: CCE 1·2·3 + 120 (4 courses)'],['light','Breadth: P/NP allowed'],['conf','From the catalog']],
       areas:[
         ['CCE core','4','CCE 1 (engagement intro) → CCE 2 & 3 (two writing-intensive quarters) → CCE 120 (community project).','lg'],
         ['Breadth','10','Two from each of five areas: Arts; Humanities; Natural Sciences; Quantitative Methods & Engineering; Social Sciences. May be taken P/NP within the 25% cap.','pnp']
@@ -1706,12 +1723,23 @@ function init(DATA){
     }).catch(()=>{list.innerHTML=`<a href="${TSS_HOME}" target="_blank" rel="noopener">Couldn’t load the sections — open TSS ↗</a>`;});
   }
   // keep the popup on screen (on a phone the row's right edge sits near the left side)
+  // Position the (fixed) list under its button — or above it when there's more room
+  // there — kept inside the viewport, its height capped to the space available.
   function placeSecPick(list){
-    list.style.transform='';
-    const r=list.getBoundingClientRect(), vw=document.documentElement.clientWidth; let dx=0;
-    if(r.left<8) dx=8-r.left; else if(r.right>vw-8) dx=vw-8-r.right;
-    if(dx) list.style.transform='translateX('+Math.round(dx)+'px)';
+    const d=list.closest('.secpick'), sm=d&&d.querySelector('summary'); if(!sm) return;
+    const a=sm.getBoundingClientRect(), vw=document.documentElement.clientWidth, vh=window.innerHeight;
+    if(a.bottom<0||a.top>vh){d.open=false;return;}          // its button scrolled away
+    const below=vh-a.bottom-12, above=a.top-12, want=Math.min(list.scrollHeight,360);
+    const up=below<Math.min(want,220)&&above>below;
+    const maxH=Math.max(120,Math.min(360,up?above:below));
+    list.style.maxHeight=maxH+'px';
+    const h=Math.min(list.scrollHeight,maxH), w=list.offsetWidth;
+    list.style.top=Math.round(up?a.top-4-h:a.bottom+4)+'px';
+    list.style.left=Math.round(Math.max(8,Math.min(a.right-w,vw-8-w)))+'px';
   }
+  const replaceSecPick=()=>{const l=document.querySelector('.secpick[open] .secpick-list');if(l)placeSecPick(l);};
+  window.addEventListener('scroll',e=>{if(!(e.target&&e.target.classList&&e.target.classList.contains('secpick-list')))replaceSecPick();},{passive:true,capture:true});
+  window.addEventListener('resize',replaceSecPick);
   // <details> 'toggle' doesn't bubble — listen in the capture phase. One picker open at a time.
   document.addEventListener('toggle',e=>{
     const d=e.target; if(!d.classList||!d.classList.contains('secpick')||!d.open) return;
@@ -1928,9 +1956,9 @@ function init(DATA){
     const isCur=r[C.cur]===1;
     const title=(r[C.t]>=0?(T[r[C.t]]||''):'')||(isRmp?'Graduate course · RMP-rated':'');
     const nowBadge=isNew2?'<span class="firstx" title="No grade-distribution data for this course × professor">0×</span>'
-                  :isTBA?(umbrella?'<span class="firstx" title="Research / independent study — many possible instructors">research</span>':'<span class="firstx" title="Instructor not assigned yet in the catalog">TBA</span>')
+                  :isTBA?(umbrella?'<span class="firstx" title="Research / independent study — many possible instructors">research</span>':'<span class="firstx" title="No instructor assigned yet in the schedule">TBA</span>')
                   :isCat?'<span class="firstx" title="Listed in the UCSD catalog, but no recorded grade distribution and not offered this term">catalog</span>'
-                  :(isCur?'<span class="badge-now" title="This professor is teaching this course in '+TERM.name+'.">Teaching now</span>':'');
+                  :(isCur?'<span class="badge-now" title="This instructor is teaching this course in '+TERM.name+'.">Teaching '+TERM.code+'</span>':'');
     const preferredInstructor=isCur&&faList ? orderFa(faList).find(n=>faMatchesName(n,r[C.i]||''))||'' : '';
     const scheduledItem=schItems.find(it=>it.k===fakey);
     const addState=!scheduledItem?'add'
@@ -1940,15 +1968,15 @@ function init(DATA){
     const addTitle=addState==='switch'?`Switch schedule to ${preferredInstructor}`:addState==='added'?'Remove from My Schedule':preferredInstructor?`Add ${fakey} with ${preferredInstructor}`:'Add to My Schedule';
     const addBtn=r[C.off]?`<button class="addbtn ${addState}" data-add="${esc(fakey)}"${preferredInstructor?` data-instr="${esc(preferredInstructor)}"`:''} title="${esc(addTitle)}">${addText}</button>`:'';
     let nowLine='';
-    if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Teaching this term · no grade data</span>';
+    if(isNew2) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Teaching '+TERM.name+' · no grades for this course yet</span>';
     else if(isCat) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>Not offered in '+TERM.name+'</span>';
     else if(isTBA) nowLine=`<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--muted)"></span>${umbrella?'Research / independent study':'Instructor to be announced'}</span>`;
-    else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching this term</span>';
+    else if(isCur) nowLine='<span class="now"><span class="dotnow"></span>Teaching '+TERM.name+'</span>';
     else if(isSet && !(r[C.off]&&faList)) nowLine='<span class="now" style="color:var(--muted)"><span class="dotnow" style="background:var(--accent)"></span>Recent instructor · course evaluations below</span>';
     // This row's professor is NOT teaching it this term — the names belong to the
     // course, not to this row, so say "this course" (a bare "FA26: …" under every
     // past instructor read as though all of them were teaching it this fall, #65).
-    else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');const tip=`${instrShort(r[C.i]||'')||'This professor'} is not teaching ${r[C.s]} ${r[C.c]} in ${TERM.name} — it is taught by ${ord.join(', ')}. This row is their past grade history for the course.`;nowLine=`<span class="now" style="color:var(--muted)" title="${esc(tip)}"><span class="dotnow" style="background:var(--muted)"></span>This course in ${TERM.code}: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
+    else if(r[C.off]&&faList){const ord=orderFa(faList);const shownFa=ord.slice(0,3).map(n=>esc(n)+(NEWPROF.has(n)?' 0×':'')).join(', ');const tip=`${instrShort(r[C.i]||'')||'This professor'} is not teaching ${r[C.s]} ${r[C.c]} in ${TERM.name} — it is taught by ${ord.join(', ')}. This row is ${instrShort(r[C.i]||'')||'this instructor'}’s past grade history for the course.`;nowLine=`<span class="now" style="color:var(--muted)" title="${esc(tip)}"><span class="dotnow" style="background:var(--muted)"></span>This course in ${TERM.code}: ${shownFa}${ord.length>3?' +'+(ord.length-3):''}</span>`;}
     // Offered course with NO instructor in the WebReg catalog at all (key absent from the
     // fa map): fillFa26Rows() never visits it and the branch above can't fire, so its
     // RMP-backfill row showed the RMP professor + "Offered" as if they taught it (#65's
@@ -1971,7 +1999,7 @@ function init(DATA){
     if(rid==null){rmpCell='<span class="none">no RMP match</span>';}
     else{
       const diff=rd==null?'':`<span class="d">Diff <span class="diffchip" style="background:${diffColor(rd)}">${rd.toFixed(1)}</span></span>`;
-      const wta=rwta==null?'':`<span class="wta">${rwta}% again</span>`;
+      const wta=rwta==null?'':`<span class="wta" title="Share of RMP reviewers who would take this instructor again">${rwta}% would take again</span>`;
       const aka=RMPAKA[rid]?`<span class="rmpaka" title="This professor is listed on RateMyProfessors under a different name">listed on RMP as ${esc(RMPAKA[rid])}</span>`:'';
       rmpCell=rn?`${diff}${wta}${aka}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener">RMP · ${rn} rating${rn===1?'':'s'} ↗</a>`
         :`${aka}<a href="https://www.ratemyprofessors.com/professor/${rid}" target="_blank" rel="noopener" title="This professor has a RateMyProfessors page but no ratings yet">RMP profile · no ratings yet ↗</a>`;
@@ -1983,8 +2011,8 @@ function init(DATA){
     const setYr=setL?Math.max(0,...setL.map(e=>{const m=(e.t||'').match(/(\d{2})$/);return m?+m[0]:0})):0;
     const sample=setL?`<span class="n">${setL.length}×</span><div class="yr ${setYr>=25?'recent':''}" title="Terms this instructor taught the course, per official SET evaluations">${setYr?'latest 20'+setYr:'taught'}</div>`
       :isNew2?`<span class="n">0×</span><div class="yr">no grades</div>`
-      :isTBA?`<span class="n">—</span><div class="yr">${umbrella?faList.length+' instr':'TBA'}</div>`
-      :isRmp?`<span class="n">${r[C.n]}</span><div class="yr" title="RateMyProfessors reviews written specifically about this course. The RMP column shows this professor's total review count across all their courses.">for this course</div>`
+      :isTBA?`<span class="n">—</span><div class="yr">${umbrella?faList.length+' instructors':'TBA'}</div>`
+      :isRmp?`<span class="n">${r[C.n]}</span><div class="yr" title="RateMyProfessors reviews written specifically about this course. The RMP column shows this instructor's total review count across all their courses.">RMP reviews</div>`
       :`<span class="n">${r[C.n]}×</span><div class="yr ${recent?'recent':''}">${yr!=null?'latest 20'+yr:''}</div>`;
     const instrLabel=isTBA?TERM.code:isNew2?(isNewProf?'New instructor':TERM.code+' instructor'):isSet?'Instructor':'Past instructor';
     const displayName=isTBA?(umbrella?`Instructors vary · ${faList.length}`:'Instructor TBA'):instrShort(r[C.i]);
@@ -1999,7 +2027,7 @@ function init(DATA){
       <div class="gpa"><span class="k">Avg GPA</span>${gpaCell}</div>
       <div class="dist"><span class="k">Grade distribution</span>${dist}</div>
       <div class="rmp"><span class="k">RMP</span>${rmpCell}</div>
-      <div class="samp num"><span class="k">Sample</span>${sample}</div>
+      <div class="samp num"><span class="k">Times taught</span>${sample}</div>
     </div>`;
   }
 
@@ -2027,14 +2055,14 @@ function init(DATA){
     document.querySelectorAll('.thead .sortable').forEach(el=>el.dataset.active=(el.dataset.sort===state.sort)?'1':'0');
   }
   // Catalog-only courses (src=4) have no grade distribution and aren't on the
-  // FA26 schedule, so two defaults hide them: "Offered this term only" and the
+  // FA26 schedule, so two defaults hide them: "Offered this quarter only" and the
   // Undergrad level filter (most are 200+). When a search matches some that the
   // current filters exclude, say so and reveal them in one click — otherwise a
   // course like BENG 223 just looks missing.
   // When a search matches courses the current filters hide, say so and offer to show them
   // (exact-code searches for grad or not-offered courses used to hit a bare "No matching").
   // Subject / exact-list / professor picks and the time window are explicit choices and are
-  // respected; level, "Offered this term only", "Teaching … only" and "Taught ≥" are relaxed.
+  // respected; level, "Offered this quarter only", "Teaching … only" and "Taught ≥" are relaxed.
   function renderCatHint(){
     const el=$('catHint'); if(!el) return;
     const q=state.q.trim().toLowerCase();
@@ -2056,7 +2084,7 @@ function init(DATA){
     if(!n){ el.hidden=true; return; }
     const why=[];
     if(state.level!=='all') why.push('course level');
-    if(state.offered) why.push('“Offered this term only”');
+    if(state.offered) why.push('“Offered this quarter only”');
     if(state.curonly) why.push('“Teaching '+TERM.code+' only”');
     if(state.minoff>1) why.push('“Taught ≥ '+state.minoff+'”');
     const list=[...filtered,...catOnly].slice(0,3).join(', ')+(n>3?' …':'');
@@ -2088,10 +2116,10 @@ function init(DATA){
     const avgA=av.length?av.reduce((a,b)=>a+b,0)/av.length:null;
     const cov=list.length?Math.round(100*list.filter(r=>r[C.rid]!=null).length/list.length):0;
     const tiles=[
-      {v:list.length.toLocaleString(),l:'Course × professor matches'},
+      {v:list.length.toLocaleString(),l:'Course–instructor pairs'},
       {v:med==null?'—':med.toFixed(2),l:'Median avg GPA',accent:true},
       {v:avgA==null?'—':avgA.toFixed(0)+'%',l:'Mean A rate'},
-      {v:cov+'%',l:'RMP match coverage'},
+      {v:cov+'%',l:'Instructors with an RMP page'},
     ];
     $('stats').innerHTML=tiles.map(t=>`<div class="stat"><div class="v ${t.accent?'accent':''}">${t.v}</div><div class="l">${t.l}</div></div>`).join('');
   }
@@ -2215,7 +2243,7 @@ function init(DATA){
   }
   setupCombo({
     combo:$('profCombo'), input:$('profInput'), list:$('profList'), clear:$('profClear'),
-    allLabel:'Any professor',
+    allLabel:'Any instructor',
     getItems(f){return profSuggestions(f);},
     onSelect(v){state.prof=v;render();}
   });
@@ -2668,7 +2696,7 @@ function init(DATA){
   function gmapsDir(c1,c2){ return 'https://www.google.com/maps/dir/?api=1&origin='+c1[0]+','+c1[1]+'&destination='+c2[0]+','+c2[1]+'&travelmode=walking'; }
   function renderTransitions(){
     const host=$('gaBody'); if(!host) return;
-    if(!WALK){ host.innerHTML='<div class="ga-load">Loading walk / bike times…</div>'; ensureWalk().then(w=>{ if(w){ gaFillSelects(); renderTransitions(); } else host.innerHTML='<div class="ga-empty">Couldn’t load campus distances.</div>'; }); return; }
+    if(!WALK){ host.innerHTML='<div class="ga-load">Loading walk / bike times…</div>'; ensureWalk().then(w=>{ if(w){ gaFillSelects(); renderTransitions(); } else host.innerHTML='<div class="ga-empty">Couldn’t load walking and biking times. Reload the page to try again.</div>'; }); return; }
     const evs=schEvents().filter(e=>e.bld && WALK._idx[e.bld]!=null);
     const DAYNAMES=['Monday','Tuesday','Wednesday','Thursday','Friday'];
     let html='';
@@ -3028,7 +3056,7 @@ function init(DATA){
   $('tpFrom').addEventListener('change',()=>{fixRange('from');applyTime();});
   $('tpTo').addEventListener('change',()=>{fixRange('to');applyTime();});
   const gridEl=$('tpGridEl');
-  {let html='<div></div>'+DAY_SHORT.map((d,i)=>`<div class="gh" data-col="${i}" title="Toggle the whole day">${d}</div>`).join('');
+  {let html='<div></div>'+DAY_SHORT.map((d,i)=>`<div class="gh" data-col="${i}" title="Select or clear this whole day">${d}</div>`).join('');
    for(let h=GRID_H0;h<GRID_H1;h++){
      html+=`<div class="glab">${fmtMin(h*60)}</div>`;
      for(let d=0;d<7;d++) html+=`<div class="gc" data-cell="${d}-${h}"></div>`;
@@ -3135,9 +3163,9 @@ function init(DATA){
     const links=(GE.sources||[]).map(s=>`<li><a href="${esc(s[1])}" target="_blank" rel="noopener">${esc(s[0])}</a>${s[2]==='secondary'?' <span style="color:var(--faint)">· secondary</span>':''}</li>`).join('');
     el.innerHTML=`<h4>Confidence &amp; sources</h4>
       <div class="ckey">
-        <span><i class="cdot" style="background:var(--gA)"></i>High · triple-verified</span>
-        <span><i class="cdot" style="background:var(--gD)"></i>Catalog-sourced · not triple-verified</span>
-        <span><i class="cdot" style="background:var(--gW)"></i>Reference · secondary/common</span>
+        <span><i class="cdot" style="background:var(--gA)"></i>Checked against 3 official sources</span>
+        <span><i class="cdot" style="background:var(--gD)"></i>From the catalog only</span>
+        <span><i class="cdot" style="background:var(--gW)"></i>Secondary source</span>
       </div>
       <ul>${links}</ul>
       <p class="disc">Reference only — <b>not official, not academic advice</b>. Course counts are approximate and vary by major, transfer agreement and year; confirm every requirement with the official UCSD catalog and your advisor. Verified ${esc(GE.meta&&GE.meta.date||'')}.</p>`;
@@ -3150,7 +3178,7 @@ function init(DATA){
     renderGeBody();
   }
   function renderGE(){
-    if(!GE.colleges){$('geBody').innerHTML='<div class="ge-card"><div class="ge-note">Requirements data unavailable.</div></div>';return;}
+    if(!GE.colleges){$('geBody').innerHTML='<div class="ge-card"><div class="ge-note">Couldn’t load the requirements. Reload the page — if it keeps failing, tell us with the Feedback button.</div></div>';return;}
     if(geInit)return; geInit=true;
     renderGePicker(); renderGeBody(); renderGeUni(); renderGeSrc();
   }
@@ -3319,7 +3347,7 @@ function init(DATA){
     $('mnEmpty').hidden=true; $('mnApp').hidden=false;
     $('mnTitle').textContent=m.name+' minor';
     const codes=(m.codes||[]).filter(c=>courseKeySet.has(c));
-    $('mnSub').innerHTML=esc(m.admin)+' · ISIS '+esc(m.code)+' · '+esc(m.tss)
+    $('mnSub').innerHTML=esc(m.admin)+' · minor code '+esc(m.code)
       +(w.n?' · '+w.n+' courses':'')+(w.units?' / '+w.units+' units':'')
       +' · <a href="'+esc(m.url||'https://catalog.ucsd.edu/')+'" target="_blank" rel="noopener" style="color:var(--accent-2)">catalog entry ↗</a>'
       +(m.site?' · <a href="'+esc(m.site)+'" target="_blank" rel="noopener" style="color:var(--accent-2)">department requirements ↗</a>':'');
@@ -3477,7 +3505,7 @@ function init(DATA){
   let minInit=false;
   function renderMinors(){
     if(minInit) return; minInit=true;
-    if(!MIN||!MIN.length){$('mnEmpty').textContent='Minor data unavailable (minors.json failed to load).';return;}
+    if(!MIN||!MIN.length){$('mnEmpty').textContent='Couldn’t load the minors. Reload the page — if it keeps failing, tell us with the Feedback button.';return;}
     $('mnTotal').textContent=String(MIN.length);
     $('mnEmpty').textContent='Start typing a minor above — “data”, “music”, “M070”, “LTEN” — or pick a department first.';
     const want=mwStore.sel&&MIN.find(m=>m.tss===mwStore.sel);
@@ -3507,7 +3535,7 @@ function init(DATA){
     $('minorView').classList.toggle('active',v==='minor');
     $('tab-planner').setAttribute('aria-selected',v==='planner'?'true':'false');
     $('plannerView').classList.toggle('active',v==='planner');
-    if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Could not load schedule.json</div><div>The '+TERM.name+' catalog file is missing.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
+    if(v==='sched') ensureSched().then(renderSchedule).catch(()=>{$('schedEmpty').innerHTML='<div class="big">Couldn’t load the '+TERM.name+' schedule</div><div>Reload the page — if it keeps failing, tell us with the Feedback button.</div>';$('schedEmpty').hidden=false;$('schedGrid').hidden=true;});
     if(v==='ge') ensureGeCourses().then(renderGE);
     if(v==='minor') ensureMinors().then(renderMinors);
     if(v==='planner') initPlanner();
@@ -3587,7 +3615,7 @@ function init(DATA){
       document.addEventListener('click',e=>{const c=$('dpMajorInput');if(c&&!c.parentNode.contains(e.target))dpCloseDrop();});
       $('dpEmpty').textContent='Choose a major above to start planning.';
       dpRestore();
-    }).catch(err=>{$('dpEmpty').textContent='Could not load plan data (plans.json). '+((err&&err.message)||'');});
+    }).catch(err=>{$('dpEmpty').textContent='Couldn’t load the academic plans. Reload the page — if it keeps failing, tell us with the Feedback button.';});
   }
   function dpOnCollegeYear(){
     const c=$('dpCollege').value, ys=$('dpYear');
@@ -3852,7 +3880,7 @@ function init(DATA){
   function dpImport(e){
     const f=e.target.files[0]; if(!f)return;
     const r=new FileReader();
-    r.onload=()=>{try{const m=JSON.parse(r.result);if(!m.meta||!Array.isArray(m.courses))throw 0;m.courses.forEach((c,i)=>{if(!c.key)c.key='c'+i+'_'+Math.random().toString(36).slice(2,6);});dpModel=m;dpOfficial=dpOfficial||JSON.parse(JSON.stringify(m));$('dpNotes').value=m.notes||'';dpSave();dpRender();}catch(err){$('dpEmpty').textContent='Could not read that plan file.';}};
+    r.onload=()=>{try{const m=JSON.parse(r.result);if(!m.meta||!Array.isArray(m.courses))throw 0;m.courses.forEach((c,i)=>{if(!c.key)c.key='c'+i+'_'+Math.random().toString(36).slice(2,6);});dpModel=m;dpOfficial=dpOfficial||JSON.parse(JSON.stringify(m));$('dpNotes').value=m.notes||'';dpSave();dpRender();}catch(err){$('dpEmpty').textContent='Couldn’t read that file — choose a plan you saved with “Save to file” (.json).';}};
     r.readAsText(f); e.target.value='';
   }
   function dpSave(){try{localStorage.setItem(DP_KEY,JSON.stringify({model:dpModel,official:dpOfficial}));}catch(e){}}
@@ -3937,7 +3965,7 @@ function init(DATA){
       $('gpPrint').onclick=()=>window.print();
       $('gpNotes').oninput=()=>{if(gpModel){gpModel.notes=$('gpNotes').value;gpSave();}};
       gpRestore();
-    }).catch(err=>{$('gpEmpty').textContent='Could not load graduate program data (gradplans.json). '+((err&&err.message)||'');});
+    }).catch(err=>{$('gpEmpty').textContent='Couldn’t load the graduate programs. Reload the page — if it keeps failing, tell us with the Feedback button.';});
   }
   function gpDeptAvailable(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.available!==false:false;}
   function gpDeptSchool(code){const d=(gpDB.departments||[]).find(x=>x.code===code);return d?d.school:'';}
@@ -4284,7 +4312,7 @@ function init(DATA){
   function gpImport(e){
     const f=e.target.files[0]; if(!f)return;
     const r=new FileReader();
-    r.onload=()=>{try{const m=JSON.parse(r.result);if(!m.meta||!Array.isArray(m.courses)||!m.meta.groups)throw 0;m.courses.forEach((c,i)=>{if(!c.key)c.key='g'+i+'_'+Math.random().toString(36).slice(2,6);});gpModel=m;gpOfficial=gpOfficial||JSON.parse(JSON.stringify(m));$('gpNotes').value=m.notes||'';gpSave();gpRender();}catch(err){$('gpEmpty').hidden=false;$('gpApp').hidden=true;$('gpEmpty').textContent='Could not read that plan file.';}};
+    r.onload=()=>{try{const m=JSON.parse(r.result);if(!m.meta||!Array.isArray(m.courses)||!m.meta.groups)throw 0;m.courses.forEach((c,i)=>{if(!c.key)c.key='g'+i+'_'+Math.random().toString(36).slice(2,6);});gpModel=m;gpOfficial=gpOfficial||JSON.parse(JSON.stringify(m));$('gpNotes').value=m.notes||'';gpSave();gpRender();}catch(err){$('gpEmpty').hidden=false;$('gpApp').hidden=true;$('gpEmpty').textContent='Couldn’t read that file — choose a worksheet you saved with “Save to file” (.json).';}};
     r.readAsText(f); e.target.value='';
   }
   function gpSave(){try{localStorage.setItem(GP_KEY,JSON.stringify({model:gpModel,official:gpOfficial}));}catch(e){}}
@@ -4353,7 +4381,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
     }
     init(data);
   }catch(err){
-    document.getElementById('rows').innerHTML='<div class="loading">Could not load data.json — '+esc(err.message)+'</div>';
+    document.getElementById('rows').innerHTML='<div class="loading">Couldn’t load the course data. Reload the page — if it keeps failing, tell us with the Feedback button.</div>';
   }
 })();
 </script>
@@ -4501,7 +4529,7 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
 <div id="fbOverlay" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
   <div class="fb-card">
     <h3 id="fbTitle">Report a bug or suggest an improvement</h3>
-    <p class="sub">Found something broken, or have an idea? Let me know — it goes straight to the project's issue tracker.</p>
+    <p class="sub">Found something broken, or have an idea? Let me know — it’s filed as an issue on the project’s GitHub, so please don’t include anything private.</p>
     <div class="fb-seg" id="fbSeg">
       <button type="button" data-type="bug" class="on">🐞 Bug</button>
       <button type="button" data-type="idea">💡 Idea</button>
