@@ -898,7 +898,7 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
            <button type="button" class="cal-tab" id="calTabFinals">Finals week · <span class="t-finals">Dec 5–12</span></button>
          </div>
          <div class="cal" id="cal"></div>
-         <div class="cal-note">Times from the <span class="t-code">FA26</span> Schedule of Classes. Discussion/lab options you can switch per course on the left. Weekend &amp; TBA meetings are listed but not drawn. Instruction runs <b class="t-instr">Sep 24 – Dec 4</b> (weeks 1–10, official UCSD calendar); switch to <b>Finals week</b> to see your exams laid out on <b class="t-finals">Dec 5–12</b>. Both go into the calendar export.</div>
+         <div class="cal-note">Times from the <span class="t-code">FA26</span> Schedule of Classes. Discussion/lab options you can switch per course on the left. TBA meetings are listed but not drawn; Saturday/Sunday columns appear when a section meets then. Instruction runs <b class="t-instr">Sep 24 – Dec 4</b> (weeks 1–10, official UCSD calendar); switch to <b>Finals week</b> to see your exams laid out on <b class="t-finals">Dec 5–12</b>. Both go into the calendar export.</div>
        </div>
        <div class="map-card">
          <div class="map-head" id="mapHead"><b>Campus map</b> — buildings for your selected sections</div>
@@ -1077,9 +1077,11 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
    .dp-course .gr{border:none;background:none;color:var(--accent-2);cursor:pointer;font-size:11px;font-family:var(--mono);padding:0 1px;white-space:nowrap}
    .dp-course .gr:hover{text-decoration:underline}
    .dp-course .del{border:none;background:none;color:var(--faint);cursor:pointer;font-size:14px;line-height:1;padding:0 2px}
-   .dp-course .mv{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex:none;color:var(--faint);font-size:12px;line-height:1;border-radius:4px}
+   .dp-course .mv{position:relative;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex:none;color:var(--faint);font-size:12px;line-height:1;border-radius:4px;overflow:hidden}
    .dp-course .mv:hover,.dp-course .mv:focus-within{color:var(--accent-2);background:var(--accent-soft)}
-   .dp-course .mv select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+   /* Chrome gives a <select> a ~44px minimum width — wider than the 18px ⇄, so the invisible
+      select covered the ✕ next to it and a tap on ✕ opened "Move to…". Clip it to the glyph. */
+   .dp-course .mv select{position:absolute;inset:0;width:100%;height:100%;min-width:0;max-width:100%;padding:0;border:0;appearance:none;-webkit-appearance:none;opacity:0;cursor:pointer;font-size:16px}
    @media(max-width:720px){.dp-course .mv{width:32px;height:32px;font-size:16px}}
    .dp-course .del:hover{color:#C0392B}
    .dp-add{display:flex;gap:4px;margin-top:2px}
@@ -1106,6 +1108,17 @@ window.__dataPromise.catch(function(){});   // reported where the app awaits it
      .dp-add input.nm,.dp-add input.un,.dp-course .cn-edit{font-size:16px}
    }
    @media print{.dp-controls,.dp-toolbar,.dp-add,.dp-legend,.dp-course .del,.dp-course .gr,.dp-course .mv,.dp-course input[type=checkbox],.dp-notes textarea{display:none!important}}
+   /* print just the content: no site header, stat tiles, tabs, footer, feedback button
+      or term picker; force the light palette and keep cards whole across pages */
+   @media print{
+     header.top,#stats,#viewtabs,footer,#fbBtn,#fbOverlay,.theme-btn,.ge-cta,.ge-intro{display:none!important}
+     :root{color-scheme:light}
+     body{background:#fff!important;color:#000}
+     .gp-group,.dp-year,.sci,.ge-card{break-inside:avoid}
+     #mnNotes,#gpNotes{display:none!important}
+     .print-notes{display:block!important}
+   }
+   .print-notes{display:none;white-space:pre-wrap;font-size:12.5px;line-height:1.5;border-top:1px solid var(--line);padding-top:6px}
 
    /* Undergrad / Graduate mode toggle */
    .dp-mode{display:inline-flex;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;margin:2px 0 10px}
@@ -1571,7 +1584,8 @@ const TERM=TERMS[TERM_CODE];
   const codes=Object.keys(TERM_FILES).filter(c=>TERMS[c]).sort((a,b)=>TERMS[b].start.localeCompare(TERMS[a].start));
   sel.innerHTML=codes.map(c=>'<option value="'+c+'"'+(c===TERM_CODE?' selected':'')+'>'+TERMS[c].name+(c===TERM_DEFAULT?'':' (archived)')+'</option>').join('');
   sel.hidden=codes.length<2;
-  sel.onchange=()=>{try{if(sel.value===TERM_DEFAULT)localStorage.removeItem(TERM_KEY);else localStorage.setItem(TERM_KEY,sel.value);}catch(e){}location.reload();};
+  sel.onchange=()=>{try{if(sel.value===TERM_DEFAULT)localStorage.removeItem(TERM_KEY);else localStorage.setItem(TERM_KEY,sel.value);
+    const t=document.querySelector('.viewtab[aria-selected="true"]');if(t)sessionStorage.setItem('easyA_tab',t.id);}catch(e){}location.reload();};
 })();
 const ymd=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
 const mdShort=d=>(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()])+' '+d.getDate();
@@ -2430,7 +2444,8 @@ function init(DATA){
     return schPromise;
   }
   const CAL_COLORS=['#0E63AC','#1F9D6B','#B9700E','#7A4FC0','#C0392B','#0E8F8F','#B0357A','#5B7A0E','#2C5FA8','#A15C2B'];
-  const DAYIDX={M:0,Tu:1,W:2,Th:3,F:4,Sa:5,Su:6}, DAYLAB=['Mon','Tue','Wed','Thu','Fri'];
+  const DAYIDX={M:0,Tu:1,W:2,Th:3,F:4,Sa:5,Su:6}, DAYLAB=['Mon','Tue','Wed','Thu','Fri'], DAYLAB7=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const DAYFULL=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const S_CODE=0,S_TYPE=1,S_DAYS=2,S_START=3,S_END=4,S_BLD=5,S_ROOM=6,S_INSTR=7,S_CANC=10;
   function parseDays(s){const out=[],re=/Su|Sa|Th|Tu|M|W|F/g;let m;while((m=re.exec(s||''))!==null)out.push(DAYIDX[m[0]]);return out;}
   function parseMin(t){const m=/^(\d{1,2}):(\d{2})\s*([ap])?/i.exec(String(t||''));if(!m)return null;let h=+m[1];const mi=+m[2],ap=(m[3]||'').toLowerCase();if(ap==='p'&&h!==12)h+=12;if(ap==='a'&&h===12)h=0;return h*60+mi;}
@@ -2616,7 +2631,9 @@ function init(DATA){
         const hgt=Math.max(15,(clamp(e.b,DAY_START,DAY_END)-clamp(e.a,DAY_START,DAY_END))/60*HRH);
         const nc=e._ncols||1, col=e._col||0;
         const left=`calc(${(col/nc*100).toFixed(3)}% + 3px)`, wid=`calc(${(100/nc).toFixed(3)}% - 6px)`;
-        html+=`<div class="ev${e.clash?' clash':''}" style="top:${top}px;height:${hgt}px;left:${left};width:${wid};right:auto;background:${e.color}"><span class="ec">${esc(e.code)}</span> <span class="et">${esc(e.type)}</span></div>`;
+        const clashK=e.clash?[...new Set(evs.filter(o=>o.ci!==e.ci&&o.d===e.d&&o.a<e.b&&e.a<o.b).map(o=>o.code))]:[];
+        const tip=e.code+' '+e.type+' · '+minLabel(e.a)+'–'+minLabel(e.b)+(e.bld?' · '+e.bld+(e.room?' '+e.room:''):'')+(clashK.length?' — conflicts with '+clashK.join(', '):'');
+        html+=`<div class="ev${e.clash?' clash':''}" title="${esc(tip)}" style="top:${top}px;height:${hgt}px;left:${left};width:${wid};right:auto;background:${e.color}"><span class="ec">${esc(e.code)}</span> <span class="et">${esc(e.type)}</span></div>`;
       }
       html+='</div>';
     }
@@ -2675,8 +2692,8 @@ function init(DATA){
       <div class="ctrls">${grpSel}${optSel}</div>
       <div class="meets">${meets}${finRows}</div>
       ${(profs.length||bookLink)?`<div class="prof">${profs.length?`<span class="lab">Instructor:</span> ${esc(profs.join(', '))}`:''}${bookLink?`<span class="sci-book">${bookLink}</span>`:''}</div>`:''}
-      ${it._conf?'<div class="conf-note">⚠ Time conflict with another course</div>':''}
-      ${it._finConf?'<div class="conf-note">⚠ Final exam overlaps another course’s final</div>':''}
+      ${it._conf?'<div class="conf-note">⚠ Time conflict with '+it._confWith.map(c=>'<b>'+esc(c.k)+'</b> ('+esc(c.when)+')').join(', ')+'</div>':''}
+      ${it._finConf?'<div class="conf-note">⚠ Final exam overlaps the final of '+it._finWith.map(k=>'<b>'+esc(k)+'</b>').join(', ')+'</div>':''}
     </div>`;
   }
   // ---- Getting around campus: walk/bike times between buildings ----
@@ -2698,14 +2715,15 @@ function init(DATA){
     const host=$('gaBody'); if(!host) return;
     if(!WALK){ host.innerHTML='<div class="ga-load">Loading walk / bike times…</div>'; ensureWalk().then(w=>{ if(w){ gaFillSelects(); renderTransitions(); } else host.innerHTML='<div class="ga-empty">Couldn’t load walking and biking times. Reload the page to try again.</div>'; }); return; }
     const evs=schEvents().filter(e=>e.bld && WALK._idx[e.bld]!=null);
-    const DAYNAMES=['Monday','Tuesday','Wednesday','Thursday','Friday'];
+    const DAYNAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
     let html='';
-    for(let d=0; d<5; d++){
+    for(let d=0; d<7; d++){
       const day=evs.filter(e=>e.d===d).sort((x,y)=>x.a-y.a||x.b-y.b);
       const rows=[];
       for(let i=0;i+1<day.length;i++){
         const A=day[i],B=day[i+1];
         if(A.bld===B.bld) continue;                    // same building — no walk
+        if(B.a-A.b>60) continue;                        // an hour+ apart isn't back-to-back
         const t=walkPair(A.bld,B.bld); if(!t) continue;
         rows.push({A,B,t,gap:B.a-A.b});
       }
@@ -2746,8 +2764,22 @@ function init(DATA){
     if(!has){ $('schedItems').innerHTML=''; const _c=$('cal'); if(_c)_c.innerHTML='';
       const _g=$('gaBody'); if(_g)_g.innerHTML='';   // clear walk/bike rows too, or they go stale
       return; }
-    const evs=schEvents(), confSet=new Set(evs.filter(e=>e.clash).map(e=>e.ci));
-    schItems.forEach((it,ci)=>it._conf=confSet.has(ci));
+    const evs=schEvents();
+    // who clashes with whom: ci -> Map(other ci -> first clashing meeting), and the
+    // number of distinct conflicting course PAIRS (two courses clashing = 1 conflict)
+    const clashWith=new Map(), timePairs=new Set();   // ci -> Map(other ci -> {days:Set, at})
+    const note=(x,y,d,at)=>{if(!clashWith.has(x))clashWith.set(x,new Map());const m=clashWith.get(x);
+      const v=m.get(y)||{days:new Set(),at};v.days.add(d);v.at=Math.min(v.at,at);m.set(y,v);};
+    for(let i=0;i<evs.length;i++)for(let j=i+1;j<evs.length;j++){
+      const x=evs[i],y=evs[j];
+      if(x.ci!==y.ci&&x.d===y.d&&x.a<y.b&&y.a<x.b){
+        const at=Math.max(x.a,y.a);
+        note(x.ci,y.ci,x.d,at);note(y.ci,x.ci,x.d,at);timePairs.add(Math.min(x.ci,y.ci)+'|'+Math.max(x.ci,y.ci));
+      }
+    }
+    // "Mon/Wed/Fri 1:00p"
+    schItems.forEach((it,ci)=>{const m=clashWith.get(ci);it._conf=!!m;
+      it._confWith=m?[...m].map(([o,v])=>({k:schItems[o].k,when:[...v.days].sort().map(d=>DAYFULL[d]).join('/')+' '+minLabel(v.at)})):[];});
     // final-exam overlaps (same date, overlapping time, different courses)
     const finEvs=[];
     schItems.forEach((it,ci)=>{
@@ -2758,20 +2790,26 @@ function init(DATA){
         finEvs.push({ci,day:d.getTime(),a,b:b==null?a+179:b});
       }
     });
-    const finConf=new Set();
+    const finWith=new Map(), finPairs=new Set();
     for(let i=0;i<finEvs.length;i++)for(let j=i+1;j<finEvs.length;j++){
       const x=finEvs[i],y=finEvs[j];
-      if(x.ci!==y.ci&&x.day===y.day&&x.a<y.b&&y.a<x.b){finConf.add(x.ci);finConf.add(y.ci);}
+      if(x.ci!==y.ci&&x.day===y.day&&x.a<y.b&&y.a<x.b){
+        for(const [u,v] of [[x.ci,y.ci],[y.ci,x.ci]]){if(!finWith.has(u))finWith.set(u,new Set());finWith.get(u).add(v);}
+        finPairs.add(Math.min(x.ci,y.ci)+'|'+Math.max(x.ci,y.ci));
+      }
     }
-    schItems.forEach((it,ci)=>it._finConf=finConf.has(ci));
+    schItems.forEach((it,ci)=>{const w=finWith.get(ci);it._finConf=!!w;it._finWith=w?[...w].map(o=>schItems[o].k):[];});
+    const nConf=timePairs.size+finPairs.size;
     let units=0; schItems.forEach(it=>{const c=SCHED.courses[it.k];if(c){const u=parseFloat(c.u);if(!isNaN(u))units+=u;}});
     $('schedSummary').innerHTML=`
       <div class="st"><div class="v">${schItems.length}</div><div class="l">Courses</div></div>
       <div class="st"><div class="v">${units%1?units.toFixed(1):units}</div><div class="l">Units</div></div>
-      <div class="st"><div class="v ${(confSet.size||finConf.size)?'warn':''}">${new Set([...confSet,...finConf]).size}</div><div class="l">Conflicts</div></div>`;
+      <div class="st" title="${nConf?'Pairs of courses that clash: '+timePairs.size+' in class time, '+finPairs.size+' in final exams':'No class-time or final-exam conflicts'}"><div class="v ${nConf?'warn':''}">${nConf}</div><div class="l">Conflict${nConf===1?'':'s'}</div></div>`;
     $('schedItems').innerHTML=schItems.map((it,ci)=>schItemHTML(it,ci)).join('');
     {const btn=$('openAllPages');if(btn){btn.disabled=schItems.length===0;const c=$('openAllCnt');if(c)c.textContent=schItems.length?`· ${schItems.length}`:'';}}
-    if(calMode==='finals') renderCal(finalsEvents(),FINALS_LABELS); else renderCal(evs);
+    // Saturday / Sunday columns only when a picked section meets then
+    const lastDay=evs.reduce((m,e)=>Math.max(m,e.d),4);
+    if(calMode==='finals') renderCal(finalsEvents(),FINALS_LABELS); else renderCal(evs,DAYLAB7.slice(0,lastDay+1));
     renderMap();
     renderTransitions();
   }
@@ -2794,7 +2832,7 @@ function init(DATA){
   const ICS_UNTIL=(()=>{const e=ymd(TERM.end),off=laDST(e)?7:8;
     const u=new Date(Date.UTC(e.getFullYear(),e.getMonth(),e.getDate(),23+off,59,59));
     return u.toISOString().replace(/[-:]/g,'').replace(/\.\d+Z$/,'Z');})();
-  const JSDAY={0:1,1:2,2:3,3:4,4:5};                   // my DAYIDX(M..F) -> JS getDay(Mon..Fri)
+  const JSDAY={0:1,1:2,2:3,3:4,4:5,5:6,6:0};           // my DAYIDX(M..Su) -> JS getDay (weekend meetings export too)
   const ICSDAY=['SU','MO','TU','WE','TH','FR','SA'];   // by JS getDay
   const HOLIDAYS=TERM.holidays.map(ymd);                // no-class days → EXDATEs on their weekday
   const p2=n=>String(n).padStart(2,'0');
@@ -3324,7 +3362,9 @@ function init(DATA){
     const m=(MIN||[]).find(x=>x.tss===tss); if(!m) return;
     mwM=m;
     const saved=!fresh&&mwStore['ws:'+tss];
+    const keepNotes=fresh&&mwStore['ws:'+tss]&&mwStore['ws:'+tss].notes;   // a reset clears picks, not notes
     mwWS=saved&&saved.c?saved:mwSeed(m);
+    if(keepNotes) mwWS.notes=keepNotes;
     mwWS.c.forEach(x=>{if(!x.k)x.k=++mwKey;});
     $('mnNotes').value=mwWS.notes||'';
     mwSave(); mwRender();
@@ -3513,7 +3553,7 @@ function init(DATA){
     mnDeptBox.sync(); mnPickBox.sync();
   }
   $('mnLoad').addEventListener('click',()=>{ if(mwSel) mwLoad(mwSel); });
-  $('mnReset').addEventListener('click',()=>{if(mwM&&confirm('Clear your picks for the '+mwM.name+' minor and start from the catalog list?')) mwLoad(mwM.tss,true);});
+  $('mnReset').addEventListener('click',()=>{if(mwM&&confirm('Clear your picks for the '+mwM.name+' minor and start from the catalog list? Your notes are kept.')) mwLoad(mwM.tss,true);});
   $('mnRank').addEventListener('click',()=>{
     const codes=(mwM.codes||[]).filter(c=>courseKeySet.has(c)); if(!codes.length)return;
     goToCoursesByCode(codes,mwM.name+' minor');
@@ -3545,6 +3585,11 @@ function init(DATA){
   $('tab-ge').addEventListener('click',()=>setView('ge'));
   $('tab-minor').addEventListener('click',()=>setView('minor'));
   $('tab-planner').addEventListener('click',()=>setView('planner'));
+  // A textarea prints only its visible box (and the print CSS hides it) — copy each notes
+  // field into a plain block just before printing so the notes make it onto paper.
+  window.addEventListener('beforeprint',()=>{for(const id of ['dpNotes','gpNotes','mnNotes']){const t=$(id);if(!t)continue;
+    let d=t.nextElementSibling;if(!d||!d.classList.contains('print-notes')){d=document.createElement('div');d.className='print-notes';t.after(d);}
+    d.textContent=t.value.trim()?'Notes: '+t.value:'';}});
 
   /* ===================== Degree Planner ===================== */
   const DP_KEY='earPlanner_v1';
@@ -3599,7 +3644,7 @@ function init(DATA){
       $('dpYear').onchange=dpOnYearReady;
       $('dpType').onchange=()=>{$('dpLoad').disabled=!$('dpType').value;};
       $('dpLoad').onclick=dpLoadOfficial;
-      $('dpReset').onclick=()=>{if(dpOfficial){dpModel=JSON.parse(JSON.stringify(dpOfficial));dpSave();dpRender();}};
+      $('dpReset').onclick=()=>{if(dpOfficial){const notes=(dpModel&&dpModel.notes)||'';dpModel=JSON.parse(JSON.stringify(dpOfficial));dpModel.notes=notes;$('dpNotes').value=notes;dpSave();dpRender();}};   // courses back to official; your notes stay
       $('dpSummer').onclick=()=>{if(!dpModel)return;dpModel.showSummer=!dpModel.showSummer;dpSave();dpRender();};
       $('dpExport').onclick=dpExport;
       $('dpImport').onclick=()=>$('dpFile').click();
@@ -3958,7 +4003,7 @@ function init(DATA){
       gpComboInit();
       $('gpPlan').onchange=()=>{$('gpLoad').disabled=!$('gpPlan').value;};
       $('gpLoad').onclick=gpLoadWorksheet;
-      $('gpReset').onclick=()=>{if(gpOfficial){gpModel=JSON.parse(JSON.stringify(gpOfficial));gpSave();gpRender();}};
+      $('gpReset').onclick=()=>{if(gpOfficial){const notes=(gpModel&&gpModel.notes)||'';gpModel=JSON.parse(JSON.stringify(gpOfficial));gpModel.notes=notes;$('gpNotes').value=notes;gpSave();gpRender();}};
       $('gpExport').onclick=gpExport;
       $('gpImport').onclick=()=>$('gpFile').click();
       $('gpFile').onchange=gpImport;
@@ -4380,6 +4425,10 @@ document.getElementById('themeBtn').addEventListener('click',()=>{
       data=await unGz(raw);
     }
     init(data);
+    // Back on the tab you were on before switching quarters (the switch reloads the page).
+    // Only after init() has run — the planner's state is declared further down inside it.
+    try{const t=sessionStorage.getItem('easyA_tab');sessionStorage.removeItem('easyA_tab');
+      if(t&&/^tab-(sched|ge|minor|planner)$/.test(t)){const el=document.getElementById(t);if(el)el.click();}}catch(e){}
   }catch(err){
     document.getElementById('rows').innerHTML='<div class="loading">Couldn’t load the course data. Reload the page — if it keeps failing, tell us with the Feedback button.</div>';
   }

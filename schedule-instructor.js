@@ -4,6 +4,9 @@
   root.ScheduleInstructor = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   const CODE_INDEX = 0;
+  const TYPE_INDEX = 1;
+  const DAYS_INDEX = 2;
+  const START_INDEX = 3;
   const INSTRUCTOR_INDEX = 7;
 
   function instructorsForGroup(sections) {
@@ -31,8 +34,16 @@
     return !!left && left === normalize(b);
   }
 
+  // "LE MWF 10:00a" — the group's lecture (else its first timed meeting), used to tell
+  // apart two groups taught by the same instructor.
+  function groupMeeting(sections) {
+    const timed = (sections || []).filter((s) => s[DAYS_INDEX] && s[START_INDEX]);
+    const pick = timed.find((s) => s[TYPE_INDEX] === 'LE') || timed[0];
+    return pick ? pick[TYPE_INDEX] + ' ' + pick[DAYS_INDEX] + ' ' + pick[START_INDEX] : '';
+  }
+
   function instructorGroupChoices(groups) {
-    return Object.keys(groups || {}).sort().map((group) => {
+    const choices = Object.keys(groups || {}).sort().map((group) => {
       const sections = groups[group] || [];
       const instructors = instructorsForGroup(sections);
       // No instructor names (AWP-style seminars): label with the real section
@@ -42,8 +53,15 @@
         group,
         instructors,
         label: instructors.length ? instructors.join(', ') + ' · ' + group : 'Section ' + (code || group),
+        _who: instructors.join(', '),
+        _when: groupMeeting(sections),
       };
     });
+    // Same instructor on several groups ("Steven Levkoff · A" / "· B"): add the meeting time.
+    const count = {};
+    for (const c of choices) if (c._who) count[c._who] = (count[c._who] || 0) + 1;
+    return choices.map(({ _who, _when, ...c }) =>
+      (_who && count[_who] > 1 && _when) ? { ...c, label: c.label + ' · ' + _when } : c);
   }
 
   function preferredGroupForInstructor(groups, instructor) {

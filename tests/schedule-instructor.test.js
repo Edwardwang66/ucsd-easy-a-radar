@@ -68,9 +68,10 @@ test('instructor choices identify every ECON 1 section group', () => {
   assert.equal(typeof helper.instructorGroupChoices, 'function');
 
   const groups = activeGroups(schedule.courses['ECON 1']);
+  // the same instructor on two groups gets the lecture time so the options differ
   assert.deepEqual(helper.instructorGroupChoices(groups), [
-    { group: 'A', instructors: ['Steven Levkoff'], label: 'Steven Levkoff · A' },
-    { group: 'B', instructors: ['Steven Levkoff'], label: 'Steven Levkoff · B' },
+    { group: 'A', instructors: ['Steven Levkoff'], label: 'Steven Levkoff · A · LE TuTh 11:00a' },
+    { group: 'B', instructors: ['Steven Levkoff'], label: 'Steven Levkoff · B · LE TuTh 2:00p' },
     { group: 'C', instructors: ['Yinlin Dai'], label: 'Yinlin Dai · C' },
   ]);
 });
